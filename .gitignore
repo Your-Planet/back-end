@@ -209,3 +209,6 @@ gradle-app.setting
 ### Gradle Patch ###
 # Java heap dump
 *.hprof
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/vcs.xml
