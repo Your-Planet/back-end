@@ -1,27 +1,34 @@
-package kr.co.yourplanet.ypbackend.business.user.dto;
+package kr.co.yourplanet.ypbackend.business.user.domain;
 
 import kr.co.yourplanet.ypbackend.common.MemberType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
-@Getter @NoArgsConstructor
-public class RegisterForm {
+@Entity
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Member {
 
-    @NotBlank
+    @Id
     private String id;
-    @NotBlank
+
     private String password;
-    @NotBlank
+
     private String name;
-    @NotBlank
+
     private boolean sex; // false : 남자 / true : 여자
-    @NotBlank
+
     private String tel;
-    @NotBlank
+
     private MemberType memberType;
-    @NotBlank
+
     private String birthYmd; // YYYYMMDD
 
     // Author
@@ -32,5 +39,4 @@ public class RegisterForm {
     private String businessNumber;
     private String representativeName;
     private String businessAddress;
-
 }

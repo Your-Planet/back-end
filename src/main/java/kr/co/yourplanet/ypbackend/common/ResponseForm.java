@@ -1,8 +1,10 @@
 package kr.co.yourplanet.ypbackend.common;
 
+import lombok.Getter;
 import lombok.Setter;
 
 @Setter
+@Getter
 public class ResponseForm {
 
     private StatusCode statusCode;
