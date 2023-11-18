@@ -28,10 +28,17 @@ public class MemberController {
                 .id(registerForm.getId())
                 .password(registerForm.getPassword())
                 .name(registerForm.getName())
+<<<<<<< HEAD
                 .genderType(registerForm.getGenderType())
                 .tel(registerForm.getTel())
                 .memberType(registerForm.getMemberType())
                 .birthDate(registerForm.getBirthDate())
+=======
+                .sex(registerForm.getSex())
+                .tel(registerForm.getTel())
+                .memberType(registerForm.getMemberType())
+                .birthYmd(registerForm.getBirthYmd())
+>>>>>>> f70981d (feat: register form 수정)
                 .instagramId(registerForm.getInstagramId())
                 .companyName(registerForm.getCompanyName())
                 .businessNumber(registerForm.getBusinessNumber())
