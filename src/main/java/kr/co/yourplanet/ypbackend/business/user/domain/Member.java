@@ -1,7 +1,7 @@
 package kr.co.yourplanet.ypbackend.business.user.domain;
 
-import kr.co.yourplanet.ypbackend.common.ENUM.MemberType;
-import kr.co.yourplanet.ypbackend.common.ENUM.Sex;
+import kr.co.yourplanet.ypbackend.common.enums.MemberType;
+import kr.co.yourplanet.ypbackend.common.enums.Sex;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

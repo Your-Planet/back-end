@@ -1,7 +1,7 @@
 package kr.co.yourplanet.ypbackend.business.user.dto;
 
-import kr.co.yourplanet.ypbackend.common.ENUM.MemberType;
-import kr.co.yourplanet.ypbackend.common.ENUM.Sex;
+import kr.co.yourplanet.ypbackend.common.enums.MemberType;
+import kr.co.yourplanet.ypbackend.common.enums.Sex;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
