@@ -1,4 +1,4 @@
-package kr.co.yourplanet.ypbackend.common;
+package kr.co.yourplanet.ypbackend.common.ENUM;
 
 public enum StatusCode {
 

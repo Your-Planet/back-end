@@ -27,9 +27,15 @@ public class HomeController {
                 .id(registerForm.getId())
                 .password(registerForm.getPassword())
                 .name(registerForm.getName())
-                .sex(registerForm.isSex())
+                .sex(registerForm.getSex())
                 .tel(registerForm.getTel())
                 .memberType(registerForm.getMemberType())
+                .birthYmd(registerForm.getBirthYmd())
+                .instagramId(registerForm.getInstagramId())
+                .companyName(registerForm.getCompanyName())
+                .businessNumber(registerForm.getBusinessNumber())
+                .representativeName(registerForm.getRepresentativeName())
+                .businessAddress(registerForm.getBusinessAddress())
                 .build();
 
         homeService.register(member);

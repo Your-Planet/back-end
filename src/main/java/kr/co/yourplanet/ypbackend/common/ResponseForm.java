@@ -1,5 +1,6 @@
 package kr.co.yourplanet.ypbackend.common;
 
+import kr.co.yourplanet.ypbackend.common.ENUM.StatusCode;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,6 +1,7 @@
 package kr.co.yourplanet.ypbackend.business.user.dto;
 
-import kr.co.yourplanet.ypbackend.common.MemberType;
+import kr.co.yourplanet.ypbackend.common.ENUM.MemberType;
+import kr.co.yourplanet.ypbackend.common.ENUM.Sex;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,7 +17,7 @@ public class RegisterForm {
     @NotBlank
     private String name;
     @NotBlank
-    private boolean sex; // false : 남자 / true : 여자
+    private Sex sex; // M: 남자 / F: 여자
     @NotBlank
     private String tel;
     @NotBlank
