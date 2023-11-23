@@ -13,12 +13,11 @@ public class HomeRepository {
         this.em = em;
     }
 
-    public void save(Member member){
+    public void saveMember(Member member) {
         em.persist(member);
     }
 
-    public Member findMemberById(String id){
+    public Member findMemberById(String id) {
         return em.find(Member.class, id);
     }
-
 }
