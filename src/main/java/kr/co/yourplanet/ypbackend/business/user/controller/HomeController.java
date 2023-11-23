@@ -4,6 +4,7 @@ import kr.co.yourplanet.ypbackend.business.user.domain.Member;
 import kr.co.yourplanet.ypbackend.business.user.dto.RegisterForm;
 import kr.co.yourplanet.ypbackend.business.user.service.HomeService;
 import kr.co.yourplanet.ypbackend.common.ResponseForm;
+import kr.co.yourplanet.ypbackend.business.user.dto.LoginForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,7 +21,7 @@ public class HomeController {
     private final HomeService homeService;
 
     @PostMapping("/register")
-    public ResponseEntity<ResponseForm> register(@RequestBody RegisterForm registerForm){
+    public ResponseEntity<ResponseForm> register(@RequestBody RegisterForm registerForm) {
         ResponseForm responseForm = new ResponseForm();
 
         Member member = Member.builder()
@@ -37,4 +38,12 @@ public class HomeController {
         return new ResponseEntity<>(responseForm, HttpStatus.OK);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<ResponseForm> login(@RequestBody LoginForm loginForm) {
+        ResponseForm responseForm = new ResponseForm();
+
+        Member member = homeService.login(loginForm);
+
+        return new ResponseEntity<>(responseForm, HttpStatus.OK);
+    }
 }
