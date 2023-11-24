@@ -5,11 +5,11 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 @Repository
-public class HomeRepository {
+public class MemberRepository {
 
     private final EntityManager em;
 
-    public HomeRepository(EntityManager em) {
+    public MemberRepository(EntityManager em) {
         this.em = em;
     }
 
