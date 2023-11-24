@@ -48,7 +48,7 @@ public class MemberController {
     public ResponseEntity<ResponseForm> login(@RequestBody LoginForm loginForm) {
         ResponseForm responseForm = new ResponseForm();
 
-        Member member = homeService.login(loginForm);
+        Member member = memberService.login(loginForm);
 
         return new ResponseEntity<>(responseForm, HttpStatus.OK);
     }
