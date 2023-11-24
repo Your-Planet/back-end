@@ -28,7 +28,7 @@ public class HomeService {
 
     public void checkDuplId(String id){
         if(homeRepository.findMemberById(id) != null){
-            throw new IllegalStateException("이미 존재하는 ID입니다");
+            throw new IllegalStateException("이미 존재하는 ID입니다.");
         }
     }
 
@@ -36,11 +36,11 @@ public class HomeService {
         Member member = homeRepository.findMemberById(loginForm.getId());
 
         if (member == null) {
-            return null;
+            throw new IllegalStateException("존재하지 않는 ID입니다.");
         }
 
         if (!member.getPassword().equals(loginForm.getPassword())) {
-            return null;
+            throw new IllegalStateException("비밀번호가 틀렸습니다.");
         }
 
         return member;
