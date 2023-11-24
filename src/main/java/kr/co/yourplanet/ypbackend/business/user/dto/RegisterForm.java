@@ -1,7 +1,7 @@
 package kr.co.yourplanet.ypbackend.business.user.dto;
 
 import kr.co.yourplanet.ypbackend.common.enums.MemberType;
-import kr.co.yourplanet.ypbackend.common.enums.Gender;
+import kr.co.yourplanet.ypbackend.common.enums.GenderType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -17,7 +17,7 @@ public class RegisterForm {
     @NotBlank
     private String name;
     @NotBlank
-    private Gender gender; // MALE: 남자 / FEMALE: 여자
+    private GenderType genderType; // MALE: 남자 / FEMALE: 여자
     @NotBlank
     private String tel;
     @NotBlank

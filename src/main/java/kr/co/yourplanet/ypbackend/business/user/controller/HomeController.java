@@ -27,7 +27,7 @@ public class HomeController {
                 .id(registerForm.getId())
                 .password(registerForm.getPassword())
                 .name(registerForm.getName())
-                .gender(registerForm.getGender())
+                .genderType(registerForm.getGenderType())
                 .tel(registerForm.getTel())
                 .memberType(registerForm.getMemberType())
                 .birthDate(registerForm.getBirthDate())

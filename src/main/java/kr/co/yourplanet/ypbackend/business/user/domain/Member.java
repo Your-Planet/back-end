@@ -1,7 +1,7 @@
 package kr.co.yourplanet.ypbackend.business.user.domain;
 
 import kr.co.yourplanet.ypbackend.common.enums.MemberType;
-import kr.co.yourplanet.ypbackend.common.enums.Gender;
+import kr.co.yourplanet.ypbackend.common.enums.GenderType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,7 +24,7 @@ public class Member {
 
     private String name;
 
-    private Gender gender; // MALE: 남자 / FEMALE: 여자
+    private GenderType genderType; // MALE: 남자 / FEMALE: 여자
 
     private String tel;
 

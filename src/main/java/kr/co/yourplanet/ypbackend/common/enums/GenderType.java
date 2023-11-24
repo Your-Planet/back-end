@@ -1,6 +1,6 @@
 package kr.co.yourplanet.ypbackend.common.enums;
 
-public enum Gender {
+public enum GenderType {
     MALE,
     FEMALE
 }
