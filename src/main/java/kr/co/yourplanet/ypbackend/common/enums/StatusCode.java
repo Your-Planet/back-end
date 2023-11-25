@@ -1,4 +1,4 @@
-package kr.co.yourplanet.ypbackend.common;
+package kr.co.yourplanet.ypbackend.common.enums;
 
 public enum StatusCode {
 
@@ -7,8 +7,8 @@ public enum StatusCode {
     NOT_FOUND(404, "NOT_FOUND"),
     INTERNAL_SERER_ERROR(500, "INTERNAL_SERVER_ERROR");
 
-    int statusCode;
-    String code;
+    final int statusCode;
+    final String code;
 
     StatusCode(int statusCode, String code) {
         this.statusCode = statusCode;

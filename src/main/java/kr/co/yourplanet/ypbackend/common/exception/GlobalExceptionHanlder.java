@@ -1,7 +1,7 @@
 package kr.co.yourplanet.ypbackend.common.exception;
 
 import kr.co.yourplanet.ypbackend.common.ResponseForm;
-import kr.co.yourplanet.ypbackend.common.StatusCode;
+import kr.co.yourplanet.ypbackend.common.enums.StatusCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

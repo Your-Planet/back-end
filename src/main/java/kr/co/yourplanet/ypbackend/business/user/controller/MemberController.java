@@ -28,9 +28,15 @@ public class MemberController {
                 .id(registerForm.getId())
                 .password(registerForm.getPassword())
                 .name(registerForm.getName())
-                .sex(registerForm.isSex())
+                .genderType(registerForm.getGenderType())
                 .tel(registerForm.getTel())
                 .memberType(registerForm.getMemberType())
+                .birthDate(registerForm.getBirthDate())
+                .instagramId(registerForm.getInstagramId())
+                .companyName(registerForm.getCompanyName())
+                .businessNumber(registerForm.getBusinessNumber())
+                .representativeName(registerForm.getRepresentativeName())
+                .businessAddress(registerForm.getBusinessAddress())
                 .build();
 
         memberService.register(member);
