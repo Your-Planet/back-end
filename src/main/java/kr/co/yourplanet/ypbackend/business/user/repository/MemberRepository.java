@@ -5,20 +5,19 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 @Repository
-public class HomeRepository {
+public class MemberRepository {
 
     private final EntityManager em;
 
-    public HomeRepository(EntityManager em) {
+    public MemberRepository(EntityManager em) {
         this.em = em;
     }
 
-    public void save(Member member){
+    public void saveMember(Member member) {
         em.persist(member);
     }
 
-    public Member findMemberById(String id){
+    public Member findMemberById(String id) {
         return em.find(Member.class, id);
     }
-
 }
