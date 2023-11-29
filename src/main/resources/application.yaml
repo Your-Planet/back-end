@@ -19,6 +19,6 @@ logging:
     org.hibernate.type: trace # sql 쿼리 input 값 확인하고 싶을 때
 
 jwt:
-  header: Authorization
+  header: X-AUTH-TOKEN
   secret: yourplanet
-  token-validity-time: 60 * 30 # sec
+  token-validity-time: 1800 # sec
