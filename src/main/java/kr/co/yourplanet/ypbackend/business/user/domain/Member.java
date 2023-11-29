@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 @Getter
@@ -19,17 +20,17 @@ public class Member {
 
     @Id
     private String id;
-
+    @NotBlank
     private String password;
-
+    @NotBlank
     private String name;
-
+    @NotBlank
     private GenderType genderType; // MALE: 남자 / FEMALE: 여자
-
+    @NotBlank
     private String tel;
-
+    @NotBlank
     private MemberType memberType;
-
+    @NotBlank
     private String birthDate; // YYYYMMDD
 
     // Author

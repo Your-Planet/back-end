@@ -20,7 +20,7 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @PostMapping("/register")
+    @PostMapping("/member/register")
     public ResponseEntity<ResponseForm> register(@RequestBody RegisterForm registerForm) {
         ResponseForm responseForm = new ResponseForm();
 
@@ -44,7 +44,7 @@ public class MemberController {
         return new ResponseEntity<>(responseForm, HttpStatus.OK);
     }
 
-    @PostMapping("/login")
+    @PostMapping("/member/login")
     public ResponseEntity<ResponseForm> login(@RequestBody LoginForm loginForm) {
         ResponseForm responseForm = new ResponseForm();
 

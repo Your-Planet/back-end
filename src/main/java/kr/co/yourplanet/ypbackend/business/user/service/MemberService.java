@@ -17,7 +17,7 @@ public class MemberService {
     @Transactional
     public String register(Member member){
         //중복 아이디 체크. 중복시 Exception 발생
-        checkDuplId(member.getId());
+        checkDuplicateId(member.getId());
 
         // 추후 비밀번호 저장시 암호화해서 DB에 저장하는 로직 추가하자
         memberRepository.saveMember(member);
@@ -25,7 +25,7 @@ public class MemberService {
         return "Done";
     }
 
-    public void checkDuplId(String id){
+    public void checkDuplicateId(String id){
         if(memberRepository.findMemberById(id) != null){
             throw new IllegalStateException("이미 존재하는 ID입니다");
         }
@@ -34,12 +34,8 @@ public class MemberService {
     public Member login(LoginForm loginForm) {
         Member member = memberRepository.findMemberById(loginForm.getId());
 
-        if (member == null) {
-            throw new IllegalStateException("존재하지 않는 ID입니다.");
-        }
-
-        if (!member.getPassword().equals(loginForm.getPassword())) {
-            throw new IllegalStateException("비밀번호가 틀렸습니다.");
+        if (member == null || !member.getPassword().equals(loginForm.getPassword())) {
+            throw new IllegalStateException("아이디 또는 비밀번호를 잘못 입력했습니다. 입력하신 내용을 다시 확인해주세요.");
         }
 
         return member;
