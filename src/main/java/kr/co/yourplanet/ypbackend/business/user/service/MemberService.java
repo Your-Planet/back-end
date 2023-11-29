@@ -34,12 +34,8 @@ public class MemberService {
     public Member login(LoginForm loginForm) {
         Member member = memberRepository.findMemberById(loginForm.getId());
 
-        if (member == null) {
-            throw new IllegalStateException("존재하지 않는 ID입니다.");
-        }
-
-        if (!member.getPassword().equals(loginForm.getPassword())) {
-            throw new IllegalStateException("비밀번호가 틀렸습니다.");
+        if (member == null || !member.getPassword().equals(loginForm.getPassword())) {
+            throw new IllegalStateException("아이디 또는 비밀번호를 잘못 입력했습니다. 입력하신 내용을 다시 확인해주세요.");
         }
 
         return member;
