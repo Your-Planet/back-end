@@ -13,9 +13,9 @@ import java.util.Base64;
 public class JwtConfig {
 
     @Bean(name = "jwtTokenProvider")
-    public JwtTokenProvider jwtTokenProvider(JwtProperties jwtProperties){
+    public JwtTokenProvider jwtTokenProvider(JwtProperties jwtProperties) {
         String secretKey = Base64.getEncoder().encodeToString(jwtProperties.getSecret().getBytes()); // Base64 Encoding
-        return new JwtTokenProvider(secretKey, jwtProperties.getTokenValidityTime());
+        return new JwtTokenProvider(jwtProperties.getHeader(), secretKey, jwtProperties.getTokenValidityTime());
     }
 
 }

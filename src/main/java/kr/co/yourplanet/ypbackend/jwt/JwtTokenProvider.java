@@ -20,13 +20,13 @@ import java.util.Date;
 @Slf4j
 public class JwtTokenProvider {
 
-    private static final String JWT_HEADER = "X-AUTH-TOKEN";
-
+    private final String jwtHeader;
     private final String secretKey; // Encoded Base64
     private final long tokenValidityTime;
 
-    public String createToken(String id, String name, MemberType memberType){
-        Claims claims = Jwts.claims().setSubject(id);
+    public String createToken(String id, String name, MemberType memberType) {
+        Claims claims = Jwts.claims();
+        claims.put("id", id);
         claims.put("name", name);
         claims.put("memberType", memberType);
 
@@ -39,13 +39,13 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String getMemberId(String token){
+    public String getMemberId(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJwt(token).getBody().getSubject();
     }
 
     // Request Header에서 token 가져오기
-    public String resolveToken(HttpServletRequest request){
-        return request.getHeader(JWT_HEADER);
+    public String resolveToken(HttpServletRequest request) {
+        return request.getHeader(jwtHeader);
     }
 
 
