@@ -11,6 +11,7 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 @ConfigurationProperties(prefix = "jwt")
 public class JwtProperties {
 
+    private final String header;
     private final String secret;
     private final long tokenValidityTime;
 
