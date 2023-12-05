@@ -1,5 +1,8 @@
 package kr.co.yourplanet.ypbackend.config;
 
+import kr.co.yourplanet.ypbackend.foundation.filter.JwtAuthenticationFilter;
+import kr.co.yourplanet.ypbackend.jwt.JwtTokenProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,10 +14,14 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class WebSecurityConfig {
+
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -40,8 +47,11 @@ public class WebSecurityConfig {
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 토큰 기반 인증이므로 세션 사용 안함
                 .and()
-                .authorizeRequests(authz -> authz.anyRequest().permitAll())
-                //.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .authorizeRequests()
+                .antMatchers("/member/**").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
             ;
         // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 넣음
 

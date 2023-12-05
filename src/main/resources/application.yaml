@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:h2:tcp://localhost/~/yourplanet
     username: sa
-    password:
+    password: sa
     driver-class-name: org.h2.Driver
 
   jpa:
@@ -21,4 +21,4 @@ logging:
 jwt:
   header: X-AUTH-TOKEN
   secret: yourplanet
-  token-validity-time: 1800 # sec
+  token-validity-time: 1800000 # milliseconds 30 * 60 * 1000
