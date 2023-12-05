@@ -2,6 +2,7 @@ package kr.co.yourplanet.ypbackend.business.user.domain;
 
 import kr.co.yourplanet.ypbackend.common.enums.MemberType;
 import kr.co.yourplanet.ypbackend.common.enums.GenderType;
+import kr.co.yourplanet.ypbackend.common.interfaces.ValidEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,11 +25,11 @@ public class Member {
     private String password;
     @NotBlank
     private String name;
-    @NotBlank
+    @ValidEnum(enumClass = GenderType.class)
     private GenderType genderType; // MALE: 남자 / FEMALE: 여자
     @NotBlank
     private String tel;
-    @NotBlank
+    @ValidEnum(enumClass = MemberType.class)
     private MemberType memberType;
     @NotBlank
     private String birthDate; // YYYYMMDD
