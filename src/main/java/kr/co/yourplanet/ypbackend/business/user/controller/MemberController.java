@@ -8,6 +8,7 @@ import kr.co.yourplanet.ypbackend.business.user.dto.LoginForm;
 import kr.co.yourplanet.ypbackend.common.enums.StatusCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +20,7 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @PostMapping("/register")
+    @PostMapping("/member/register")
     public ResponseForm<?> register(@RequestBody RegisterForm registerForm) {
         Member member = Member.builder()
                 .id(registerForm.getId())
@@ -41,7 +42,7 @@ public class MemberController {
         return new ResponseForm<>(StatusCode.OK);
     }
 
-    @PostMapping("/login")
+    @PostMapping("/member/login")
     public ResponseForm<String> login(@RequestBody LoginForm loginForm) {
 
         String jwtToken = memberService.login(loginForm);

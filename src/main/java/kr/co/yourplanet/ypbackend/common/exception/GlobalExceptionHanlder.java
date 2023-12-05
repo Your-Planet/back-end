@@ -18,7 +18,7 @@ public class GlobalExceptionHanlder {
 
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ResponseForm<?>> etcException(Exception e) {
-        ResponseForm<?> exceptionResponse = new ResponseForm<>(StatusCode.BAD_REQUEST, "정의되지 않은 예외 발생 \n" + e.getMessage());
+        ResponseForm<?> exceptionResponse = new ResponseForm<>(StatusCode.BAD_REQUEST, "정의되지 않은 예외 발생 : " + e.getMessage());
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
 

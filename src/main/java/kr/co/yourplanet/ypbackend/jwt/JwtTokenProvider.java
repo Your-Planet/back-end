@@ -3,7 +3,7 @@ package kr.co.yourplanet.ypbackend.jwt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import kr.co.yourplanet.ypbackend.common.JwtMember;
+import kr.co.yourplanet.ypbackend.common.JwtPrincipal;
 import kr.co.yourplanet.ypbackend.common.enums.MemberType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,35 +40,33 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String getMemberId(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJwt(token).getBody().getSubject();
-    }
-
     // Request Header에서 token 가져오기
     public String resolveToken(HttpServletRequest request) {
         return request.getHeader(jwtHeader);
     }
 
     // 토큰 유효성 검증 (변조, 만료시간)
-    public boolean validateToken(String token){
-        try{
+    public boolean validateToken(String token) {
+        try {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return true;
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("error error " + e.getMessage());
             return false;
         }
     }
 
-    public Authentication getAuthentication(String token){
+    // JWT 값으로 Authentication
+    public Authentication getAuthentication(String token) {
         Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
-        JwtMember jwtMember = JwtMember.builder()
-                        .id(claims.get("id", String.class))
-                        .name(claims.get("name", String.class))
-                        .memberType(MemberType.valueOf(claims.get("memberType", String.class)))
-                        .build();
-        return new UsernamePasswordAuthenticationToken(jwtMember, null, null);
-    }
 
+        JwtPrincipal userDetails = JwtPrincipal.builder()
+                .id(claims.get("id", String.class))
+                .memberName(claims.get("name", String.class))
+                .memberType(MemberType.valueOf(claims.get("memberType", String.class)))
+                .build();
+
+        return new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
+    }
 
 }
