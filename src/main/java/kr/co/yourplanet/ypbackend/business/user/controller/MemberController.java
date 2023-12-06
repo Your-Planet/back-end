@@ -5,10 +5,10 @@ import kr.co.yourplanet.ypbackend.business.user.dto.RegisterForm;
 import kr.co.yourplanet.ypbackend.business.user.service.MemberService;
 import kr.co.yourplanet.ypbackend.common.ResponseForm;
 import kr.co.yourplanet.ypbackend.business.user.dto.LoginForm;
+import kr.co.yourplanet.ypbackend.common.enums.StatusCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,9 +21,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/member/register")
-    public ResponseEntity<ResponseForm> register(@RequestBody RegisterForm registerForm) {
-        ResponseForm responseForm = new ResponseForm();
-
+    public ResponseForm<?> register(@RequestBody RegisterForm registerForm) {
         Member member = Member.builder()
                 .id(registerForm.getId())
                 .password(registerForm.getPassword())
@@ -41,15 +39,14 @@ public class MemberController {
 
         memberService.register(member);
 
-        return new ResponseEntity<>(responseForm, HttpStatus.OK);
+        return new ResponseForm<>(StatusCode.OK);
     }
 
     @PostMapping("/member/login")
-    public ResponseEntity<ResponseForm> login(@RequestBody LoginForm loginForm) {
-        ResponseForm responseForm = new ResponseForm();
+    public ResponseForm<String> login(@RequestBody LoginForm loginForm) {
 
-        Member member = memberService.login(loginForm);
+        String jwtToken = memberService.login(loginForm);
 
-        return new ResponseEntity<>(responseForm, HttpStatus.OK);
+        return new ResponseForm<>(StatusCode.OK, null, jwtToken);
     }
 }

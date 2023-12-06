@@ -3,6 +3,7 @@ package kr.co.yourplanet.ypbackend.business.user.service;
 import kr.co.yourplanet.ypbackend.business.user.domain.Member;
 import kr.co.yourplanet.ypbackend.business.user.dto.LoginForm;
 import kr.co.yourplanet.ypbackend.business.user.repository.MemberRepository;
+import kr.co.yourplanet.ypbackend.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
     public String register(Member member){
@@ -31,14 +34,14 @@ public class MemberService {
         }
     }
 
-    public Member login(LoginForm loginForm) {
+    public String login(LoginForm loginForm) {
         Member member = memberRepository.findMemberById(loginForm.getId());
 
         if (member == null || !member.getPassword().equals(loginForm.getPassword())) {
             throw new IllegalStateException("아이디 또는 비밀번호를 잘못 입력했습니다. 입력하신 내용을 다시 확인해주세요.");
         }
 
-        return member;
+        return jwtTokenProvider.createToken(member.getId(), member.getName(), member.getMemberType());
     }
 
 }
