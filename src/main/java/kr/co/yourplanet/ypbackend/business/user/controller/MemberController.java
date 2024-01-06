@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -21,9 +23,9 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/member/register")
-    public ResponseForm<?> register(@RequestBody RegisterForm registerForm) {
+    public ResponseForm<?> register(@Valid @RequestBody RegisterForm registerForm) {
         Member member = Member.builder()
-                .id(registerForm.getId())
+                .email(registerForm.getEmail())
                 .password(registerForm.getPassword())
                 .name(registerForm.getName())
                 .genderType(registerForm.getGenderType())
@@ -43,7 +45,7 @@ public class MemberController {
     }
 
     @PostMapping("/member/login")
-    public ResponseForm<String> login(@RequestBody LoginForm loginForm) {
+    public ResponseForm<String> login(@Valid @RequestBody LoginForm loginForm) {
 
         String jwtToken = memberService.login(loginForm);
 

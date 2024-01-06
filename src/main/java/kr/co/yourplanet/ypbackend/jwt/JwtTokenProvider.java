@@ -27,7 +27,7 @@ public class JwtTokenProvider {
     private final String secretKey; // Encoded Base64
     private final long tokenValidityTime;
 
-    public String createToken(String id, String name, MemberType memberType) {
+    public String createToken(Long id, String name, MemberType memberType) {
         Claims claims = Jwts.claims();
         claims.put("id", id);
         claims.put("name", name);
@@ -61,7 +61,7 @@ public class JwtTokenProvider {
         Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
 
         JwtPrincipal userDetails = JwtPrincipal.builder()
-                .id(claims.get("id", String.class))
+                .id(claims.get("id", Long.class))
                 .memberName(claims.get("name", String.class))
                 .memberType(MemberType.valueOf(claims.get("memberType", String.class)))
                 .build();
