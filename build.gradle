@@ -11,6 +11,14 @@ java {
 	sourceCompatibility = '8'
 }
 
+bootJar {
+	mainClass = 'kr.co.yourplanet.ypbackend.YpBackendApplication'
+}
+
+jar {
+	enabled = false // false : do not generate -plain.jar
+}
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
@@ -42,8 +50,4 @@ dependencies {
 
 	// JWT
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
-}
-
-tasks.named('test') {
-	useJUnitPlatform()
 }
