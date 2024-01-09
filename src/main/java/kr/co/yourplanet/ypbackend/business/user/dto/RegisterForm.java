@@ -12,7 +12,7 @@ import javax.validation.constraints.NotBlank;
 public class RegisterForm {
 
     @NotBlank
-    private String id;
+    private String email;
     @NotBlank
     private String password;
     @NotBlank

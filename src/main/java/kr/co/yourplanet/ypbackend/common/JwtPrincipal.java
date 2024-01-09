@@ -16,14 +16,14 @@ import java.util.Set;
 @AllArgsConstructor
 public class JwtPrincipal implements UserPrincipal {
 
-    private String id;
+    private Long id;
     @Getter
     private String memberName;
     private MemberType memberType;
 
     @Override
     public String getName() {
-        return this.id;
+        return this.memberName;
     }
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
