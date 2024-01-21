@@ -1,9 +1,10 @@
-package kr.co.yourplanet.ypbackend.business.entity;
+package kr.co.yourplanet.ypbackend.business.portfolio.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,6 +15,7 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@DynamicUpdate
 @Builder
 public class Category {
 
