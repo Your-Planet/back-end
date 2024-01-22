@@ -2,6 +2,7 @@ package kr.co.yourplanet.ypbackend.business.task.domain;
 
 import kr.co.yourplanet.ypbackend.business.user.domain.Member;
 import kr.co.yourplanet.ypbackend.common.enums.TaskStatus;
+import kr.co.yourplanet.ypbackend.common.interfaces.ValidEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -41,6 +42,7 @@ public class Task {
     @Column(name = "complete_date")
     private LocalDateTime completeDate;
 
+    @ValidEnum(enumClass = TaskStatus.class)
     @Column(name = "task_status")
     private TaskStatus taskStatus;
 

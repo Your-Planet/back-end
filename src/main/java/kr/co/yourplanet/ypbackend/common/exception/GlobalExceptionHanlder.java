@@ -16,6 +16,12 @@ public class GlobalExceptionHanlder {
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    protected ResponseEntity<ResponseForm<?>> illegalArgumentException(IllegalArgumentException e) {
+        ResponseForm<?> exceptionResponse = new ResponseForm<>(StatusCode.BAD_REQUEST, e.getMessage());
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ResponseForm<?>> etcException(Exception e) {
         ResponseForm<?> exceptionResponse = new ResponseForm<>(StatusCode.BAD_REQUEST, "정의되지 않은 예외 발생 : " + e.getMessage());
