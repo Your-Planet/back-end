@@ -1,10 +1,12 @@
 package kr.co.yourplanet.ypbackend.business.task.domain;
 
+import kr.co.yourplanet.ypbackend.business.portfolio.domain.Category;
 import kr.co.yourplanet.ypbackend.business.user.domain.Member;
 import kr.co.yourplanet.ypbackend.common.enums.TaskStatus;
 import kr.co.yourplanet.ypbackend.common.interfaces.ValidEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -15,6 +17,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @DynamicUpdate
+@Getter
 @Builder
 public class Task {
 
@@ -39,6 +42,16 @@ public class Task {
     @Column(name = "toDate")
     private LocalDateTime toDate;
 
+    @Column(name = "payment")
+    private Long payment;
+
+    @Column(name = "cut_number")
+    private Integer cutNumber;
+
+    @ManyToOne
+    @JoinColumn(name = "category_code")
+    private Category category;
+
     @Column(name = "complete_date")
     private LocalDateTime completeDate;
 
@@ -46,6 +59,7 @@ public class Task {
     @Column(name = "task_status")
     private TaskStatus taskStatus;
 
-    @Column(name = "payment")
-    private Long payment;
+    public void changeTaskStatus(TaskStatus taskStatus){
+        this.taskStatus = taskStatus;
+    }
 }
