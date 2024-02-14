@@ -1,4 +1,4 @@
-package kr.co.yourplanet.ypbackend.business.task.dto;
+package kr.co.yourplanet.ypbackend.business.task.dto.request;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

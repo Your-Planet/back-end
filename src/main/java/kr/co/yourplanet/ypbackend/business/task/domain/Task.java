@@ -62,4 +62,14 @@ public class Task {
     public void changeTaskStatus(TaskStatus taskStatus){
         this.taskStatus = taskStatus;
     }
+
+    public void acceptTask(TaskHistory taskHistory){
+        this.requestContext = taskHistory.getRequestContext();
+        this.fromDate = taskHistory.getFromDate();
+        this.toDate = taskHistory.getToDate();
+        this.payment = taskHistory.getPayment();
+        this.cutNumber = taskHistory.getCutNumber();
+        this.category = taskHistory.getCategory();
+        this.taskStatus = TaskStatus.ACCEPT;
+    }
 }

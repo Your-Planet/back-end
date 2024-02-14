@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -25,5 +26,11 @@ public class TaskRepository {
     // TaskHistory 영역
     public void saveTaskHistory(TaskHistory taskHistory) {
         em.persist(taskHistory);
+    }
+
+    public List<TaskHistory> findTaskHistoryListByTaskNo(Long taskNo) {
+        return em.createQuery("select th from task_history th where th.task_no = :taskNo order by th.seq asc", TaskHistory.class)
+                .setParameter("taskNo", taskNo)
+                .getResultList();
     }
 }
