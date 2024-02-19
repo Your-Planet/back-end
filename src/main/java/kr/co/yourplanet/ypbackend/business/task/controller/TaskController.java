@@ -65,7 +65,7 @@ public class TaskController {
         List<TaskHistory> taskHistoryList = taskService.getTaskHistoryList(taskNo, principal.getId());
 
         for (TaskHistory taskHistory : taskHistoryList) {
-            taskHistoriesList.add(TaskHistories.builder()
+            TaskHistories taskHistories = TaskHistories.builder()
                     .taskNo(taskHistory.getTask().getTaskNo())
                     .seq(taskHistory.getSeq())
                     .requestContext(taskHistory.getRequestContext())
@@ -73,9 +73,11 @@ public class TaskController {
                     .toDate(taskHistory.getToDate())
                     .payment(taskHistory.getPayment())
                     .cutNumber(taskHistory.getCutNumber())
-                    .categoryName(taskHistory.getCategory().getCategoryName())
+                    //.categoryName(taskHistory.getCategory().getCategoryName())
                     .requestMemberType(taskHistory.getRequestMember().getMemberType())
-                    .build());
+                    .build();
+
+            taskHistoriesList.add(taskHistories);
         }
 
         ResponseForm<List<TaskHistories>> responseForm = new ResponseForm<>(StatusCode.OK, "", taskHistoriesList);

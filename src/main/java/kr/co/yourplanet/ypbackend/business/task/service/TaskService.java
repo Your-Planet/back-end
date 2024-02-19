@@ -71,7 +71,7 @@ public class TaskService {
         checkTaskValidation(member, task);
 
         if (TaskStatus.REJECT.equals(task.getTaskStatus()) || TaskStatus.ACCEPT.equals(task.getTaskStatus()) || TaskStatus.COMPLETE.equals(task.getTaskStatus())) {
-            throw new IllegalStateException("현재 취소할 수 없는 상태입니다 : " + task.getTaskStatus().toString());
+            throw new IllegalStateException("현재 취소할 수 없는 상태입니다 : " + task.getTaskStatus());
         }
 
         task.changeTaskStatus(TaskStatus.REJECT);
@@ -86,14 +86,17 @@ public class TaskService {
         checkTaskValidation(requestMember, task);
 
         if (TaskStatus.REJECT.equals(task.getTaskStatus()) || TaskStatus.ACCEPT.equals(task.getTaskStatus()) || TaskStatus.COMPLETE.equals(task.getTaskStatus())) {
-            throw new IllegalStateException("현재 취소할 수 없는 상태입니다 : " + task.getTaskStatus().toString());
+            throw new IllegalStateException("현재 취소할 수 없는 상태입니다 : " + task.getTaskStatus());
         }
 
         task.changeTaskStatus(TaskStatus.NEGOTIATION);
 
+        List<TaskHistory> taskHistoryList = taskRepository.findAllTaskHistoryListByTaskNo(task);
+        Integer seq = taskHistoryList.get(taskHistoryList.size() - 1).getSeq() + 1;
+
         TaskHistory taskHistory = TaskHistory.builder()
                 .task(task)
-                .seq(1)
+                .seq(seq)
                 .requestContext(taskNegotiateForm.getRequsetContext())
                 .fromDate(taskNegotiateForm.getFromDate())
                 .toDate(taskNegotiateForm.getToDate())
@@ -119,10 +122,10 @@ public class TaskService {
         }
 
         if (TaskStatus.REJECT.equals(task.getTaskStatus()) || TaskStatus.ACCEPT.equals(task.getTaskStatus()) || TaskStatus.COMPLETE.equals(task.getTaskStatus())) {
-            throw new IllegalStateException("현재 수락할 수 없는 상태입니다 : " + task.getTaskStatus().toString());
+            throw new IllegalStateException("현재 수락할 수 없는 상태입니다 : " + task.getTaskStatus());
         }
 
-        List<TaskHistory> taskHistoryList = taskRepository.findTaskHistoryListByTaskNo(task.getTaskNo());
+        List<TaskHistory> taskHistoryList = taskRepository.findAllTaskHistoryListByTaskNo(task);
 
         if(!taskHistoryList.isEmpty()){
             task.acceptTask(taskHistoryList.get(taskHistoryList.size() - 1));
@@ -138,13 +141,7 @@ public class TaskService {
 
         checkTaskValidation(member, task);
 
-        List<TaskHistory> taskHistoryList = taskRepository.findTaskHistoryListByTaskNo(taskNo);
-
-        if (taskHistoryList.isEmpty()) {
-            throw new IllegalStateException("작업내역이 존재하지 않습니다");
-        }
-
-        return taskHistoryList;
+        return taskRepository.findAllTaskHistoryListByTaskNo(task);
     }
 
     private void checkTaskValidation(Member member, Task task) {

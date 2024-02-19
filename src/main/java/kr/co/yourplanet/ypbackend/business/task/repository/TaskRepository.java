@@ -28,9 +28,9 @@ public class TaskRepository {
         em.persist(taskHistory);
     }
 
-    public List<TaskHistory> findTaskHistoryListByTaskNo(Long taskNo) {
-        return em.createQuery("select th from task_history th where th.task_no = :taskNo order by th.seq asc", TaskHistory.class)
-                .setParameter("taskNo", taskNo)
+    public List<TaskHistory> findAllTaskHistoryListByTaskNo(Task t) {
+        return em.createQuery("select th from TaskHistory th where th.task = :t order by th.seq asc", TaskHistory.class)
+                .setParameter("t", t)
                 .getResultList();
     }
 }

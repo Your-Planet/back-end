@@ -23,6 +23,7 @@ public class Task {
 
     @Id
     @GeneratedValue
+    @Column(name = "task_no")
     private Long taskNo;
 
     @ManyToOne

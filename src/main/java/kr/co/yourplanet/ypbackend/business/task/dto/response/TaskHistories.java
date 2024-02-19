@@ -3,10 +3,14 @@ package kr.co.yourplanet.ypbackend.business.task.dto.response;
 import kr.co.yourplanet.ypbackend.common.enums.MemberType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
+@NoArgsConstructor
+@Getter
 @Builder
 public class TaskHistories {
 
