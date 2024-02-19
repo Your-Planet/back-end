@@ -1,25 +1,23 @@
 package kr.co.yourplanet.ypbackend.business.user.repository;
 
 import kr.co.yourplanet.ypbackend.business.user.domain.Member;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import java.util.Optional;
 
 @Repository
+@RequiredArgsConstructor
 public class MemberRepository {
 
     private final EntityManager em;
-
-    public MemberRepository(EntityManager em) {
-        this.em = em;
-    }
 
     public void saveMember(Member member) {
         em.persist(member);
     }
 
-    public Member findMemberById(String id) {
+    public Member findMemberById(Long id) {
         return em.find(Member.class, id);
     }
 
