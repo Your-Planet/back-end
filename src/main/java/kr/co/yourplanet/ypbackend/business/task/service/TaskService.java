@@ -51,12 +51,13 @@ public class TaskService {
         TaskHistory taskHistory = TaskHistory.builder()
                 .task(task)
                 .seq(1)
-                .requestContext(taskRequestForm.getRequsetContext())
+                .title(taskRequestForm.getTitle())
+                .context(taskRequestForm.getContext())
                 .fromDate(taskRequestForm.getFromDate())
                 .toDate(taskRequestForm.getToDate())
                 .payment(taskRequestForm.getPayment())
                 .cutNumber(taskRequestForm.getCutNumber())
-                //.category(taskRequestForm.getCategory()) // 추후 Category Repository에서 조회하여 기입하자
+                .categoryList(taskRequestForm.getCategoryList()) // 추후 Category Repository에서 조회하여 기입하자
                 .requestMember(advertiser)
                 .build();
 
@@ -97,12 +98,12 @@ public class TaskService {
         TaskHistory taskHistory = TaskHistory.builder()
                 .task(task)
                 .seq(seq)
-                .requestContext(taskNegotiateForm.getRequsetContext())
+                .context(taskNegotiateForm.getContext())
                 .fromDate(taskNegotiateForm.getFromDate())
                 .toDate(taskNegotiateForm.getToDate())
                 .payment(taskNegotiateForm.getPayment())
                 .cutNumber(taskNegotiateForm.getCutNumber())
-                //.category(taskRequestForm.getCategory()) // 추후 Category Repository에서 조회하여 기입하자
+                .categoryList(taskNegotiateForm.getCategoryList()) // 추후 Category Repository에서 조회하여 기입하자
                 .requestMember(requestMember)
                 .build();
 

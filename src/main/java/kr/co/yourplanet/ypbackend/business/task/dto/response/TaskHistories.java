@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,6 +22,6 @@ public class TaskHistories {
     private LocalDateTime toDate;
     private Long payment;
     private Integer cutNumber;
-    private String categoryName;
+    private List<String> categoryList;
     private MemberType requestMemberType;
 }

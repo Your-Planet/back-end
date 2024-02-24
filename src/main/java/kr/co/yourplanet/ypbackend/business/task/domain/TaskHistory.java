@@ -1,7 +1,7 @@
 package kr.co.yourplanet.ypbackend.business.task.domain;
 
-import kr.co.yourplanet.ypbackend.business.portfolio.domain.Category;
 import kr.co.yourplanet.ypbackend.business.user.domain.Member;
+import kr.co.yourplanet.ypbackend.common.StringListConverter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,6 +10,8 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -28,13 +30,16 @@ public class TaskHistory {
     @Id
     private Integer seq;
 
-    @Column(name = "request_context")
-    private String requestContext;
+    @Column(name = "title")
+    private String title;
+
+    @Column(name = "context")
+    private String context;
 
     @Column(name = "from_date")
     private LocalDateTime fromDate;
 
-    @Column(name = "toDate")
+    @Column(name = "to_date")
     private LocalDateTime toDate;
 
     @Column(name = "payment")
@@ -44,10 +49,10 @@ public class TaskHistory {
     private Integer cutNumber;
 
     @ManyToOne
-    @JoinColumn(name = "category_code")
-    private Category category;
-
-    @ManyToOne
     @JoinColumn(name = "request_member_id", referencedColumnName = "id")
     private Member requestMember;
+
+    @Builder.Default
+    @Convert(converter = StringListConverter.class)
+    private List<String> categoryList = new ArrayList<>();
 }

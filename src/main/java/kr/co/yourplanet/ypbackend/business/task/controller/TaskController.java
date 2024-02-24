@@ -68,12 +68,12 @@ public class TaskController {
             TaskHistories taskHistories = TaskHistories.builder()
                     .taskNo(taskHistory.getTask().getTaskNo())
                     .seq(taskHistory.getSeq())
-                    .requestContext(taskHistory.getRequestContext())
+                    .requestContext(taskHistory.getContext())
                     .fromDate(taskHistory.getFromDate())
                     .toDate(taskHistory.getToDate())
                     .payment(taskHistory.getPayment())
                     .cutNumber(taskHistory.getCutNumber())
-                    //.categoryName(taskHistory.getCategory().getCategoryName())
+                    .categoryList(taskHistory.getCategoryList())
                     .requestMemberType(taskHistory.getRequestMember().getMemberType())
                     .build();
 

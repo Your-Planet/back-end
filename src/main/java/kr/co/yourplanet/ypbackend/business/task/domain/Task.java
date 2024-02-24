@@ -1,7 +1,7 @@
 package kr.co.yourplanet.ypbackend.business.task.domain;
 
-import kr.co.yourplanet.ypbackend.business.portfolio.domain.Category;
 import kr.co.yourplanet.ypbackend.business.user.domain.Member;
+import kr.co.yourplanet.ypbackend.common.StringListConverter;
 import kr.co.yourplanet.ypbackend.common.enums.TaskStatus;
 import kr.co.yourplanet.ypbackend.common.interfaces.ValidEnum;
 import lombok.AllArgsConstructor;
@@ -12,6 +12,8 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -34,13 +36,17 @@ public class Task {
     @JoinColumn(name = "author_id", referencedColumnName = "id")
     private Member author;
 
-    @Column(name = "request_context")
-    private String requestContext;
+    @Column(name = "title")
+    private String title;
+
+    // 비고
+    @Column(name = "context")
+    private String context;
 
     @Column(name = "from_date")
     private LocalDateTime fromDate;
 
-    @Column(name = "toDate")
+    @Column(name = "to_date")
     private LocalDateTime toDate;
 
     @Column(name = "payment")
@@ -49,10 +55,6 @@ public class Task {
     @Column(name = "cut_number")
     private Integer cutNumber;
 
-    @ManyToOne
-    @JoinColumn(name = "category_code")
-    private Category category;
-
     @Column(name = "complete_date")
     private LocalDateTime completeDate;
 
@@ -60,17 +62,21 @@ public class Task {
     @Column(name = "task_status")
     private TaskStatus taskStatus;
 
+    @Builder.Default
+    @Convert(converter = StringListConverter.class)
+    private List<String> categoryList = new ArrayList<>();
+
     public void changeTaskStatus(TaskStatus taskStatus){
         this.taskStatus = taskStatus;
     }
 
     public void acceptTask(TaskHistory taskHistory){
-        this.requestContext = taskHistory.getRequestContext();
+        this.context = taskHistory.getContext();
         this.fromDate = taskHistory.getFromDate();
         this.toDate = taskHistory.getToDate();
         this.payment = taskHistory.getPayment();
         this.cutNumber = taskHistory.getCutNumber();
-        this.category = taskHistory.getCategory();
+        this.categoryList = taskHistory.getCategoryList();
         this.taskStatus = TaskStatus.ACCEPT;
     }
 }
