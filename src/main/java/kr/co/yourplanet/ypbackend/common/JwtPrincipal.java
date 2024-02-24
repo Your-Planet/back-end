@@ -13,11 +13,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Builder
+@Getter
 @AllArgsConstructor
 public class JwtPrincipal implements UserPrincipal {
 
     private Long id;
-    @Getter
     private String memberName;
     private MemberType memberType;
 

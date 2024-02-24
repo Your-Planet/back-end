@@ -5,6 +5,7 @@ public enum TaskStatus {
     REQUEST,
     NEGOTIATION,
     ACCEPT,
-    REJECT
+    REJECT,
+    COMPLETE
 
 }
