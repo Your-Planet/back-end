@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Get the current commit message
+commit_msg_file=$1
+commit_msg=$(cat "$commit_msg_file")
+
+# Check if the commit message contains "Jira:" and <jira-issue-key>
+if [[ $commit_msg =~ ^Jira:\ YP-[0-9]+ ]]; then
+  echo "Jira issue key already present in the commit message. Nothing to do."
+else
+  # Extract the Jira issue key from the branch name (assuming a common naming convention)
+  branch_name=$(git symbolic-ref --short HEAD)
+  jira_issue_key=$(echo "$branch_name" | grep -oE "YP-[0-9]+")
+
+  # Add the Jira issue key to the commit message
+  if [ -n "$jira_issue_key" ]; then
+    echo "Jira: $jira_issue_key" >> "$commit_msg_file"
+    echo "Jira issue key added to the commit message: $jira_issue_key"
+  else
+    echo "Error: No valid Jira issue key found in the branch name. Make sure your branch follows the naming convention." >&2
+    exit 1  # Exit with a non-zero status to indicate failure
+  fi
+fi
