@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -35,7 +34,7 @@ public class MemberService {
 
         Optional<Member> findMember = memberRepository.findMemberByEmail(email);
         if (findMember.isPresent()) {
-            throw new IllegalStateException("이미 존재하는 이메일입니다.");
+            throw new IllegalStateException("중복된 이메일이 존재합니다.");
         }
 
     }
