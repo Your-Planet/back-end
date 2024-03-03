@@ -1,20 +1,13 @@
-spring:
-  datasource:
-    url: jdbc:h2:tcp://localhost/~/yourplanet
-    username: sa
-    password: sa
-    driver-class-name: org.h2.Driver
+server:
+  port: 8080
 
-  jpa:
-    hibernate:
-      ddl-auto: create
-    properties:
-      hibernate:
-#        show_sql: true  #여기는 prinln으로 출력이 나오기 때문에 일단 주석
-        format_sql: true
+spring:
+  profiles:
+    active: local
 
 logging:
   level:
+    root : debug
     org.hibernate.SQL: debug
     org.hibernate.type: trace # sql 쿼리 input 값 확인하고 싶을 때
 
