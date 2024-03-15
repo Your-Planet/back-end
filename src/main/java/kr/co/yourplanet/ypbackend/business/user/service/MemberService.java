@@ -3,6 +3,7 @@ package kr.co.yourplanet.ypbackend.business.user.service;
 import kr.co.yourplanet.ypbackend.business.user.domain.Member;
 import kr.co.yourplanet.ypbackend.business.user.dto.LoginForm;
 import kr.co.yourplanet.ypbackend.business.user.repository.MemberRepository;
+import kr.co.yourplanet.ypbackend.common.exception.BusinessException;
 import kr.co.yourplanet.ypbackend.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +50,7 @@ public class MemberService {
 
         Optional<Member> findMember = memberRepository.findMemberByEmail(email);
         if (findMember.isPresent()) {
-            throw new IllegalStateException("중복된 이메일이 존재합니다.");
+            throw new BusinessException("중복된 이메일이 존재합니다.");
         }
 
     }
@@ -58,7 +59,7 @@ public class MemberService {
         Optional<Member> findMember = memberRepository.findMemberByEmail(loginForm.getEmail());
 
         if (!findMember.isPresent() || !findMember.get().getPassword().equals(loginForm.getPassword())) {
-            throw new IllegalStateException("아이디 또는 비밀번호를 잘못 입력했습니다. 입력하신 내용을 다시 확인해주세요.");
+            throw new BusinessException("아이디 또는 비밀번호를 잘못 입력했습니다. 입력하신 내용을 다시 확인해주세요.");
         }
 
         return jwtTokenProvider.createToken(findMember.get().getId(), findMember.get().getName(), findMember.get().getMemberType());
@@ -71,7 +72,7 @@ public class MemberService {
 
         // 비밀번호 길이 체크
         if (password.length() < MIN_LENGTH || password.length() > MAX_LENGTH) {
-            throw new IllegalStateException("8-20자의 비밀번호만 사용할 수 있어요");
+            throw new BusinessException("8-20자의 비밀번호만 사용할 수 있어요");
         }
 
         if (Pattern.matches(LOWER_CASE_REGEX, password)) {
@@ -89,16 +90,16 @@ public class MemberService {
 
         // 비밀번호 패턴 종류 체크
         if (patternCount < 3) {
-            throw new IllegalStateException("영문 대문자, 소문자, 숫자, 특수문자 중 3종류 이상을 사용해 주세요.");
+            throw new BusinessException("영문 대문자, 소문자, 숫자, 특수문자 중 3종류 이상을 사용해 주세요.");
         }
 
  /*
         if (Pattern.matches(REPEATED_CHARACTERS_REGEX, password)) {
-            throw new IllegalStateException("동일한 문자/숫자는 3자리 이상 사용할 수 없어요.");
+            throw new BuisnessException("동일한 문자/숫자는 3자리 이상 사용할 수 없어요.");
         }
 
         if (Pattern.matches(SEQUENTIAL_REGEX, password)){
-            throw new IllegalStateException("3자리 연속된 문자/숫자는 비밀번호로 사용할 수 없어요.");
+            throw new BuisnessException("3자리 연속된 문자/숫자는 비밀번호로 사용할 수 없어요.");
         }
 */
     }
