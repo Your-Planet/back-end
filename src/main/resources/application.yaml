@@ -4,10 +4,13 @@ server:
 spring:
   profiles:
     active: local
+  output:
+    ansi:
+      enabled: always
 
 logging:
   level:
-    root : debug
+    root : info
     org.hibernate.SQL: debug
     org.hibernate.type: trace # sql 쿼리 input 값 확인하고 싶을 때
 
