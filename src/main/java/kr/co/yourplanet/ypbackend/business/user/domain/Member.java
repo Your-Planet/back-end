@@ -13,6 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -21,6 +22,7 @@ import javax.validation.constraints.NotBlank;
 @Builder
 public class Member {
 
+    // Required
     @Id @GeneratedValue
     private Long id;
     @Column(unique=true) @NotBlank
@@ -46,4 +48,7 @@ public class Member {
     private String businessNumber;
     private String representativeName;
     private String businessAddress;
+
+    // Common
+    private LocalDateTime termsAgreedTimestamp;
 }
