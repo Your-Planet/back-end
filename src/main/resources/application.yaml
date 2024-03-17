@@ -18,3 +18,6 @@ jwt:
   header: X-AUTH-TOKEN
   secret: yourplanet
   token-validity-time: 1800000 # milliseconds 30 * 60 * 1000
+
+encrypt:
+  secret: yourplanet123456

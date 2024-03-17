@@ -7,7 +7,7 @@ import kr.co.yourplanet.ypbackend.business.task.dto.response.TaskHistories;
 import kr.co.yourplanet.ypbackend.business.task.dto.request.TaskRejectForm;
 import kr.co.yourplanet.ypbackend.business.task.dto.request.TaskRequestForm;
 import kr.co.yourplanet.ypbackend.business.task.service.TaskService;
-import kr.co.yourplanet.ypbackend.common.JwtPrincipal;
+import kr.co.yourplanet.ypbackend.jwt.JwtPrincipal;
 import kr.co.yourplanet.ypbackend.common.ResponseForm;
 import kr.co.yourplanet.ypbackend.common.enums.StatusCode;
 import lombok.RequiredArgsConstructor;

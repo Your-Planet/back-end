@@ -1,6 +1,7 @@
 package kr.co.yourplanet.ypbackend.business.user.repository;
 
 import kr.co.yourplanet.ypbackend.business.user.domain.Member;
+import kr.co.yourplanet.ypbackend.business.user.domain.MemberSalt;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -25,5 +26,9 @@ public class MemberRepository {
         return em.createQuery("select m from Member m where m.email = :email", Member.class)
                 .setParameter("email", email)
                 .getResultStream().findAny();
+    }
+
+    public void saveMemberSalt(MemberSalt memberSalt){
+        em.persist(memberSalt);
     }
 }

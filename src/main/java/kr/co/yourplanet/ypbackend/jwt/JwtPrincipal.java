@@ -1,4 +1,4 @@
-package kr.co.yourplanet.ypbackend.common;
+package kr.co.yourplanet.ypbackend.jwt;
 
 import kr.co.yourplanet.ypbackend.common.enums.MemberType;
 import lombok.AllArgsConstructor;
