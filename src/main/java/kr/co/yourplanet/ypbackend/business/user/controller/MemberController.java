@@ -50,6 +50,6 @@ public class MemberController {
 
         String jwtToken = memberService.login(loginForm);
 
-        return new ResponseForm<>(StatusCode.OK, null, jwtToken);
+        return new ResponseForm<>(StatusCode.OK, jwtToken);
     }
 }

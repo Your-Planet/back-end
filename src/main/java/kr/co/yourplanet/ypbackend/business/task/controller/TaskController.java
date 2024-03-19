@@ -31,7 +31,7 @@ public class TaskController {
 
         taskService.requestTask(taskRequestForm, principal.getId());
 
-        return new ResponseEntity<>(new ResponseForm<>(StatusCode.OK, "", "OK"), HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseForm<>(StatusCode.OK), HttpStatus.OK);
     }
 
     @PostMapping("/task/reject")
@@ -39,7 +39,7 @@ public class TaskController {
 
         taskService.rejectTask(taskRejectForm, principal.getId());
 
-        return new ResponseEntity<>(new ResponseForm<>(StatusCode.OK, "", "OK"), HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseForm<>(StatusCode.OK), HttpStatus.OK);
     }
 
     @PostMapping("/task/negotiate")
@@ -47,7 +47,7 @@ public class TaskController {
 
         taskService.negotiateTask(taskNegotiateForm, principal.getId());
 
-        return new ResponseEntity<>(new ResponseForm<>(StatusCode.OK, "", "OK"), HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseForm<>(StatusCode.OK), HttpStatus.OK);
     }
 
     @PostMapping("/task/accept")
@@ -55,7 +55,7 @@ public class TaskController {
 
         taskService.acceptTask(taskAcceptForm, principal.getId());
 
-        return new ResponseEntity<>(new ResponseForm<>(StatusCode.OK, "", "OK"), HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseForm<>(StatusCode.OK), HttpStatus.OK);
     }
 
     @GetMapping("/task/history")
@@ -80,7 +80,7 @@ public class TaskController {
             taskHistoriesList.add(taskHistories);
         }
 
-        ResponseForm<List<TaskHistories>> responseForm = new ResponseForm<>(StatusCode.OK, "", taskHistoriesList);
+        ResponseForm<List<TaskHistories>> responseForm = new ResponseForm<>(StatusCode.OK, taskHistoriesList);
 
         return new ResponseEntity<>(responseForm, HttpStatus.OK);
     }
