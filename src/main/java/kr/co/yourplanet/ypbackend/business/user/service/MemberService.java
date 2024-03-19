@@ -5,6 +5,7 @@ import kr.co.yourplanet.ypbackend.business.user.domain.MemberSalt;
 import kr.co.yourplanet.ypbackend.business.user.dto.LoginForm;
 import kr.co.yourplanet.ypbackend.business.user.dto.RegisterForm;
 import kr.co.yourplanet.ypbackend.business.user.repository.MemberRepository;
+import kr.co.yourplanet.ypbackend.common.enums.StatusCode;
 import kr.co.yourplanet.ypbackend.common.exception.BusinessException;
 import kr.co.yourplanet.ypbackend.common.encrypt.EncryptManager;
 import kr.co.yourplanet.ypbackend.jwt.JwtTokenProvider;
@@ -110,7 +111,7 @@ public class MemberService {
 
         // 비밀번호 길이 체크
         if (password.length() < MIN_LENGTH || password.length() > MAX_LENGTH) {
-            throw new BusinessException("8-20자의 비밀번호만 사용할 수 있어요");
+            throw new BusinessException(StatusCode.BAD_REQUEST, "8-20자의 비밀번호만 사용할 수 있어요", false);
         }
 
         if (Pattern.matches(LOWER_CASE_REGEX, password)) {
@@ -128,7 +129,7 @@ public class MemberService {
 
         // 비밀번호 패턴 종류 체크
         if (patternCount < 3) {
-            throw new BusinessException("영문 대문자, 소문자, 숫자, 특수문자 중 3종류 이상을 사용해 주세요.");
+            throw new BusinessException(StatusCode.BAD_REQUEST, "영문 대문자, 소문자, 숫자, 특수문자 중 3종류 이상을 사용해 주세요.", false);
         }
 
  /*
