@@ -80,7 +80,7 @@ public class MemberService {
     public void checkDuplicateEmail(String email) {
 
         if (memberRepository.findMemberByEmail(email).isPresent()) {
-            throw new BusinessException("중복된 이메일이 존재합니다.");
+            throw new BusinessException(StatusCode.BAD_REQUEST, "중복된 이메일이 존재합니다.", false);
         }
 
     }
@@ -89,7 +89,7 @@ public class MemberService {
         Optional<Member> findMember = memberRepository.findMemberByEmail(loginForm.getEmail());
 
         if (!findMember.isPresent()) {
-            throw new BusinessException("아이디 또는 비밀번호를 잘못 입력했습니다. 입력하신 내용을 다시 확인해주세요.");
+            throw new BusinessException(StatusCode.BAD_REQUEST, "잘못된 아이디입니다. 입력하신 내용을 다시 확인해주세요.", false);
         }
 
         Member member = findMember.get();
@@ -98,7 +98,7 @@ public class MemberService {
         String encryptedSalt = member.getMemberSalt().getSalt();
         String encryptedPassword = encryptManager.encryptPassword(loginForm.getPassword(), encryptManager.decryptSalt(encryptedSalt));
         if (!member.getPassword().equals(encryptedPassword)) {
-            throw new BusinessException("아이디 또는 비밀번호를 잘못 입력했습니다. 입력하신 내용을 다시 확인해주세요.");
+            throw new BusinessException(StatusCode.BAD_REQUEST, "잘못된 비밀번호입니다. 입력하신 내용을 다시 확인해주세요.", false);
         }
 
         return jwtTokenProvider.createToken(member.getId(), member.getName(), member.getMemberType());
