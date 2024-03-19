@@ -17,7 +17,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BusinessException.class)
     protected ResponseEntity<ResponseForm<Void>> handleBusinessException(BusinessException e) {
         StatusCode statusCode = e.getStatusCode();
-        ResponseForm<Void> exceptionResponse = new ResponseForm<>(statusCode);
+        ResponseForm<Void> exceptionResponse = new ResponseForm<>(statusCode, e.getMessage(), false);
         HttpStatus headerStatus;
         
         try {
