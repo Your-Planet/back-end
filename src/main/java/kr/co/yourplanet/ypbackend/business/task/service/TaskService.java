@@ -10,6 +10,7 @@ import kr.co.yourplanet.ypbackend.business.task.repository.TaskRepository;
 import kr.co.yourplanet.ypbackend.business.user.domain.Member;
 import kr.co.yourplanet.ypbackend.business.user.repository.MemberRepository;
 import kr.co.yourplanet.ypbackend.common.enums.MemberType;
+import kr.co.yourplanet.ypbackend.common.enums.StatusCode;
 import kr.co.yourplanet.ypbackend.common.enums.TaskStatus;
 import kr.co.yourplanet.ypbackend.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
@@ -34,11 +35,11 @@ public class TaskService {
         Member author = memberRepository.findMemberById(taskRequestForm.getAuthorId());
 
         if (advertiser == null || !MemberType.ADVERTISER.equals(advertiser.getMemberType())) {
-            throw new BusinessException("유효하지 않은 광고주 정보");
+            throw new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 광고주 정보입니다.", false);
         }
 
         if (author == null || !MemberType.AUTHOR.equals(author.getMemberType())) {
-            throw new BusinessException("유효하지 않은 작가 정보");
+            throw new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 작가 정보입니다.", false);
         }
 
         Task task = Task.builder()
@@ -73,7 +74,7 @@ public class TaskService {
         checkTaskValidation(member, task);
 
         if (TaskStatus.REJECT.equals(task.getTaskStatus()) || TaskStatus.ACCEPT.equals(task.getTaskStatus()) || TaskStatus.COMPLETE.equals(task.getTaskStatus())) {
-            throw new BusinessException("현재 취소할 수 없는 상태입니다 : " + task.getTaskStatus());
+            throw new BusinessException(StatusCode.BAD_REQUEST,"현재 취소할 수 없는 상태입니다 : " + task.getTaskStatus(), false);
         }
 
         task.changeTaskStatus(TaskStatus.REJECT);
@@ -88,7 +89,7 @@ public class TaskService {
         checkTaskValidation(requestMember, task);
 
         if (TaskStatus.REJECT.equals(task.getTaskStatus()) || TaskStatus.ACCEPT.equals(task.getTaskStatus()) || TaskStatus.COMPLETE.equals(task.getTaskStatus())) {
-            throw new BusinessException("현재 취소할 수 없는 상태입니다 : " + task.getTaskStatus());
+            throw new BusinessException(StatusCode.BAD_REQUEST, "현재 취소할 수 없는 상태입니다 : " + task.getTaskStatus(), false);
         }
 
         task.changeTaskStatus(TaskStatus.NEGOTIATION);
@@ -120,11 +121,11 @@ public class TaskService {
         checkTaskValidation(member, task);
 
         if(!MemberType.AUTHOR.equals(member.getMemberType())){
-            throw new BusinessException("작업수락은 작가만 할 수 있습니다");
+            throw new BusinessException(StatusCode.BAD_REQUEST, "작업수락은 작가만 할 수 있습니다", false);
         }
 
         if (TaskStatus.REJECT.equals(task.getTaskStatus()) || TaskStatus.ACCEPT.equals(task.getTaskStatus()) || TaskStatus.COMPLETE.equals(task.getTaskStatus())) {
-            throw new BusinessException("현재 수락할 수 없는 상태입니다 : " + task.getTaskStatus());
+            throw new BusinessException(StatusCode.BAD_REQUEST, "현재 수락할 수 없는 상태입니다 : " + task.getTaskStatus(), false);
         }
 
         List<TaskHistory> taskHistoryList = taskRepository.findAllTaskHistoryListByTaskNo(task);
@@ -132,7 +133,7 @@ public class TaskService {
         if(!taskHistoryList.isEmpty()){
             task.acceptTask(taskHistoryList.get(taskHistoryList.size() - 1));
         } else{
-            throw new BusinessException("작업 요청 이력이 존재하지 않습니다");
+            throw new BusinessException(StatusCode.NOT_FOUND, "작업 요청 이력이 존재하지 않습니다", false);
         }
 
     }
@@ -151,21 +152,21 @@ public class TaskService {
 
         // 요청자 존재여부
         if (member == null) {
-            throw new BusinessException("유효하지 않은 사용자 요청");
+            throw new BusinessException(StatusCode.UNAUTHORIZED, "유효하지 않은 사용자 요청입니다.", false);
         }
 
         // Task 존재여부
         if (task == null) {
-            throw new BusinessException("존재하지 않는 작업내역입니다");
+            throw new BusinessException(StatusCode.NOT_FOUND, "존재하지 않는 작업내역입니다", false);
         }
 
         // 요청자가 Task와 관련되어 있는지 체크 (요청자 = 작가 or 광고주)
         if (MemberType.AUTHOR.equals(member.getMemberType())) {
             if (!member.equals(task.getAuthor())) {
-                throw new BusinessException("사용자의 작업내역이 아닙니다");
+                throw new BusinessException(StatusCode.UNAUTHORIZED, "사용자의 작업내역이 아닙니다", false);
             }
         } else if (MemberType.ADVERTISER.equals(member.getMemberType()) && !member.equals(task.getAdvertiser())) {
-            throw new BusinessException("사용자의 작업내역이 아닙니다");
+            throw new BusinessException(StatusCode.UNAUTHORIZED, "사용자의 작업내역이 아닙니다", false);
         }
     }
 }

@@ -3,6 +3,7 @@ package kr.co.yourplanet.ypbackend.business.user.service;
 import kr.co.yourplanet.ypbackend.business.user.domain.Member;
 import kr.co.yourplanet.ypbackend.business.user.dto.LoginForm;
 import kr.co.yourplanet.ypbackend.business.user.repository.MemberRepository;
+import kr.co.yourplanet.ypbackend.common.enums.StatusCode;
 import kr.co.yourplanet.ypbackend.common.exception.BusinessException;
 import kr.co.yourplanet.ypbackend.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +51,7 @@ public class MemberService {
 
         Optional<Member> findMember = memberRepository.findMemberByEmail(email);
         if (findMember.isPresent()) {
-            throw new BusinessException("중복된 이메일이 존재합니다.");
+            throw new BusinessException(StatusCode.BAD_REQUEST, "중복된 이메일이 존재합니다.", false);
         }
 
     }
@@ -58,8 +59,11 @@ public class MemberService {
     public String login(LoginForm loginForm) {
         Optional<Member> findMember = memberRepository.findMemberByEmail(loginForm.getEmail());
 
-        if (!findMember.isPresent() || !findMember.get().getPassword().equals(loginForm.getPassword())) {
-            throw new BusinessException("아이디 또는 비밀번호를 잘못 입력했습니다. 입력하신 내용을 다시 확인해주세요.");
+        if (!findMember.isPresent()) {
+            throw new BusinessException(StatusCode.BAD_REQUEST, "잘못된 아이디입니다. 입력하신 내용을 다시 확인해주세요.", false);
+        }
+        if (!findMember.get().getPassword().equals(loginForm.getPassword())) {
+            throw new BusinessException(StatusCode.BAD_REQUEST, "잘못된 비밀번호입니다. 입력하신 내용을 다시 확인해주세요.", false);
         }
 
         return jwtTokenProvider.createToken(findMember.get().getId(), findMember.get().getName(), findMember.get().getMemberType());
@@ -72,7 +76,7 @@ public class MemberService {
 
         // 비밀번호 길이 체크
         if (password.length() < MIN_LENGTH || password.length() > MAX_LENGTH) {
-            throw new BusinessException("8-20자의 비밀번호만 사용할 수 있어요");
+            throw new BusinessException(StatusCode.BAD_REQUEST, "8-20자의 비밀번호만 사용할 수 있어요", false);
         }
 
         if (Pattern.matches(LOWER_CASE_REGEX, password)) {
@@ -90,7 +94,7 @@ public class MemberService {
 
         // 비밀번호 패턴 종류 체크
         if (patternCount < 3) {
-            throw new BusinessException("영문 대문자, 소문자, 숫자, 특수문자 중 3종류 이상을 사용해 주세요.");
+            throw new BusinessException(StatusCode.BAD_REQUEST, "영문 대문자, 소문자, 숫자, 특수문자 중 3종류 이상을 사용해 주세요.", false);
         }
 
  /*
