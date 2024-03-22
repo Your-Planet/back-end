@@ -3,7 +3,6 @@ package kr.co.yourplanet.ypbackend.jwt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import kr.co.yourplanet.ypbackend.common.JwtPrincipal;
 import kr.co.yourplanet.ypbackend.common.enums.MemberType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

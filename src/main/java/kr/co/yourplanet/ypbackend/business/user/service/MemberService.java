@@ -1,16 +1,20 @@
 package kr.co.yourplanet.ypbackend.business.user.service;
 
 import kr.co.yourplanet.ypbackend.business.user.domain.Member;
+import kr.co.yourplanet.ypbackend.business.user.domain.MemberSalt;
 import kr.co.yourplanet.ypbackend.business.user.dto.LoginForm;
+import kr.co.yourplanet.ypbackend.business.user.dto.RegisterForm;
 import kr.co.yourplanet.ypbackend.business.user.repository.MemberRepository;
 import kr.co.yourplanet.ypbackend.common.enums.StatusCode;
 import kr.co.yourplanet.ypbackend.common.exception.BusinessException;
+import kr.co.yourplanet.ypbackend.common.encrypt.EncryptManager;
 import kr.co.yourplanet.ypbackend.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -33,24 +37,50 @@ public class MemberService {
 
     private final JwtTokenProvider jwtTokenProvider;
 
+    private final EncryptManager encryptManager;
+
     @Transactional
-    public String register(Member member) {
+    public String register(RegisterForm registerForm) {
         //중복 이메일 체크. 중복시 Exception 발생
-        checkDuplicateEmail(member.getEmail());
+        checkDuplicateEmail(registerForm.getEmail());
 
         // 비밀번호 정책 확인
-        validatePassword(member);
+        validatePassword(registerForm.getPassword());
 
-        // 추후 비밀번호 저장시 암호화해서 DB에 저장하는 로직 추가하자
+        // 비밀번호 암호화
+        String salt = encryptManager.generateSalt();
+        String encodedHashPassword = encryptManager.encryptPassword(registerForm.getPassword(), salt);
+
+        Member member = Member.builder()
+                .email(registerForm.getEmail())
+                .password(encodedHashPassword)
+                .name(registerForm.getName())
+                .genderType(registerForm.getGenderType())
+                .tel(registerForm.getTel())
+                .memberType(registerForm.getMemberType())
+                .birthDate(registerForm.getBirthDate())
+                .instagramId(registerForm.getInstagramId())
+                .companyName(registerForm.getCompanyName())
+                .businessNumber(registerForm.getBusinessNumber())
+                .representativeName(registerForm.getRepresentativeName())
+                .businessAddress(registerForm.getBusinessAddress())
+                .termsAgreedTimestamp(LocalDateTime.now())
+                .build();
+
         memberRepository.saveMember(member);
+
+        MemberSalt memberSalt = MemberSalt.builder()
+                .member(member)
+                .salt(encryptManager.encryptSalt(salt))
+                .build();
+        memberRepository.saveMemberSalt(memberSalt);
 
         return "Done";
     }
 
     public void checkDuplicateEmail(String email) {
 
-        Optional<Member> findMember = memberRepository.findMemberByEmail(email);
-        if (findMember.isPresent()) {
+        if (memberRepository.findMemberByEmail(email).isPresent()) {
             throw new BusinessException(StatusCode.BAD_REQUEST, "중복된 이메일이 존재합니다.", false);
         }
 
@@ -62,15 +92,20 @@ public class MemberService {
         if (!findMember.isPresent()) {
             throw new BusinessException(StatusCode.BAD_REQUEST, "잘못된 아이디입니다. 입력하신 내용을 다시 확인해주세요.", false);
         }
-        if (!findMember.get().getPassword().equals(loginForm.getPassword())) {
+
+        Member member = findMember.get();
+
+        // 입력받은 비밀번호 암호화 후 비교
+        String encryptedSalt = member.getMemberSalt().getSalt();
+        String encryptedPassword = encryptManager.encryptPassword(loginForm.getPassword(), encryptManager.decryptSalt(encryptedSalt));
+        if (!member.getPassword().equals(encryptedPassword)) {
             throw new BusinessException(StatusCode.BAD_REQUEST, "잘못된 비밀번호입니다. 입력하신 내용을 다시 확인해주세요.", false);
         }
 
-        return jwtTokenProvider.createToken(findMember.get().getId(), findMember.get().getName(), findMember.get().getMemberType());
+        return jwtTokenProvider.createToken(member.getId(), member.getName(), member.getMemberType());
     }
 
-    public void validatePassword(Member member) {
-        String password = member.getPassword();
+    public void validatePassword(String password) {
 
         int patternCount = 0;
 
