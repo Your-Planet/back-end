@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
@@ -42,6 +43,7 @@ public class Member {
 
     // Author
     private String instagramId;
+    private String instagramUserName;
 
     // Advertiser
     private String companyName;
@@ -49,6 +51,9 @@ public class Member {
     private String representativeName;
     private String businessAddress;
 
-    // Common
-    private LocalDateTime termsAgreedTimestamp;
+    // Commons
+    @NotNull
+    private LocalDateTime termsOfServiceAgreedTime;
+    private LocalDateTime privacyPolicyAgreedTime;
+    private LocalDateTime shoppingInformationAgreedTime;
 }

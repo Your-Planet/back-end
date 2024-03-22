@@ -4,13 +4,12 @@ import kr.co.yourplanet.ypbackend.common.enums.MemberType;
 import kr.co.yourplanet.ypbackend.common.enums.GenderType;
 import kr.co.yourplanet.ypbackend.common.interfaces.ValidEnum;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
-@Getter @NoArgsConstructor
-public class RegisterForm {
+@Getter
+public class JoinForm {
 
     @NotBlank
     @Email
@@ -30,11 +29,23 @@ public class RegisterForm {
 
     // Author
     private String instagramId;
+    private String instagramUserName;
 
     // Advertiser
     private String companyName;
     private String businessNumber;
     private String representativeName;
     private String businessAddress;
+
+    // Commons
+    private Boolean isTermsOfService;
+    private Boolean isPrivacyPolicy;
+    private Boolean isShoppingInformation;
+
+    public JoinForm(){
+        isTermsOfService = false;
+        isPrivacyPolicy = false;
+        isShoppingInformation = false;
+    }
 
 }

@@ -3,7 +3,7 @@ package kr.co.yourplanet.ypbackend.business.user.service;
 import kr.co.yourplanet.ypbackend.business.user.domain.Member;
 import kr.co.yourplanet.ypbackend.business.user.domain.MemberSalt;
 import kr.co.yourplanet.ypbackend.business.user.dto.LoginForm;
-import kr.co.yourplanet.ypbackend.business.user.dto.RegisterForm;
+import kr.co.yourplanet.ypbackend.business.user.dto.JoinForm;
 import kr.co.yourplanet.ypbackend.business.user.repository.MemberRepository;
 import kr.co.yourplanet.ypbackend.common.enums.StatusCode;
 import kr.co.yourplanet.ypbackend.common.exception.BusinessException;
@@ -40,31 +40,38 @@ public class MemberService {
     private final EncryptManager encryptManager;
 
     @Transactional
-    public String register(RegisterForm registerForm) {
+    public String register(JoinForm joinForm) {
         //중복 이메일 체크. 중복시 Exception 발생
-        checkDuplicateEmail(registerForm.getEmail());
+        checkDuplicateEmail(joinForm.getEmail());
 
         // 비밀번호 정책 확인
-        validatePassword(registerForm.getPassword());
+        validatePassword(joinForm.getPassword());
+
+        if (joinForm.getIsTermsOfService() == null || !joinForm.getIsTermsOfService()) {
+            throw new BusinessException(StatusCode.BAD_REQUEST, "필수 약관에 동의해주세요.", false);
+        }
 
         // 비밀번호 암호화
         String salt = encryptManager.generateSalt();
-        String encodedHashPassword = encryptManager.encryptPassword(registerForm.getPassword(), salt);
+        String encodedHashPassword = encryptManager.encryptPassword(joinForm.getPassword(), salt);
 
         Member member = Member.builder()
-                .email(registerForm.getEmail())
+                .email(joinForm.getEmail())
                 .password(encodedHashPassword)
-                .name(registerForm.getName())
-                .genderType(registerForm.getGenderType())
-                .tel(registerForm.getTel())
-                .memberType(registerForm.getMemberType())
-                .birthDate(registerForm.getBirthDate())
-                .instagramId(registerForm.getInstagramId())
-                .companyName(registerForm.getCompanyName())
-                .businessNumber(registerForm.getBusinessNumber())
-                .representativeName(registerForm.getRepresentativeName())
-                .businessAddress(registerForm.getBusinessAddress())
-                .termsAgreedTimestamp(LocalDateTime.now())
+                .name(joinForm.getName())
+                .genderType(joinForm.getGenderType())
+                .tel(joinForm.getTel())
+                .memberType(joinForm.getMemberType())
+                .birthDate(joinForm.getBirthDate())
+                .instagramId(joinForm.getInstagramId())
+                .instagramUserName(joinForm.getInstagramUserName())
+                .companyName(joinForm.getCompanyName())
+                .businessNumber(joinForm.getBusinessNumber())
+                .representativeName(joinForm.getRepresentativeName())
+                .businessAddress(joinForm.getBusinessAddress())
+                .termsOfServiceAgreedTime(joinForm.getIsTermsOfService() ? LocalDateTime.now() : null)
+                .privacyPolicyAgreedTime(joinForm.getIsPrivacyPolicy() ? LocalDateTime.now() : null)
+                .shoppingInformationAgreedTime(joinForm.getIsShoppingInformation() ? LocalDateTime.now() : null)
                 .build();
 
         memberRepository.saveMember(member);
