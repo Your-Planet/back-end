@@ -1,5 +1,6 @@
 package kr.co.yourplanet.ypbackend.common.encrypt;
 
+import kr.co.yourplanet.ypbackend.common.enums.StatusCode;
 import kr.co.yourplanet.ypbackend.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +48,7 @@ public class EncryptManager {
             return digest.digest(saltedPassword);
         } catch (NoSuchAlgorithmException e) {
             log.error(e.getMessage());
-            throw new BusinessException("패스워드 암호화 중 오류 발생");
+            throw new BusinessException(StatusCode.INTERNAL_SERVER_ERROR, "패스워드 암호화 중 오류 발생", false);
         }
     }
 
@@ -68,7 +69,7 @@ public class EncryptManager {
             return Base64.getEncoder().encodeToString(encryptedBytes);
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new BusinessException("패스워드 암호화 중 오류 발생");
+            throw new BusinessException(StatusCode.INTERNAL_SERVER_ERROR, "패스워드 암호화 중 오류 발생", false);
         }
     }
 
@@ -81,7 +82,7 @@ public class EncryptManager {
             return new String(decryptedBytes);
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new BusinessException("패스워드 복호화 중 오류 발생");
+            throw new BusinessException(StatusCode.INTERNAL_SERVER_ERROR, "패스워드 복호화 중 오류 발생", false);
         }
     }
 

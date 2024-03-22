@@ -1,6 +1,6 @@
 package kr.co.yourplanet.ypbackend.business.user.controller;
 
-import kr.co.yourplanet.ypbackend.business.user.dto.RegisterForm;
+import kr.co.yourplanet.ypbackend.business.user.dto.JoinForm;
 import kr.co.yourplanet.ypbackend.business.user.service.MemberService;
 import kr.co.yourplanet.ypbackend.common.ResponseForm;
 import kr.co.yourplanet.ypbackend.business.user.dto.LoginForm;
@@ -20,10 +20,10 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @PostMapping("/member/register")
-    public ResponseForm<Void> register(@Valid @RequestBody RegisterForm registerForm) {
+    @PostMapping("/member/join")
+    public ResponseForm<Void> join(@Valid @RequestBody JoinForm joinForm) {
 
-        memberService.register(registerForm);
+        memberService.register(joinForm);
 
         return new ResponseForm<>(StatusCode.OK);
     }
