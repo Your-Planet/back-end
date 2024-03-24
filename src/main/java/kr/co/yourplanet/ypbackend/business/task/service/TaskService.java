@@ -30,11 +30,11 @@ public class TaskService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void requestTask(TaskRequestForm taskRequestForm, Long advertiserId) {
-        Member advertiser = memberRepository.findMemberById(advertiserId);
+    public void requestTask(TaskRequestForm taskRequestForm, Long sponsorId) {
+        Member sponsor = memberRepository.findMemberById(sponsorId);
         Member author = memberRepository.findMemberById(taskRequestForm.getAuthorId());
 
-        if (advertiser == null || !MemberType.ADVERTISER.equals(advertiser.getMemberType())) {
+        if (sponsor == null || !MemberType.SPONSOR.equals(sponsor.getMemberType())) {
             throw new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 광고주 정보입니다.", false);
         }
 
@@ -44,7 +44,7 @@ public class TaskService {
 
         Task task = Task.builder()
                 .author(author)
-                .advertiser(advertiser)
+                .sponsor(sponsor)
                 .taskStatus(TaskStatus.REQUEST)
                 .build();
 
@@ -60,7 +60,7 @@ public class TaskService {
                 .payment(taskRequestForm.getPayment())
                 .cutNumber(taskRequestForm.getCutNumber())
                 .categoryList(taskRequestForm.getCategoryList()) // 추후 Category Repository에서 조회하여 기입하자
-                .requestMember(advertiser)
+                .requestMember(sponsor)
                 .build();
 
         taskRepository.saveTaskHistory(taskHistory);
@@ -165,7 +165,7 @@ public class TaskService {
             if (!member.equals(task.getAuthor())) {
                 throw new BusinessException(StatusCode.UNAUTHORIZED, "사용자의 작업내역이 아닙니다", false);
             }
-        } else if (MemberType.ADVERTISER.equals(member.getMemberType()) && !member.equals(task.getAdvertiser())) {
+        } else if (MemberType.SPONSOR.equals(member.getMemberType()) && !member.equals(task.getSponsor())) {
             throw new BusinessException(StatusCode.UNAUTHORIZED, "사용자의 작업내역이 아닙니다", false);
         }
     }

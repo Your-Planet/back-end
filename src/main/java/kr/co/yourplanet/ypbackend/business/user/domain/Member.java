@@ -45,7 +45,7 @@ public class Member {
     private String instagramId;
     private String instagramUserName;
 
-    // Advertiser
+    // Sponsor
     private String companyName;
     private String businessNumber;
     private String representativeName;
