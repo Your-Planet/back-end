@@ -29,8 +29,8 @@ public class Task {
     private Long taskNo;
 
     @ManyToOne
-    @JoinColumn(name = "advertiser_id", referencedColumnName = "id")
-    private Member advertiser;
+    @JoinColumn(name = "sponsor_id", referencedColumnName = "id")
+    private Member sponsor;
 
     @ManyToOne
     @JoinColumn(name = "author_id", referencedColumnName = "id")
