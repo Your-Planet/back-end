@@ -23,7 +23,7 @@ public class MemberController {
     @PostMapping("/member/join")
     public ResponseForm<Void> join(@Valid @RequestBody JoinForm joinForm) {
 
-        memberService.register(joinForm);
+        memberService.join(joinForm);
 
         return new ResponseForm<>(StatusCode.OK);
     }

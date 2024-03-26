@@ -40,7 +40,7 @@ public class MemberService {
     private final EncryptManager encryptManager;
 
     @Transactional
-    public String register(JoinForm joinForm) {
+    public void join(JoinForm joinForm) {
         //중복 이메일 체크. 중복시 Exception 발생
         checkDuplicateEmail(joinForm.getEmail());
 
@@ -65,6 +65,7 @@ public class MemberService {
                 .birthDate(joinForm.getBirthDate())
                 .instagramId(joinForm.getInstagramId())
                 .instagramUserName(joinForm.getInstagramUserName())
+                .instagramAccessToken(joinForm.getInstagramAccessToken())
                 .companyName(joinForm.getCompanyName())
                 .businessNumber(joinForm.getBusinessNumber())
                 .representativeName(joinForm.getRepresentativeName())
@@ -82,7 +83,6 @@ public class MemberService {
                 .build();
         memberRepository.saveMemberSalt(memberSalt);
 
-        return "Done";
     }
 
     public void checkDuplicateEmail(String email) {
@@ -97,7 +97,7 @@ public class MemberService {
         Optional<Member> findMember = memberRepository.findMemberByEmail(loginForm.getEmail());
 
         if (!findMember.isPresent()) {
-            throw new BusinessException(StatusCode.BAD_REQUEST, "잘못된 아이디입니다. 입력하신 내용을 다시 확인해주세요.", false);
+            throw new BusinessException(StatusCode.BAD_REQUEST, "잘못된 이메일 혹은 비밀번호입니다.", false);
         }
 
         Member member = findMember.get();
@@ -106,7 +106,7 @@ public class MemberService {
         String encryptedSalt = member.getMemberSalt().getSalt();
         String encryptedPassword = encryptManager.encryptPassword(loginForm.getPassword(), encryptManager.decryptSalt(encryptedSalt));
         if (!member.getPassword().equals(encryptedPassword)) {
-            throw new BusinessException(StatusCode.BAD_REQUEST, "잘못된 비밀번호입니다. 입력하신 내용을 다시 확인해주세요.", false);
+            throw new BusinessException(StatusCode.BAD_REQUEST, "잘못된 이메일 혹은 비밀번호입니다.", false);
         }
 
         return jwtTokenProvider.createToken(member.getId(), member.getName(), member.getMemberType());
