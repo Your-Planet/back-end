@@ -37,7 +37,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BindException.class)
     protected ResponseEntity<ResponseForm<Void>> handleBindException(BindException e) {
-        ResponseForm<Void> exceptionResponse = new ResponseForm<>(StatusCode.BAD_REQUEST);
+        ResponseForm<Void> exceptionResponse = new ResponseForm<>(StatusCode.BAD_REQUEST, e.getAllErrors().get(0).getDefaultMessage(), false);
         return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
     }
 

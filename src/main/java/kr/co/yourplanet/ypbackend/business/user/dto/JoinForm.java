@@ -5,31 +5,31 @@ import kr.co.yourplanet.ypbackend.common.enums.GenderType;
 import kr.co.yourplanet.ypbackend.common.interfaces.ValidEnum;
 import lombok.Getter;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 @Getter
 public class JoinForm {
 
     @NotBlank
-    @Email
+    @Pattern(regexp = "^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,3}$", message = "이메일 주소 양식을 확인해주세요")
     private String email;
-    @NotBlank
+    @NotBlank(message = "비밀번호를 입력해주세요")
     private String password;
-    @NotBlank
+    @NotBlank(message = "이름을 입력해주세요")
     private String name;
     @ValidEnum(enumClass = GenderType.class)
     private GenderType genderType; // MALE: 남자 / FEMALE: 여자
-    @NotBlank
+    @NotBlank(message = "전화번호를 입력해주세요")
     private String tel;
     @ValidEnum(enumClass = MemberType.class)
     private MemberType memberType;
-    @NotBlank
     private String birthDate; // YYYYMMDD
 
     // Author
     private String instagramId;
     private String instagramUserName;
+    private String instagramAccessToken;
 
     // Sponsor
     private String companyName;
@@ -42,7 +42,7 @@ public class JoinForm {
     private Boolean isPrivacyPolicy;
     private Boolean isShoppingInformation;
 
-    public JoinForm(){
+    public JoinForm() {
         isTermsOfService = false;
         isPrivacyPolicy = false;
         isShoppingInformation = false;
