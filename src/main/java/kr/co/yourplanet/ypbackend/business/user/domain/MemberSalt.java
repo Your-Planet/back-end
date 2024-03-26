@@ -1,5 +1,6 @@
 package kr.co.yourplanet.ypbackend.business.user.domain;
 
+import kr.co.yourplanet.ypbackend.common.domain.BasicColumn;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,9 +14,10 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberSalt {
+public class MemberSalt extends BasicColumn {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)

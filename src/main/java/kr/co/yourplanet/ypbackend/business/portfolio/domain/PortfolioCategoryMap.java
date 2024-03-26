@@ -1,5 +1,6 @@
 package kr.co.yourplanet.ypbackend.business.portfolio.domain;
 
+import kr.co.yourplanet.ypbackend.common.domain.BasicColumn;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +16,7 @@ import javax.persistence.*;
 @Builder
 @DynamicUpdate
 @IdClass(PortfolioCategoryMapKey.class)
-public class PortfolioCategoryMap {
+public class PortfolioCategoryMap extends BasicColumn {
 
     @Id
     @ManyToOne

@@ -1,5 +1,6 @@
 package kr.co.yourplanet.ypbackend.business.portfolio.domain;
 
+import kr.co.yourplanet.ypbackend.common.domain.BasicColumn;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import org.hibernate.annotations.DynamicUpdate;
@@ -11,7 +12,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @IdClass(PortfolioLinkKey.class)
 @Builder
-public class PortfolioLink {
+public class PortfolioLink extends BasicColumn {
 
     @Id
     @ManyToOne
