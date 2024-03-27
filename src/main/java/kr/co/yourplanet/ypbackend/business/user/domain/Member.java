@@ -44,6 +44,7 @@ public class Member {
     // Author
     private String instagramId;
     private String instagramUserName;
+    private String instagramAccessToken;
 
     // Sponsor
     private String companyName;
