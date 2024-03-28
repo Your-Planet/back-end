@@ -1,5 +1,6 @@
 package kr.co.yourplanet.ypbackend.business.user.domain;
 
+import kr.co.yourplanet.ypbackend.common.domain.BasicColumn;
 import kr.co.yourplanet.ypbackend.common.enums.MemberType;
 import kr.co.yourplanet.ypbackend.common.enums.GenderType;
 import kr.co.yourplanet.ypbackend.common.interfaces.ValidEnum;
@@ -18,12 +19,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Member {
+public class Member extends BasicColumn {
 
     // Required
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     private Long id;
-    @Column(unique=true) @NotBlank
+    @Column(unique = true)
+    @NotBlank
     private String email;
     @NotBlank
     private String password;

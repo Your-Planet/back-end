@@ -2,6 +2,7 @@ package kr.co.yourplanet.ypbackend.business.task.domain;
 
 import kr.co.yourplanet.ypbackend.business.user.domain.Member;
 import kr.co.yourplanet.ypbackend.common.StringListConverter;
+import kr.co.yourplanet.ypbackend.common.domain.BasicColumn;
 import kr.co.yourplanet.ypbackend.common.enums.TaskStatus;
 import kr.co.yourplanet.ypbackend.common.interfaces.ValidEnum;
 import lombok.AllArgsConstructor;
@@ -21,7 +22,7 @@ import java.util.List;
 @DynamicUpdate
 @Getter
 @Builder
-public class Task {
+public class Task extends BasicColumn {
 
     @Id
     @GeneratedValue
@@ -66,11 +67,11 @@ public class Task {
     @Convert(converter = StringListConverter.class)
     private List<String> categoryList = new ArrayList<>();
 
-    public void changeTaskStatus(TaskStatus taskStatus){
+    public void changeTaskStatus(TaskStatus taskStatus) {
         this.taskStatus = taskStatus;
     }
 
-    public void acceptTask(TaskHistory taskHistory){
+    public void acceptTask(TaskHistory taskHistory) {
         this.context = taskHistory.getContext();
         this.fromDate = taskHistory.getFromDate();
         this.toDate = taskHistory.getToDate();

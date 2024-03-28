@@ -1,6 +1,7 @@
 package kr.co.yourplanet.ypbackend.business.portfolio.domain;
 
 import kr.co.yourplanet.ypbackend.business.user.domain.Member;
+import kr.co.yourplanet.ypbackend.common.domain.BasicColumn;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @DynamicUpdate
 @Builder
-public class Portfolio {
+public class Portfolio extends BasicColumn {
 
     @Id
     @NotBlank
