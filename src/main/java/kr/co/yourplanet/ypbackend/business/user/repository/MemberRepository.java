@@ -31,4 +31,11 @@ public class MemberRepository {
     public void saveMemberSalt(MemberSalt memberSalt){
         em.persist(memberSalt);
     }
+
+    public Optional<Member> findByNameAndPhone(String name, String phone) {
+        return em.createQuery("select m from Member m where m.name = :name and m.phone = :phone", Member.class)
+                .setParameter("name", name)
+                .setParameter("phone", phone)
+                .getResultStream().findAny();
+    }
 }

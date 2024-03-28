@@ -2,8 +2,10 @@ package kr.co.yourplanet.ypbackend.business.user.service;
 
 import kr.co.yourplanet.ypbackend.business.user.domain.Member;
 import kr.co.yourplanet.ypbackend.business.user.domain.MemberSalt;
+import kr.co.yourplanet.ypbackend.business.user.dto.FindIdForm;
 import kr.co.yourplanet.ypbackend.business.user.dto.LoginForm;
 import kr.co.yourplanet.ypbackend.business.user.dto.JoinForm;
+import kr.co.yourplanet.ypbackend.business.user.dto.ResetPasswordForm;
 import kr.co.yourplanet.ypbackend.business.user.repository.MemberRepository;
 import kr.co.yourplanet.ypbackend.common.enums.StatusCode;
 import kr.co.yourplanet.ypbackend.common.exception.BusinessException;
@@ -150,4 +152,41 @@ public class MemberService {
 */
     }
 
+    public String findId(FindIdForm accountRecoveryFrom) {
+        Optional<Member> findMember = memberRepository.findByNameAndPhone(accountRecoveryFrom.getName(), accountRecoveryFrom.getPhone());
+
+        if (!findMember.isPresent()) {
+            throw new BusinessException(StatusCode.BAD_REQUEST, "가입된 회원이 없습니다.", false);
+        }
+
+        return findMember.get().getEmail();
+    }
+
+    @Transactional
+    public void resetPassword(ResetPasswordForm resetPasswordForm) {
+        Optional<Member> findMember = memberRepository.findMemberByEmail(resetPasswordForm.getEmail());
+
+        if (!findMember.isPresent()) {
+            throw new BusinessException(StatusCode.BAD_REQUEST, "가입된 회원이 없습니다.", false);
+        }
+
+        Member member = findMember.get();
+
+        // 비밀번호 정책 확인
+        validatePassword(resetPasswordForm.getNewPassword());
+
+        // 비밀번호 암호화
+        String salt = encryptManager.generateSalt();
+        String encodedHashPassword = encryptManager.encryptPassword(resetPasswordForm.getNewPassword(), salt);
+
+        member.updatePassword(encodedHashPassword);
+
+        MemberSalt memberSalt = MemberSalt.builder()
+                .member(member)
+                .salt(encryptManager.encryptSalt(salt))
+                .build();
+
+        memberRepository.saveMember(member);
+        memberRepository.saveMemberSalt(memberSalt);
+    }
 }

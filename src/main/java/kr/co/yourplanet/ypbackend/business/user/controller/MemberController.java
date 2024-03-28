@@ -1,6 +1,8 @@
 package kr.co.yourplanet.ypbackend.business.user.controller;
 
+import kr.co.yourplanet.ypbackend.business.user.dto.FindIdForm;
 import kr.co.yourplanet.ypbackend.business.user.dto.JoinForm;
+import kr.co.yourplanet.ypbackend.business.user.dto.ResetPasswordForm;
 import kr.co.yourplanet.ypbackend.business.user.service.MemberService;
 import kr.co.yourplanet.ypbackend.common.ResponseForm;
 import kr.co.yourplanet.ypbackend.business.user.dto.LoginForm;
@@ -34,5 +36,16 @@ public class MemberController {
         String jwtToken = memberService.login(loginForm);
 
         return new ResponseForm<>(StatusCode.OK, jwtToken);
+    }
+
+    @PostMapping("/member/find-id")
+    public ResponseForm<String> findId(@Valid @RequestBody FindIdForm accountRecoveryFrom) {
+        return new ResponseForm<>(StatusCode.OK, memberService.findId(accountRecoveryFrom));
+    }
+
+    @PostMapping("/member/reset-password")
+    public ResponseForm<Void> resetPassword(@Valid @RequestBody ResetPasswordForm resetPasswordForm) {
+        memberService.resetPassword(resetPasswordForm);
+        return new ResponseForm<>(StatusCode.OK);
     }
 }
