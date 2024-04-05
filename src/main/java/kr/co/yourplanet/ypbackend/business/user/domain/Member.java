@@ -58,6 +58,7 @@ public class Member extends BasicColumn {
     // Commons
     @NotNull
     private LocalDateTime termsOfServiceAgreedTime;
+    @NotNull
     private LocalDateTime privacyPolicyAgreedTime;
     private LocalDateTime shoppingInformationAgreedTime;
 }

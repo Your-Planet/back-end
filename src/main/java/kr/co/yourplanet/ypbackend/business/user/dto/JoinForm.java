@@ -6,6 +6,7 @@ import kr.co.yourplanet.ypbackend.common.interfaces.ValidEnum;
 import lombok.Getter;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 @Getter
@@ -24,6 +25,8 @@ public class JoinForm {
     private String tel;
     @ValidEnum(enumClass = MemberType.class)
     private MemberType memberType;
+    @NotNull(message = "약관 동의여부를 확인해주세요")
+    TermsInfo termsInfo;
     private String birthDate; // YYYYMMDD
 
     // Author
@@ -36,16 +39,5 @@ public class JoinForm {
     private String businessNumber;
     private String representativeName;
     private String businessAddress;
-
-    // Commons
-    private Boolean isTermsOfService;
-    private Boolean isPrivacyPolicy;
-    private Boolean isShoppingInformation;
-
-    public JoinForm() {
-        isTermsOfService = false;
-        isPrivacyPolicy = false;
-        isShoppingInformation = false;
-    }
 
 }
