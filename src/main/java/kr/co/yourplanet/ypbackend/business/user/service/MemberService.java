@@ -47,7 +47,8 @@ public class MemberService {
         // 비밀번호 정책 확인
         validatePassword(joinForm.getPassword());
 
-        if (joinForm.getIsTermsOfService() == null || !joinForm.getIsTermsOfService()) {
+        if (joinForm.getTermsInfo().getIsTermsOfService() == null || !joinForm.getTermsInfo().getIsTermsOfService()
+        || joinForm.getTermsInfo().getIsPrivacyPolicy() == null || !joinForm.getTermsInfo().getIsPrivacyPolicy()) {
             throw new BusinessException(StatusCode.BAD_REQUEST, "필수 약관에 동의해주세요.", false);
         }
 
@@ -70,9 +71,9 @@ public class MemberService {
                 .businessNumber(joinForm.getBusinessNumber())
                 .representativeName(joinForm.getRepresentativeName())
                 .businessAddress(joinForm.getBusinessAddress())
-                .termsOfServiceAgreedTime(joinForm.getIsTermsOfService() ? LocalDateTime.now() : null)
-                .privacyPolicyAgreedTime(joinForm.getIsPrivacyPolicy() ? LocalDateTime.now() : null)
-                .shoppingInformationAgreedTime(joinForm.getIsShoppingInformation() ? LocalDateTime.now() : null)
+                .termsOfServiceAgreedTime(joinForm.getTermsInfo().getIsTermsOfService() ? LocalDateTime.now() : null)
+                .privacyPolicyAgreedTime(joinForm.getTermsInfo().getIsPrivacyPolicy() ? LocalDateTime.now() : null)
+                .shoppingInformationAgreedTime(joinForm.getTermsInfo().getIsShoppingInformation() ? LocalDateTime.now() : null)
                 .build();
 
         memberRepository.saveMember(member);

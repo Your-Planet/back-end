@@ -1,5 +1,6 @@
 package kr.co.yourplanet.ypbackend.business.portfolio.domain;
 
+import kr.co.yourplanet.ypbackend.common.domain.BasicColumn;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +18,7 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @DynamicUpdate
 @Builder
-public class Category {
+public class Category extends BasicColumn {
 
     @Id
     @NotBlank
