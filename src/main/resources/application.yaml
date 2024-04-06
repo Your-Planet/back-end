@@ -21,3 +21,6 @@ jwt:
 
 encrypt:
   secret: yourplanet123456
+
+instagram:
+  graph-url: https://graph.instagram.com
