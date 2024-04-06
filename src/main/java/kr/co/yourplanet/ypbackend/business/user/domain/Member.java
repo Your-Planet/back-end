@@ -61,4 +61,8 @@ public class Member extends BasicColumn {
     @NotNull
     private LocalDateTime privacyPolicyAgreedTime;
     private LocalDateTime shoppingInformationAgreedTime;
+
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
+    }
 }
