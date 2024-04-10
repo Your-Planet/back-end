@@ -28,14 +28,10 @@ public class MemberRepository {
                 .getResultStream().findAny();
     }
 
-    public void saveMemberSalt(MemberSalt memberSalt){
-        em.persist(memberSalt);
-    }
-
-    public Optional<Member> findByNameAndPhone(String name, String phone) {
-        return em.createQuery("select m from Member m where m.name = :name and m.phone = :phone", Member.class)
+    public Optional<Member> findByNameAndPhone(String name, String tel) {
+        return em.createQuery("select m from Member m where m.name = :name and m.tel = :tel", Member.class)
                 .setParameter("name", name)
-                .setParameter("phone", phone)
+                .setParameter("tel", tel)
                 .getResultStream().findAny();
     }
 }

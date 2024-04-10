@@ -13,5 +13,5 @@ public class FindIdForm {
     @NotBlank
     private String name;
     @NotBlank
-    private String phone;
+    private String tel;
 }

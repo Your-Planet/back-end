@@ -27,4 +27,7 @@ public class MemberSalt extends BasicColumn {
     @NotBlank
     private String salt;
 
+    public void updateSalt(String salt){
+        this.salt = salt;
+    }
 }

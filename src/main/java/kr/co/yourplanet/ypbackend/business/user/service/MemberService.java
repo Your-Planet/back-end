@@ -7,6 +7,7 @@ import kr.co.yourplanet.ypbackend.business.user.dto.LoginForm;
 import kr.co.yourplanet.ypbackend.business.user.dto.JoinForm;
 import kr.co.yourplanet.ypbackend.business.user.dto.ResetPasswordForm;
 import kr.co.yourplanet.ypbackend.business.user.repository.MemberRepository;
+import kr.co.yourplanet.ypbackend.business.user.repository.MemberSaltRepository;
 import kr.co.yourplanet.ypbackend.common.enums.StatusCode;
 import kr.co.yourplanet.ypbackend.common.exception.BusinessException;
 import kr.co.yourplanet.ypbackend.common.encrypt.EncryptManager;
@@ -36,6 +37,7 @@ public class MemberService {
     private static final int MAX_LENGTH = 20;
 
     private final MemberRepository memberRepository;
+    private final MemberSaltRepository memberSaltRepository;
 
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -84,7 +86,7 @@ public class MemberService {
                 .member(member)
                 .salt(encryptManager.encryptSalt(salt))
                 .build();
-        memberRepository.saveMemberSalt(memberSalt);
+        memberSaltRepository.saveMemberSalt(memberSalt);
 
     }
 
@@ -154,7 +156,7 @@ public class MemberService {
     }
 
     public String findId(FindIdForm accountRecoveryFrom) {
-        Optional<Member> findMember = memberRepository.findByNameAndPhone(accountRecoveryFrom.getName(), accountRecoveryFrom.getPhone());
+        Optional<Member> findMember = memberRepository.findByNameAndPhone(accountRecoveryFrom.getName(), accountRecoveryFrom.getTel());
 
         if (!findMember.isPresent()) {
             throw new BusinessException(StatusCode.BAD_REQUEST, "가입된 회원이 없습니다.", false);
@@ -166,12 +168,20 @@ public class MemberService {
     @Transactional
     public void resetPassword(ResetPasswordForm resetPasswordForm) {
         Optional<Member> findMember = memberRepository.findMemberByEmail(resetPasswordForm.getEmail());
+        MemberSalt memberSalt;
 
         if (!findMember.isPresent()) {
             throw new BusinessException(StatusCode.BAD_REQUEST, "가입된 회원이 없습니다.", false);
         }
 
         Member member = findMember.get();
+        if(!resetPasswordForm.getTel().equals(member.getTel())){
+            throw new BusinessException(StatusCode.BAD_REQUEST, "전화번호가 일치하지 않습니다.", false);
+        }
+
+        if(!resetPasswordForm.getName().equals(member.getName())){
+            throw new BusinessException(StatusCode.BAD_REQUEST, "사용자 이름이 일치하지 않습니다.", false);
+        }
 
         // 비밀번호 정책 확인
         validatePassword(resetPasswordForm.getNewPassword());
@@ -182,12 +192,18 @@ public class MemberService {
 
         member.updatePassword(encodedHashPassword);
 
-        MemberSalt memberSalt = MemberSalt.builder()
-                .member(member)
-                .salt(encryptManager.encryptSalt(salt))
-                .build();
-
         memberRepository.saveMember(member);
-        memberRepository.saveMemberSalt(memberSalt);
+
+        Optional<MemberSalt> findMemberSalt = memberSaltRepository.findByMember(member);
+        if(!findMemberSalt.isPresent()) {
+            memberSalt = MemberSalt.builder()
+                    .member(member)
+                    .salt(encryptManager.encryptSalt(salt))
+                    .build();
+        } else {
+            memberSalt = findMemberSalt.get();
+            memberSalt.updateSalt(encryptManager.encryptSalt(salt));
+        }
+        memberSaltRepository.saveMemberSalt(memberSalt);
     }
 }
