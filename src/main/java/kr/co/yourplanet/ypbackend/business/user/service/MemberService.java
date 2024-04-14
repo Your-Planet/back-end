@@ -4,6 +4,7 @@ import kr.co.yourplanet.ypbackend.business.user.domain.Member;
 import kr.co.yourplanet.ypbackend.business.user.domain.MemberSalt;
 import kr.co.yourplanet.ypbackend.business.user.dto.FindIdForm;
 import kr.co.yourplanet.ypbackend.business.user.dto.LoginForm;
+import kr.co.yourplanet.ypbackend.business.user.dto.MemberValidateForm;
 import kr.co.yourplanet.ypbackend.business.user.dto.JoinForm;
 import kr.co.yourplanet.ypbackend.business.user.dto.ResetPasswordForm;
 import kr.co.yourplanet.ypbackend.business.user.repository.MemberRepository;
@@ -205,5 +206,22 @@ public class MemberService {
             memberSalt.updateSalt(encryptManager.encryptSalt(salt));
         }
         memberSaltRepository.saveMemberSalt(memberSalt);
+    }
+
+    public void validateMember(MemberValidateForm memberValidateForm) {
+        Optional<Member> findMember = memberRepository.findMemberByEmail(memberValidateForm.getEmail());
+        
+        if (!findMember.isPresent()) {
+            throw new BusinessException(StatusCode.BAD_REQUEST, "해당 이메일로 가입된 회원이 없습니다.", false);
+        }
+
+        Member member = findMember.get();
+        if(!memberValidateForm.getTel().equals(member.getTel())){
+            throw new BusinessException(StatusCode.BAD_REQUEST, "전화번호가 일치하지 않습니다.", false);
+        }
+
+        if(!memberValidateForm.getName().equals(member.getName())){
+            throw new BusinessException(StatusCode.BAD_REQUEST, "사용자 이름이 일치하지 않습니다.", false);
+        }
     }
 }
