@@ -6,6 +6,7 @@ import kr.co.yourplanet.ypbackend.business.user.dto.ResetPasswordForm;
 import kr.co.yourplanet.ypbackend.business.user.service.MemberService;
 import kr.co.yourplanet.ypbackend.common.ResponseForm;
 import kr.co.yourplanet.ypbackend.business.user.dto.LoginForm;
+import kr.co.yourplanet.ypbackend.business.user.dto.MemberValidateForm;
 import kr.co.yourplanet.ypbackend.common.enums.StatusCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,4 +49,11 @@ public class MemberController {
         memberService.resetPassword(resetPasswordForm);
         return new ResponseForm<>(StatusCode.OK);
     }
+
+    @PostMapping("/member/validation")
+    public ResponseForm<Void> postMethodName(@Valid @RequestBody MemberValidateForm memberValidateForm) {
+        memberService.validateMember(memberValidateForm);
+        return new ResponseForm<>(StatusCode.OK);
+    }
+    
 }
