@@ -20,8 +20,8 @@ public class PortfolioCategoryMap extends BasicColumn {
 
     @Id
     @ManyToOne
-    @JoinColumn(name = "portfolio_no")
-    private Portfolio portfolio;
+    @JoinColumn(name = "studio_id", referencedColumnName = "id")
+    private Studio studio;
 
     @Id
     @ManyToOne

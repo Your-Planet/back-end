@@ -18,8 +18,12 @@ public class MemberRepository {
         em.persist(member);
     }
 
-    public Member findMemberById(Long id) {
+    public Member getById(Long id) {
         return em.find(Member.class, id);
+    }
+
+    public Optional<Member> findById(Long id) {
+        return Optional.ofNullable(em.find(Member.class, id));
     }
 
     public Optional<Member> findMemberByEmail(String email) {
