@@ -7,6 +7,6 @@ import java.io.Serializable;
 @Data
 public class PortfolioCategoryMapKey implements Serializable {
 
-    private Long portfolio;
+    private Long studio;
     private String category;
 }

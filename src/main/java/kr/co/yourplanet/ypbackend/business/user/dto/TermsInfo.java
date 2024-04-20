@@ -1,10 +1,14 @@
 package kr.co.yourplanet.ypbackend.business.user.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Getter
+@AllArgsConstructor
+@Builder
 public class TermsInfo {
 
     private Boolean isTermsOfService;

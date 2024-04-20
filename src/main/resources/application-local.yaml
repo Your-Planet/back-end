@@ -4,11 +4,18 @@ spring:
     username: sa
     password: sa
     driver-class-name: org.h2.Driver
+    sql-script-encoding: UTF-8
 
   jpa:
+    defer-datasource-initialization: true
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
 #        show_sql: true  #여기는 prinln으로 출력이 나오기 때문에 일단 주석
         format_sql: true
+
+  sql:
+    init:
+      mode: always
+      encoding: utf-8

@@ -7,6 +7,6 @@ import java.io.Serializable;
 @Data
 public class PortfolioLinkKey implements Serializable {
 
-    private Long portfolio;
+    private Long studio;
     private Long seq;
 }

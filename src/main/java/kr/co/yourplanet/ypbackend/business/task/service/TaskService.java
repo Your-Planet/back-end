@@ -31,8 +31,8 @@ public class TaskService {
 
     @Transactional
     public void requestTask(TaskRequestForm taskRequestForm, Long sponsorId) {
-        Member sponsor = memberRepository.findMemberById(sponsorId);
-        Member author = memberRepository.findMemberById(taskRequestForm.getAuthorId());
+        Member sponsor = memberRepository.getById(sponsorId);
+        Member author = memberRepository.getById(taskRequestForm.getAuthorId());
 
         if (sponsor == null || !MemberType.SPONSOR.equals(sponsor.getMemberType())) {
             throw new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 광고주 정보입니다.", false);
@@ -68,7 +68,7 @@ public class TaskService {
 
     @Transactional
     public void rejectTask(TaskRejectForm taskRejectForm, Long requestMemberId) {
-        Member member = memberRepository.findMemberById(requestMemberId);
+        Member member = memberRepository.getById(requestMemberId);
         Task task = taskRepository.findTaskByTaskNo(taskRejectForm.getTaskNo());
 
         checkTaskValidation(member, task);
@@ -83,7 +83,7 @@ public class TaskService {
 
     @Transactional
     public void negotiateTask(TaskNegotiateForm taskNegotiateForm, Long requestMemberId) {
-        Member requestMember = memberRepository.findMemberById(requestMemberId);
+        Member requestMember = memberRepository.getById(requestMemberId);
         Task task = taskRepository.findTaskByTaskNo(taskNegotiateForm.getTaskNo());
 
         checkTaskValidation(requestMember, task);
@@ -115,7 +115,7 @@ public class TaskService {
 
     @Transactional
     public void acceptTask(TaskAcceptForm taskAcceptForm, Long requestMemberId) {
-        Member member = memberRepository.findMemberById(requestMemberId);
+        Member member = memberRepository.getById(requestMemberId);
         Task task = taskRepository.findTaskByTaskNo(taskAcceptForm.getTaskNo());
 
         checkTaskValidation(member, task);
@@ -139,7 +139,7 @@ public class TaskService {
     }
 
     public List<TaskHistory> getTaskHistoryList(Long taskNo, Long requestMemberId) {
-        Member member = memberRepository.findMemberById(requestMemberId);
+        Member member = memberRepository.getById(requestMemberId);
         Task task = taskRepository.findTaskByTaskNo(taskNo);
 
         checkTaskValidation(member, task);
