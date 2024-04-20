@@ -1,18 +1,14 @@
 package kr.co.yourplanet.ypbackend.business.user.controller;
 
-import kr.co.yourplanet.ypbackend.business.user.dto.FindIdForm;
-import kr.co.yourplanet.ypbackend.business.user.dto.JoinForm;
-import kr.co.yourplanet.ypbackend.business.user.dto.ResetPasswordForm;
+import kr.co.yourplanet.ypbackend.business.user.dto.*;
 import kr.co.yourplanet.ypbackend.business.user.service.MemberService;
 import kr.co.yourplanet.ypbackend.common.ResponseForm;
-import kr.co.yourplanet.ypbackend.business.user.dto.LoginForm;
-import kr.co.yourplanet.ypbackend.business.user.dto.MemberValidateForm;
 import kr.co.yourplanet.ypbackend.common.enums.StatusCode;
+import kr.co.yourplanet.ypbackend.jwt.JwtPrincipal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -55,5 +51,9 @@ public class MemberController {
         memberService.validateMember(memberValidateForm);
         return new ResponseForm<>(StatusCode.OK);
     }
-    
+
+    @GetMapping("/member/detail")
+    public ResponseForm<MemberDetail> getMemberDetailInfo(@AuthenticationPrincipal JwtPrincipal principal) {;
+        return new ResponseForm<>(StatusCode.OK, memberService.getMemberDetailInfo(principal.getId()));
+    }
 }

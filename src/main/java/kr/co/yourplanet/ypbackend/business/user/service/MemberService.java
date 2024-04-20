@@ -2,16 +2,13 @@ package kr.co.yourplanet.ypbackend.business.user.service;
 
 import kr.co.yourplanet.ypbackend.business.user.domain.Member;
 import kr.co.yourplanet.ypbackend.business.user.domain.MemberSalt;
-import kr.co.yourplanet.ypbackend.business.user.dto.FindIdForm;
-import kr.co.yourplanet.ypbackend.business.user.dto.LoginForm;
-import kr.co.yourplanet.ypbackend.business.user.dto.MemberValidateForm;
-import kr.co.yourplanet.ypbackend.business.user.dto.JoinForm;
-import kr.co.yourplanet.ypbackend.business.user.dto.ResetPasswordForm;
+import kr.co.yourplanet.ypbackend.business.user.dto.*;
 import kr.co.yourplanet.ypbackend.business.user.repository.MemberRepository;
 import kr.co.yourplanet.ypbackend.business.user.repository.MemberSaltRepository;
 import kr.co.yourplanet.ypbackend.common.enums.StatusCode;
 import kr.co.yourplanet.ypbackend.common.exception.BusinessException;
 import kr.co.yourplanet.ypbackend.common.encrypt.EncryptManager;
+import kr.co.yourplanet.ypbackend.jwt.JwtPrincipal;
 import kr.co.yourplanet.ypbackend.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -223,5 +220,31 @@ public class MemberService {
         if(!memberValidateForm.getName().equals(member.getName())){
             throw new BusinessException(StatusCode.BAD_REQUEST, "사용자 이름이 일치하지 않습니다.", false);
         }
+    }
+
+    public MemberDetail getMemberDetailInfo(Long memberId) {
+        Optional<Member> findMember = memberRepository.findById(memberId);
+
+        if (!findMember.isPresent()) {
+            throw new BusinessException(StatusCode.BAD_REQUEST, "해당 회원이 존재하지 않습니다.", false);
+        }
+
+        Member member = findMember.get();
+
+        TermsInfo termsInfo = TermsInfo.builder()
+                .isTermsOfService(member.getTermsOfServiceAgreedTime() != null)
+                .isPrivacyPolicy(member.getPrivacyPolicyAgreedTime() != null)
+                .isShoppingInformation(member.getShoppingInformationAgreedTime() != null)
+                .build();
+
+        return MemberDetail.builder()
+                .email(member.getEmail())
+                .name(member.getName())
+                .genderType(member.getGenderType())
+                .tel(member.getTel())
+                .memberType(member.getMemberType())
+                .instagramName(member.getInstagramUserName())
+                .termsInfo(termsInfo)
+                .build();
     }
 }

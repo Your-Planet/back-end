@@ -11,6 +11,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -18,13 +19,13 @@ import java.util.List;
 @AllArgsConstructor
 @DynamicUpdate
 @Builder
-public class Portfolio extends BasicColumn {
+public class Studio extends BasicColumn {
 
     @Id
     @NotBlank
     @GeneratedValue
-    @Column(name = "portfolio_no")
-    private Long portfolioNo;
+    @Column(name = "id")
+    private Long id;
 
     @Column(name = "description")
     private String description;
@@ -33,9 +34,28 @@ public class Portfolio extends BasicColumn {
     @JoinColumn(name = "member_id", referencedColumnName = "id")
     private Member member;
 
-    @OneToMany(mappedBy = "portfolio", fetch = FetchType.LAZY)
+    @Column(name = "toon_name")
+    private String toonName;
+
+    @OneToMany(mappedBy = "studio", fetch = FetchType.LAZY)
     private List<PortfolioCategoryMap> portfolioCategoryMapList;
 
-    @OneToMany(mappedBy = "portfolio", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "studio", fetch = FetchType.LAZY)
     private List<PortfolioLink> portfolioLinkList;
+
+    public List<String> getCategoryTypes() {
+        return portfolioCategoryMapList.stream()
+                .map(PortfolioCategoryMap::getCategory)
+                .map(Category::getCategoryName).collect(Collectors.toList());
+    }
+
+    public List<String> getPortfolioLinkUrls() {
+        return portfolioLinkList.stream()
+                .map(PortfolioLink::getUrl).collect(Collectors.toList());
+    }
+
+    public void updateStudio(String name, String description) {
+        this.toonName = name;
+        this.description = description;
+    }
 }

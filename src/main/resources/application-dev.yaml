@@ -1,11 +1,18 @@
 spring:
   datasource:
     url: ${JDBC_DATABASE_URL}
+    sql-script-encoding: UTF-8
 
   jpa:
     hibernate:
+      defer-datasource-initialization: true
       ddl-auto: update
     properties:
       hibernate:
         #        show_sql: true  #여기는 prinln으로 출력이 나오기 때문에 일단 주석
         format_sql: true
+
+  sql:
+    init:
+      mode: always
+      encoding: utf-8
