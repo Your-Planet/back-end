@@ -7,7 +7,7 @@ spring:
     sql-script-encoding: UTF-8
 
   jpa:
-    defer-datasource-initialization: true
+    defer-datasource-initialization: false
     hibernate:
       ddl-auto: update
     properties:
@@ -17,5 +17,6 @@ spring:
 
   sql:
     init:
-      mode: always
+      # category 테이블의 초기 데이터를 생성하고자 할 경우 mode 값 always로 변경
+      mode: embedded
       encoding: utf-8

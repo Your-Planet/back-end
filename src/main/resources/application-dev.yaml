@@ -5,7 +5,7 @@ spring:
 
   jpa:
     hibernate:
-      defer-datasource-initialization: true
+      defer-datasource-initialization: false
       ddl-auto: update
     properties:
       hibernate:
@@ -14,5 +14,6 @@ spring:
 
   sql:
     init:
-      mode: always
+      # category 테이블의 초기 데이터를 생성하고자 할 경우 mode 값 always로 변경
+      mode: embedded
       encoding: utf-8
