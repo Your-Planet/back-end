@@ -35,7 +35,7 @@ public class MemberController {
         return new ResponseForm<>(StatusCode.OK, jwtToken);
     }
 
-    @PostMapping("/member/find-id")
+    @PostMapping("/member/find-email")
     public ResponseForm<String> findId(@Valid @RequestBody FindIdForm accountRecoveryFrom) {
         return new ResponseForm<>(StatusCode.OK, memberService.findId(accountRecoveryFrom));
     }
