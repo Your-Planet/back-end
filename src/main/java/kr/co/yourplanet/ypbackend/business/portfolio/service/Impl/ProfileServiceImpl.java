@@ -50,7 +50,7 @@ public class ProfileServiceImpl implements ProfileService {
     public void updateStudio(Long memberId, StudioBasicInfo studioDto) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "해당 회원 정보가 존재하지 않습니다.", false));
         Studio studio = studioRepository.findByMemberId(memberId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "스튜디오 정보가 존재하지 않습니다.", false));
-        List<Category> categories = categoryRepository.findAllByCategoryCodeList(studioDto.getCategories());
+        List<Category> categories = categoryRepository.findAllByCategoryCodeIn(studioDto.getCategories());
         List<PortfolioLink> portfolioLinkList = new ArrayList<>();
         List<PortfolioCategoryMap> portfolioCategoryMapList = new ArrayList<>();
 
@@ -83,7 +83,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Transactional
     public void createStudio(Long memberId, StudioBasicInfo studioDto) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "해당 회원 정보가 존재하지 않습니다.", false));
-        List<Category> categories = categoryRepository.findAllByCategoryCodeList(studioDto.getCategories());
+        List<Category> categories = categoryRepository.findAllByCategoryCodeIn(studioDto.getCategories());
         List<PortfolioLink> portfolioLinkList = new ArrayList<>();
         List<PortfolioCategoryMap> portfolioCategoryMapList = new ArrayList<>();
 
