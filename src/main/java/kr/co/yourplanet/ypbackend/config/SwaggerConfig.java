@@ -1,5 +1,6 @@
 package kr.co.yourplanet.ypbackend.config;
 
+import kr.co.yourplanet.ypbackend.jwt.JwtPrincipal;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -18,6 +19,7 @@ public class SwaggerConfig implements WebMvcConfigurer {
                 .select()
                 .apis(RequestHandlerSelectors.any())
                 .paths(PathSelectors.any())
-                .build();
+                .build()
+                .ignoredParameterTypes(JwtPrincipal.class);
     }
 }
