@@ -22,16 +22,16 @@ import java.util.stream.Collectors;
 public class Studio extends BasicColumn {
 
     @Id
-    @GeneratedValue
     @Column(name = "id")
     private Long id;
 
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "id", referencedColumnName = "id")
+    private Member member;
+
     @Column(name = "description")
     private String description;
-
-    @OneToOne
-    @JoinColumn(name = "member_id", referencedColumnName = "id")
-    private Member member;
 
     @Column(name = "toon_name")
     private String toonName;

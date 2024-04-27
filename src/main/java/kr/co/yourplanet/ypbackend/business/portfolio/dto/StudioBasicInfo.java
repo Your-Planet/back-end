@@ -3,6 +3,7 @@ package kr.co.yourplanet.ypbackend.business.portfolio.dto;
 import kr.co.yourplanet.ypbackend.business.portfolio.domain.Category;
 import lombok.*;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Getter
@@ -11,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class StudioBasicInfo {
+    @NotBlank
     public String name;
     public String description;
     public List<String> categories;
