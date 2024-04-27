@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 public class Studio extends BasicColumn {
 
     @Id
-    @NotBlank
     @GeneratedValue
     @Column(name = "id")
     private Long id;

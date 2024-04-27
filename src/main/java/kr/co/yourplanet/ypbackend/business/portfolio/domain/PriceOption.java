@@ -16,7 +16,6 @@ import java.time.Duration;
 @Builder
 public class PriceOption {
     @Id
-    @NotBlank
     @Column(name = "id")
     private Long id;
 
