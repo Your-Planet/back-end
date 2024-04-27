@@ -1,14 +1,14 @@
 package kr.co.yourplanet.ypbackend.business.portfolio.domain;
 
+import kr.co.yourplanet.ypbackend.business.portfolio.dto.*;
 import kr.co.yourplanet.ypbackend.common.enums.PriceOptionType;
+import kr.co.yourplanet.ypbackend.common.enums.UploadPeriod;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import java.time.Duration;
 
 @Entity
 @Getter
@@ -24,24 +24,88 @@ public class TempPrice {
     @JoinColumn(name = "id")
     private Studio studio;
 
-    @Column(name = "basic_price")
-    private int basicPrice;
-    @Column(name = "basic_work_period")
-    private Duration basicWorkPeriod;
-    @Column(name = "basic_modification_number")
-    private int basicModificationNumber;
-    @Column(name = "basic_cuts")
-    private int basicCuts;
-    @Column(name = "basic_upload_period")
-    private Duration basicUploadPeriod;
-    @Column(name = "cut_option_type")
-    private PriceOptionType cutOptionType;
-    @Column(name = "modification_option_type")
-    private PriceOptionType modificationOptionType;
-    @Column(name = "origin_file_option_type")
-    private PriceOptionType originFileOptionType;
-    @Column(name = "secondary_utilization_option_type")
-    private PriceOptionType secondaryUtilizationOptionType;
-    @Column(name = "upload_period_option_type")
-    private PriceOptionType uploadPeriodOptionType;
+    @Column(name = "price")
+    private int price;
+    @Column(name = "working_days")
+    private int workingDays;
+    @Column(name = "modification_count")
+    private int modificationCount;
+    @Column(name = "cuts")
+    private int cuts;
+    @Column(name = "post_duration_type")
+    private UploadPeriod postDurationType;
+
+    @Column(name = "additional_cut_option_type")
+    private PriceOptionType additionalCutOptionType;
+    @Column(name = "additional_modification_option_type")
+    private PriceOptionType additionalModificationOptionType;
+    @Column(name = "additional_origin_file_option_type")
+    private PriceOptionType additionalOriginFileOptionType;
+    @Column(name = "additional_refinement_option_type")
+    private PriceOptionType additionalRefinementOptionType;
+    @Column(name = "additional_post_duration_extension_type")
+    private PriceOptionType additionalPostDurationExtensionType;
+
+    @Column(name = "cut_option_price")
+    private int cutOptionPrice;
+    @Column(name = "cut_option_working_days")
+    private int cutOptionWorkingDays;
+    @Column(name = "modification_option_price")
+    private int modificationOptionPrice;
+    @Column(name = "modification_option_working_days")
+    private int modificationOptionWorkingDays;
+    @Column(name = "origin_file_option_price")
+    private int originFileOptionPrice;
+    @Column(name = "refinement_price")
+    private int refinementPrice;
+    @Column(name = "post_duration_extension_price")
+    private int postDurationExtensionPrice;
+
+    public void updatePriceInfo(PriceForm priceForm) {
+        updateDefaultOption(priceForm.getDefaultOption());
+        updateAdditionalOption(priceForm.getAdditionalOption());
+    }
+
+    public void updateDefaultOption(DefaultOption defaultOption) {
+        this.price = defaultOption.getPrice();
+        this.workingDays = defaultOption.getWorkingDays();
+        this.modificationCount = defaultOption.getModificationCount();
+        this.cuts = defaultOption.getDefaultCuts();
+        this.postDurationType = defaultOption.getPostDurationType();
+    }
+
+    public void updateAdditionalOption(AdditionalPriceForm additionalOption) {
+        updateAdditionalModificationOption(additionalOption.getAdditionalModification());
+        updateAdditionalCutOption(additionalOption.getAdditionalPanel());
+        updateRefinementOption(additionalOption.getRefinement());
+        updateOriginFileOption(additionalOption.getOriginFile());
+        updatePostDurationExtensionOption(additionalOption.getPostDurationExtension());
+    }
+
+    public void updateAdditionalModificationOption(AdditionalModification additionalModification) {
+        this.additionalModificationOptionType = additionalModification.getProvisionType();
+        this.modificationOptionWorkingDays = additionalModification.getWorkingDays();
+        this.modificationOptionPrice = additionalModification.getPrice();
+    }
+
+    public void updateAdditionalCutOption(AdditionalPanel additionalPanel) {
+        this.additionalCutOptionType = additionalPanel.getProvisionType();
+        this.cutOptionWorkingDays = additionalPanel.getWorkingDays();
+        this.cutOptionPrice = additionalPanel.getPrice();
+    }
+
+    public void updateRefinementOption(Refinement refineMent) {
+        this.additionalRefinementOptionType = refineMent.getProvisionType();
+        this.refinementPrice = refineMent.getPrice();
+    }
+
+    public void updateOriginFileOption(OriginFile originFile) {
+        this.additionalOriginFileOptionType = originFile.getProvisionType();
+        this.originFileOptionPrice = originFile.getPrice();
+    }
+
+    public void updatePostDurationExtensionOption(PostDurationExtension postDurationExtension) {
+        this.additionalPostDurationExtensionType = postDurationExtension.getProvisionType();
+        this.postDurationExtensionPrice = postDurationExtension.getPrice();
+    }
 }

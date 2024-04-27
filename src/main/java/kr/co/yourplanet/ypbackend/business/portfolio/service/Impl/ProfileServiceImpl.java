@@ -33,7 +33,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final CategoryRepository categoryRepository;
 
     public StudioBasicInfo getStudio(Long memberId) {
-        Optional<Studio> optionalStudio = studioRepository.findByMemberId(memberId);
+        Optional<Studio> optionalStudio = studioRepository.findById(memberId);
         if (!optionalStudio.isPresent()) {
             throw new BusinessException(StatusCode.NOT_FOUND, "스튜디오 정보가 존재하지 않습니다.", false);
         }
@@ -49,7 +49,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Transactional
     public void updateStudio(Long memberId, StudioBasicInfo studioDto) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "해당 회원 정보가 존재하지 않습니다.", false));
-        Studio studio = studioRepository.findByMemberId(memberId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "스튜디오 정보가 존재하지 않습니다.", false));
+        Studio studio = studioRepository.findById(memberId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "스튜디오 정보가 존재하지 않습니다.", false));
         List<Category> categories = categoryRepository.findAllByCategoryCodeIn(studioDto.getCategories());
 
         List<PortfolioLink> portfolioLinkList = new ArrayList<>();

@@ -6,7 +6,7 @@ spring:
   jpa:
     hibernate:
       defer-datasource-initialization: false
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         #        show_sql: true  #여기는 prinln으로 출력이 나오기 때문에 일단 주석
@@ -15,5 +15,5 @@ spring:
   sql:
     init:
       # category 테이블의 초기 데이터를 생성하고자 할 경우 mode 값 always로 변경
-      mode: embedded
+      mode: always
       encoding: utf-8
