@@ -16,6 +16,6 @@ public class MemberDetail {
     private String tel;
     private MemberType memberType;
     private TermsInfo termsInfo;
-    private String instagramName;
+    private String instagramUserName;
     private String instagramAccessToken;
 }

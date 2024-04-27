@@ -17,7 +17,6 @@ import java.time.Duration;
 @Builder
 public class TempPrice {
     @Id
-    @NotBlank
     @Column(name = "id")
     private Long id;
     @OneToOne(fetch = FetchType.LAZY)

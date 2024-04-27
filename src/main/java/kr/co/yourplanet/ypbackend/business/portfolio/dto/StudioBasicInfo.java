@@ -11,7 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class StudioBasicInfo {
-    public Long id;
     public String name;
     public String description;
     public List<String> categories;

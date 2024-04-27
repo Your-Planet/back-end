@@ -39,7 +39,6 @@ public class ProfileServiceImpl implements ProfileService {
         }
         Studio studio = optionalStudio.get();
         return StudioBasicInfo.builder()
-                .id(studio.getId())
                 .name(studio.getToonName())
                 .description(studio.getDescription())
                 .categories(studio.getCategoryTypes())
@@ -47,10 +46,12 @@ public class ProfileServiceImpl implements ProfileService {
                 .build();
     }
 
+    @Transactional
     public void updateStudio(Long memberId, StudioBasicInfo studioDto) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "해당 회원 정보가 존재하지 않습니다.", false));
         Studio studio = studioRepository.findByMemberId(memberId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "스튜디오 정보가 존재하지 않습니다.", false));
         List<Category> categories = categoryRepository.findAllByCategoryCodeIn(studioDto.getCategories());
+
         List<PortfolioLink> portfolioLinkList = new ArrayList<>();
         List<PortfolioCategoryMap> portfolioCategoryMapList = new ArrayList<>();
 
@@ -64,6 +65,9 @@ public class ProfileServiceImpl implements ProfileService {
                     .build());
         }
 
+        if (categories.size() != studioDto.getCategories().size()) {
+            throw new BusinessException(StatusCode.BAD_REQUEST, "존재하지 않는 카테고리 코드가 포함되어 있습니다.", false);
+        }
         for (Category category : categories) {
             portfolioCategoryMapList.add(PortfolioCategoryMap.builder()
                     .category(category)
@@ -77,13 +81,18 @@ public class ProfileServiceImpl implements ProfileService {
 
         portfolioLinkRepository.deleteAllByStudioAndCreateDateBeforeAndUpdateDateBefore(studio, now, now);
         portfolioCategoryMapRepository.deleteAllByStudioAndCreateDateBeforeAndUpdateDateBefore(studio, now, now);
-
     }
 
     @Transactional
     public void createStudio(Long memberId, StudioBasicInfo studioDto) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "해당 회원 정보가 존재하지 않습니다.", false));
+
         List<Category> categories = categoryRepository.findAllByCategoryCodeIn(studioDto.getCategories());
+
+        if (categories.size() != studioDto.getCategories().size()) {
+            throw new BusinessException(StatusCode.BAD_REQUEST, "존재하지 않는 카테고리 코드가 포함되어 있습니다.", false);
+        }
+
         List<PortfolioLink> portfolioLinkList = new ArrayList<>();
         List<PortfolioCategoryMap> portfolioCategoryMapList = new ArrayList<>();
 
