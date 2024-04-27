@@ -243,7 +243,7 @@ public class MemberService {
                 .genderType(member.getGenderType())
                 .tel(member.getTel())
                 .memberType(member.getMemberType())
-                .instagramName(member.getInstagramUserName())
+                .instagramUserName(member.getInstagramUserName())
                 .termsInfo(termsInfo)
                 .build();
     }

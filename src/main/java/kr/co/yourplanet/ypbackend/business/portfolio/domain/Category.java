@@ -9,6 +9,7 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
 
@@ -21,7 +22,6 @@ import javax.validation.constraints.NotBlank;
 public class Category extends BasicColumn {
 
     @Id
-    @NotBlank
     @Column(name = "category_code")
     private String categoryCode;
 
