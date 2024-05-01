@@ -2,7 +2,7 @@
 The following was discovered as part of building this project:
 
 * The JVM level was changed from '1.8' to '17', review the [JDK Version Range](https://github.com/spring-projects/spring-framework/wiki/Spring-Framework-Versions#jdk-version-range) on the wiki for more details.
-* The original package name 'kr.co.yourplanet.yp-backend' is invalid and this project uses 'kr.co.yourplanet.ypbackend' instead.
+* The original package name 'kr.co.yourplanet.yp-backend' is invalid and this project uses 'kr.co.yourplanet.online' instead.
 
 # Getting Started
 

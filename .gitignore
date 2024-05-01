@@ -188,7 +188,8 @@ replay_pid*
 ### Gradle ###
 .gradle
 **/build/
-!src/**/build/
+!yp-online/src/**/build/
+!yp-core/src/**/build/
 
 # Ignore Gradle GUI config
 gradle-app.setting
