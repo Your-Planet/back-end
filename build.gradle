@@ -1,71 +1,62 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '2.7.17'
-	id 'io.spring.dependency-management' version '1.1.3'
+    id 'java'
+    id 'org.springframework.boot' version '2.7.17'
+    id 'io.spring.dependency-management' version '1.1.3'
 }
 
-group = 'kr.co.yourplanet'
-version = '0.0.1-SNAPSHOT'
+allprojects {
+    group = 'kr.co.yourplanet'
+    version = '0.0.1-SNAPSHOT'
 
-java {
-	sourceCompatibility = '8'
+    repositories {
+        mavenCentral()
+    }
 }
 
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+// 하위 모듈 공통 세팅
+subprojects {
+
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    java {
+        sourceCompatibility = '8'
+    }
+
+    dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+        implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+        compileOnly 'org.projectlombok:lombok'
+
+        runtimeOnly 'com.h2database:h2'
+        implementation 'org.postgresql:postgresql:42.5.2'
+
+        annotationProcessor 'org.projectlombok:lombok'
+
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    }
 }
 
-repositories {
-	mavenCentral()
+project(':yp-core') {
+    bootJar { enabled = false }
+    jar { enabled = true }
 }
 
-dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+project(':yp-online') {
+    bootJar {
+        enabled = true
+        destinationDirectory = file("$rootDir/build/lib")
+    }
+    jar { enabled = false }
 
-	compileOnly 'org.projectlombok:lombok'
-
-	runtimeOnly 'com.h2database:h2'
-	implementation 'org.postgresql:postgresql:42.5.0'
-
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
-	// Swagger
-	implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'
-	implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '3.0.0'
-
-	// JWT
-	implementation 'io.jsonwebtoken:jjwt:0.9.1'
-
-	// queryDSL
-	implementation "com.querydsl:querydsl-jpa"
-	implementation "com.querydsl:querydsl-core"
-	implementation "com.querydsl:querydsl-collections"
+    dependencies {
+        implementation(project(':yp-core')) // 컴파일 시 yp-core project 로딩
+    }
 }
+
 
 tasks.named('test') {
-	useJUnitPlatform()
-}
-
-// Querydsl 설정부
-def generated = 'src/main/generated'
-
-// querydsl QClass 파일 생성 위치를 지정
-tasks.withType(JavaCompile) {
-	options.getGeneratedSourceOutputDirectory().set(file(generated))
-}
-
-// java source set 에 querydsl QClass 위치 추가
-sourceSets {
-	main.java.srcDirs += [ generated ]
-}
-
-// gradle clean 시에 QClass 디렉토리 삭제
-clean {
-	delete file(generated)
+    useJUnitPlatform()
 }

@@ -1,1 +1,3 @@
 rootProject.name = 'yp-backend'
+include 'yp-core'
+include 'yp-online'
