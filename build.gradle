@@ -45,7 +45,10 @@ project(':yp-core') {
 }
 
 project(':yp-online') {
-    bootJar { enabled = true }
+    bootJar {
+        enabled = true
+        destinationDirectory = file("$rootDir/build/lib")
+    }
     jar { enabled = false }
 
     dependencies {
