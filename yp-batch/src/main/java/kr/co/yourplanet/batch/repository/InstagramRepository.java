@@ -1,6 +1,6 @@
 package kr.co.yourplanet.batch.repository;
 
-import kr.co.yourplanet.batch.domain.MemberInstagramInfo;
+import kr.co.yourplanet.core.entity.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -13,8 +13,8 @@ public class InstagramRepository {
 
     private final EntityManager em;
 
-    public List<MemberInstagramInfo> findAllMemberInstagramInfo() {
-        return em.createQuery("select mi from MemberInstagramInfo mi", MemberInstagramInfo.class)
+    public List<Member> findAllMemberInstagramInfo() {
+        return em.createQuery("select m from Member m where memberType = 1", Member.class)
                 .getResultList();
     }
 }

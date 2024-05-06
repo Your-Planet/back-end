@@ -1,6 +1,6 @@
 package kr.co.yourplanet.batch.job;
 
-import kr.co.yourplanet.batch.domain.MemberInstagramInfo;
+import kr.co.yourplanet.core.entity.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -19,21 +19,21 @@ public class InstagramBatchJobConfig {
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
-    private final ItemReader<MemberInstagramInfo> instagramBatchReader;
-    private final ItemProcessor<MemberInstagramInfo, InstagramBatchWriterItem> instagramBatchProcessor;
+    private final ItemReader<Member> instagramBatchReader;
+    private final ItemProcessor<Member, InstagramBatchWriterItem> instagramBatchProcessor;
     private final ItemWriter<InstagramBatchWriterItem> instagramBatchWriter;
 
     @Bean
-    public Job instaSyncJob() {
-        return jobBuilderFactory.get("instaSyncJob")
-                .start(mediaStep())
+    public Job instagramMediaJob() {
+        return jobBuilderFactory.get("instagramMediaJob")
+                .start(instagramMediaStep())
                 .build();
     }
 
     @Bean
-    public Step mediaStep() {
-        return stepBuilderFactory.get("mediaStep")
-                .<MemberInstagramInfo, InstagramBatchWriterItem>chunk(5)
+    public Step instagramMediaStep() {
+        return stepBuilderFactory.get("instagramMediaStep")
+                .<Member, InstagramBatchWriterItem>chunk(5)
                 .reader(instagramBatchReader)
                 .processor(instagramBatchProcessor)
                 .writer(instagramBatchWriter)

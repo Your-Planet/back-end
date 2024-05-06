@@ -1,7 +1,7 @@
 package kr.co.yourplanet.batch.job;
 
-import kr.co.yourplanet.batch.domain.MemberInstagramInfo;
 import kr.co.yourplanet.batch.repository.InstagramRepository;
+import kr.co.yourplanet.core.entity.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.stereotype.Component;
@@ -12,16 +12,16 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Component
-public class InstagramBatchReader implements ItemReader<MemberInstagramInfo> {
+public class InstagramBatchReader implements ItemReader<Member> {
 
     private final InstagramRepository instagramRepository;
-    private Iterator<MemberInstagramInfo> memberInstagramInfoIterator;
+    private Iterator<Member> memberInstagramInfoIterator;
 
     @Override
-    public MemberInstagramInfo read() {
+    public Member read() {
         // 데이터 리스트를 초기화하고 iterator를 얻는다
         if (memberInstagramInfoIterator == null) {
-            List<MemberInstagramInfo> memberInstagramInfoList = instagramRepository.findAllMemberInstagramInfo();
+            List<Member> memberInstagramInfoList = instagramRepository.findAllMemberInstagramInfo();
             memberInstagramInfoIterator = memberInstagramInfoList.iterator();
         }
 
