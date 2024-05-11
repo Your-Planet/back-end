@@ -3,6 +3,7 @@ package kr.co.yourplanet.core.entity.instagram;
 import kr.co.yourplanet.core.entity.BasicColumn;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -10,6 +11,7 @@ import javax.persistence.*;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 @Builder
 @Table(name = "instagram_media")
 public class InstagramMedia extends BasicColumn {
