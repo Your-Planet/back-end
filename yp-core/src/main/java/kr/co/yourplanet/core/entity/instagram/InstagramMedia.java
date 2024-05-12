@@ -13,7 +13,6 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Getter
 @Builder
-@Getter
 @Table(name = "instagram_media")
 public class InstagramMedia extends BasicColumn {
 
