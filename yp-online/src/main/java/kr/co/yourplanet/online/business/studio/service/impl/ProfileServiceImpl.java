@@ -5,6 +5,7 @@ import kr.co.yourplanet.core.entity.studio.Category;
 import kr.co.yourplanet.core.entity.studio.PortfolioCategoryMap;
 import kr.co.yourplanet.core.entity.studio.PortfolioLink;
 import kr.co.yourplanet.core.entity.studio.Studio;
+import kr.co.yourplanet.online.business.instagram.repository.InstagramMediaRepository;
 import kr.co.yourplanet.online.business.studio.dto.StudioBasicInfo;
 import kr.co.yourplanet.online.business.studio.dto.StudioResiterForm;
 import kr.co.yourplanet.online.business.studio.repository.*;
