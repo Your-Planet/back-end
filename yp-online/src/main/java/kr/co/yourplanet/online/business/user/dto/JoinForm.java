@@ -31,7 +31,7 @@ public class JoinForm {
 
     // Author
     private String instagramId;
-    private String instagramUserName;
+    private String instagramUsername;
     private String instagramAccessToken;
 
     // Sponsor
