@@ -66,7 +66,7 @@ public class MemberService {
                 .memberType(joinForm.getMemberType())
                 .birthDate(joinForm.getBirthDate())
                 .instagramId(joinForm.getInstagramId())
-                .instagramUserName(joinForm.getInstagramUserName())
+                .instagramUsername(joinForm.getInstagramUsername())
                 .instagramAccessToken(joinForm.getInstagramAccessToken())
                 .companyName(joinForm.getCompanyName())
                 .businessNumber(joinForm.getBusinessNumber())
@@ -242,7 +242,7 @@ public class MemberService {
                 .genderType(member.getGenderType())
                 .tel(member.getTel())
                 .memberType(member.getMemberType())
-                .instagramUsername(member.getInstagramUserName())
+                .instagramUsername(member.getInstagramUsername())
                 .termsInfo(termsInfo)
                 .build();
     }
