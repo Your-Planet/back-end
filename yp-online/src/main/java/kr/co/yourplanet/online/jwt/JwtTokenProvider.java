@@ -47,10 +47,14 @@ public class JwtTokenProvider {
     // 토큰 유효성 검증 (변조, 만료시간)
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+            if(!token.startsWith("Bearer ")){
+                return false;
+            }
+            String originToken = token.substring(7);
+            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(originToken);
             return true;
         } catch (Exception e) {
-            log.error("error error " + e.getMessage());
+            log.error("JWT 인증 확인 중 오류" + e.getMessage());
             return false;
         }
     }
