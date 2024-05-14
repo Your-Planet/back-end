@@ -46,7 +46,7 @@ public class Member extends BasicColumn {
 
     // Author
     private String instagramId;
-    private String instagramUserName;
+    private String instagramUsername;
     private String instagramAccessToken;
 
     // Sponsor
