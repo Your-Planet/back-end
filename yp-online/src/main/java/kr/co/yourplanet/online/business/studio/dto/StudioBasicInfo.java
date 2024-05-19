@@ -1,5 +1,6 @@
 package kr.co.yourplanet.online.business.studio.dto;
 
+import kr.co.yourplanet.core.entity.instagram.InstagramMedia;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
@@ -15,7 +16,7 @@ public class StudioBasicInfo {
     private String name;
     private String description;
     private List<String> categories;
-    private List<Portfolio> portfolios;
+    private List<InstagramMedia> portfolios;
 
     @Data
     @NoArgsConstructor
