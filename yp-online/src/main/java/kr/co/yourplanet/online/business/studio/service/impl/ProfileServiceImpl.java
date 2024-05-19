@@ -40,20 +40,12 @@ public class ProfileServiceImpl implements ProfileService {
         }
         Studio studio = optionalStudio.get();
         List<InstagramMedia> medias = studio.getPortfolioLinkUrls();
-        List<StudioBasicInfo.Portfolio> portfolios = new ArrayList<>();
-
-        for (InstagramMedia media : medias) {
-            portfolios.add(StudioBasicInfo.Portfolio.builder()
-                    .id(media.getId())
-                    .link(media.getMediaUrl())
-                    .build());
-        }
 
         return StudioBasicInfo.builder()
                 .name(studio.getToonName())
                 .description(studio.getDescription())
                 .categories(studio.getCategoryTypes())
-                .portfolios(portfolios)
+                .portfolios(medias)
                 .build();
     }
 
