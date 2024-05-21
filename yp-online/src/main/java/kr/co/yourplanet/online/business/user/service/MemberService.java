@@ -2,6 +2,7 @@ package kr.co.yourplanet.online.business.user.service;
 
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.member.MemberSalt;
+import kr.co.yourplanet.core.enums.MemberType;
 import kr.co.yourplanet.online.business.user.dto.*;
 import kr.co.yourplanet.online.business.user.repository.MemberRepository;
 import kr.co.yourplanet.online.business.user.repository.MemberSaltRepository;
@@ -42,15 +43,19 @@ public class MemberService {
 
     @Transactional
     public void join(JoinForm joinForm) {
-        //중복 이메일 체크. 중복시 Exception 발생
-        checkDuplicateEmail(joinForm.getEmail());
 
-        // 비밀번호 정책 확인
-        validatePassword(joinForm.getPassword());
+        // 공통 체크
+        checkDuplicateEmail(joinForm.getEmail()); //중복 이메일 체크. 중복시 Exception 발생
+        validatePassword(joinForm.getPassword()); // 비밀번호 정책 확인
 
         if (joinForm.getTermsInfo().getIsTermsOfService() == null || !joinForm.getTermsInfo().getIsTermsOfService()
-        || joinForm.getTermsInfo().getIsPrivacyPolicy() == null || !joinForm.getTermsInfo().getIsPrivacyPolicy()) {
+                || joinForm.getTermsInfo().getIsPrivacyPolicy() == null || !joinForm.getTermsInfo().getIsPrivacyPolicy()) {
             throw new BusinessException(StatusCode.BAD_REQUEST, "필수 약관에 동의해주세요.", false);
+        }
+
+        // 작가 인스타그램 계정 기가입 여부 확인
+        if (MemberType.AUTHOR.equals(joinForm.getMemberType()) && memberRepository.findByInstagramId(joinForm.getInstagramId()).isPresent()) {
+            throw new BusinessException(StatusCode.BAD_REQUEST, "이미 가입된 인스타그램 계정입니다.", false);
         }
 
         // 비밀번호 암호화
