@@ -18,7 +18,7 @@ public class StudioRepositoryImpl implements StudioRepositoryCustom {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public List<StudioBasicDao> findStudioBasicsWithFilters(List<Category> categories, String toonName, String description, String instagramUsername, Pageable pageable) {
+    public List<StudioBasicDao> findStudioBasicsWithFilters(List<Category> categories, String toonName, String description, String instagramUsername, Integer minPrice, Integer maxPrice, Pageable pageable) {
 
         // 1-1 조회조건에 맞는 스튜디오ID 조회
         StringBuilder findStduioIdsQuery = new StringBuilder("select distinct s.id " +
@@ -41,6 +41,12 @@ public class StudioRepositoryImpl implements StudioRepositoryCustom {
         if (!CollectionUtils.isEmpty(categories)) {
             conditions.add("exists (select 1 from PortfolioCategoryMap pcm2 where pcm.studio = pcm2.studio and pcm2.category in :categories)");
         }
+        if (minPrice != null) {
+            conditions.add("p.price >= :minPrice");
+        }
+        if (maxPrice != null) {
+            conditions.add("p.price <= :maxPrice");
+        }
         if (!CollectionUtils.isEmpty(conditions)) {
             findStduioIdsQuery.append(" where ");
             findStduioIdsQuery.append(String.join(" and ", conditions));
@@ -59,6 +65,12 @@ public class StudioRepositoryImpl implements StudioRepositoryCustom {
         }
         if (!CollectionUtils.isEmpty(categories)) {
             studioQuery.setParameter("categories", categories);
+        }
+        if (minPrice != null) {
+            studioQuery.setParameter("minPrice", minPrice);
+        }
+        if (maxPrice != null) {
+            studioQuery.setParameter("maxPrice", maxPrice);
         }
 
         // 1.3 Paging 처리

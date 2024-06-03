@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface StudioRepositoryCustom {
 
-    List<StudioBasicDao> findStudioBasicsWithFilters(List<Category> categories, String toonName, String description, String instagramUsername, Pageable pageable);
+    List<StudioBasicDao> findStudioBasicsWithFilters(List<Category> categories, String toonName, String description, String instagramUsername, Integer minPrice, Integer maxPrice, Pageable pageable);
 }
