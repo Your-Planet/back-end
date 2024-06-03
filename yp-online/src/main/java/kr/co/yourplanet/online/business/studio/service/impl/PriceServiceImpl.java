@@ -29,10 +29,10 @@ public class PriceServiceImpl implements PriceService {
 
     @Transactional
     public void savePrice(Long memberId, PriceForm priceForm) {
-        Optional<Price> OptionalPrice = priceRepository.findById(memberId);
+        Optional<Price> optionalPrice = priceRepository.findById(memberId);
         Price price;
-        if (OptionalPrice.isPresent()){
-            price = OptionalPrice.get();
+        if (optionalPrice.isPresent()){
+            price = optionalPrice.get();
             price.updateDefaultOption(
                     priceForm.getService().getPrice(),
                     priceForm.getService().getWorkingDays(),
@@ -66,7 +66,9 @@ public class PriceServiceImpl implements PriceService {
             price = convertPriceFormToPrice(memberId, priceForm);
         }
         priceRepository.save(price);
-        tempPriceRepository.deleteById(memberId);
+
+        // 임시 가격 존재할 경우에만 삭제
+        tempPriceRepository.findById(memberId).ifPresent(tempPriceRepository::delete);
     }
 
     public PriceForm getTempPrice(Long memberId) {
