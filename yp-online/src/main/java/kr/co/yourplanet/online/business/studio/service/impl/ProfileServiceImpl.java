@@ -143,7 +143,7 @@ public class ProfileServiceImpl implements ProfileService {
         }
 
 
-        List<StudioBasicDao> studioBasicDaoList = studioRepository.findStudioBasicsWithFilters(categories, toonName, description, instagramUsername, pageable);
+        List<StudioBasicDao> studioBasicDaoList = studioRepository.findStudioBasicsWithFilters(categories, toonName, description, instagramUsername, minPrice, maxPrice, pageable);
 
         Map<Long, StudioBasicSearch> studioBasicSearchMap = new HashMap<>();
 
