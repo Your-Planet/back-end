@@ -1,27 +1,35 @@
 package kr.co.yourplanet.online.business.studio.service.impl;
 
 import kr.co.yourplanet.core.entity.instagram.InstagramMedia;
+import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.studio.Category;
 import kr.co.yourplanet.core.entity.studio.PortfolioCategoryMap;
 import kr.co.yourplanet.core.entity.studio.PortfolioLink;
 import kr.co.yourplanet.core.entity.studio.Studio;
-import kr.co.yourplanet.online.business.instagram.repository.InstagramMediaRepository;
-import kr.co.yourplanet.online.business.studio.dto.StudioBasicInfo;
-import kr.co.yourplanet.online.business.studio.dto.StudioResiterForm;
-import kr.co.yourplanet.online.business.studio.repository.*;
-import kr.co.yourplanet.online.business.studio.service.ProfileService;
-import kr.co.yourplanet.core.entity.member.Member;
-import kr.co.yourplanet.online.business.user.repository.MemberRepository;
 import kr.co.yourplanet.core.enums.StatusCode;
+import kr.co.yourplanet.online.business.instagram.repository.InstagramMediaRepository;
+import kr.co.yourplanet.online.business.studio.dao.StudioBasicDao;
+import kr.co.yourplanet.online.business.studio.dto.StudioBasicInfo;
+import kr.co.yourplanet.online.business.studio.dto.StudioBasicSearch;
+import kr.co.yourplanet.online.business.studio.dto.StudioRegisterForm;
+import kr.co.yourplanet.online.business.studio.repository.CategoryRepository;
+import kr.co.yourplanet.online.business.studio.repository.PortfolioCategoryMapRepository;
+import kr.co.yourplanet.online.business.studio.repository.PortfolioLinkRepository;
+import kr.co.yourplanet.online.business.studio.repository.StudioRepository;
+import kr.co.yourplanet.online.business.studio.service.ProfileService;
+import kr.co.yourplanet.online.business.user.repository.MemberRepository;
 import kr.co.yourplanet.online.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -50,7 +58,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Transactional
-    public void upsertAndDeleteStudio(Long memberId, StudioResiterForm studioDto) {
+    public void upsertAndDeleteStudio(Long memberId, StudioRegisterForm studioDto) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "해당 회원 정보가 존재하지 않습니다.", false));
         Optional<Studio> optionalStudio = studioRepository.findById(memberId);
         Studio studio = optionalStudio.orElseGet(() -> Studio.builder()
@@ -93,5 +101,71 @@ public class ProfileServiceImpl implements ProfileService {
             portfolioLinkRepository.deleteAllByStudioAndCreateDateBeforeAndUpdateDateBefore(studio, now, now);
             portfolioCategoryMapRepository.deleteAllByStudioAndCreateDateBeforeAndUpdateDateBefore(studio, now, now);
         }
+    }
+
+    @Override
+    public Page<StudioBasicSearch> searchStudios(List<String> inputCategories, String keywordType, String keyword, Integer minPrice, Integer maxPrice, Integer inputPageNumber, Integer inputPageSize) {
+        List<Category> categories = new ArrayList<>();
+        String toonName = "";
+        String description = "";
+        String instagramUsername = "";
+
+        int pageNumber = (inputPageNumber != null) ? inputPageNumber : 0;
+        int pageSize = (inputPageSize != null) ? inputPageSize : 50;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+        if (minPrice != null && maxPrice != null && minPrice > maxPrice) {
+            throw new BusinessException(StatusCode.BAD_REQUEST, "예산 최솟값은 최댓값보다 작아야 합니다.", false);
+        }
+
+        if (!CollectionUtils.isEmpty(inputCategories)) {
+            for (String categoryCode : inputCategories) {
+                categories.add(Category.builder()
+                        .categoryCode(categoryCode)
+                        .build());
+            }
+        }
+
+        // switch문 리펙토링 진행할지
+        // keywordType Enum으로 생설할 것 인지
+        switch (keywordType) {
+            case "toonName":
+                toonName = keyword;
+                break;
+            case "description":
+                description = keyword;
+                break;
+            case "instagramUsername":
+                instagramUsername = keyword;
+                break;
+            default:
+                break;
+        }
+
+
+        List<StudioBasicDao> studioBasicDaoList = studioRepository.findStudioBasicsWithFilters(categories, toonName, description, instagramUsername, minPrice, maxPrice, pageable);
+
+        Map<Long, StudioBasicSearch> studioBasicSearchMap = new HashMap<>();
+
+        // 카테고리 Grouping
+        for (StudioBasicDao studioBasicDao : studioBasicDaoList) {
+            Long studioId = studioBasicDao.getId();
+            StudioBasicSearch studioBasicSearch = studioBasicSearchMap.get(studioId);
+            if (studioBasicSearch == null) {
+                List<String> categoryList = new ArrayList<>();
+                categoryList.add(studioBasicDao.getCategoryName());
+                studioBasicSearchMap.put(studioId, StudioBasicSearch.builder()
+                        .id(studioBasicDao.getId())
+                        .name(studioBasicDao.getToonName())
+                        .description(studioBasicDao.getDescription())
+                        .instagramUsername(studioBasicDao.getInstagramUsername())
+                        .categories(categoryList)
+                        .build());
+            } else {
+                studioBasicSearch.getCategories().add(studioBasicDao.getCategoryName());
+            }
+        }
+
+        return new PageImpl<>(new ArrayList<>(studioBasicSearchMap.values()), pageable, 0);
     }
 }
