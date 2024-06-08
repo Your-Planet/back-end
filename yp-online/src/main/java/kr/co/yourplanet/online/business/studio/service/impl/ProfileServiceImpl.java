@@ -59,6 +59,9 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Transactional
     public void upsertAndDeleteStudio(Long memberId, StudioRegisterForm studioDto) {
+        if (studioDto.isDuplicateIds()) {
+            throw new BusinessException(StatusCode.BAD_REQUEST, "중복된 포트폴리오 ID가 포함되어 있습니다.", false);
+        }
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "해당 회원 정보가 존재하지 않습니다.", false));
         Optional<Studio> optionalStudio = studioRepository.findById(memberId);
         Studio studio = optionalStudio.orElseGet(() -> Studio.builder()
