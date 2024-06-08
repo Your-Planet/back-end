@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface InstagramMediaRepository extends JpaRepository<InstagramMedia, String> {
 
-    @Query("select im from InstagramMedia im where im.memberId = :memberId and im.permalink like %:permalink%")
+    @Query("select im from InstagramMedia im where im.memberId = :memberId and im.permalink like concat('%/p/', :permalink, '/')")
     List<InstagramMedia> findByMemberIdAndPermalinkLike(@Param("memberId") Long memberId, @Param("permalink") String permalink);
 
     List<InstagramMedia> findByMemberId(Long memberId);
