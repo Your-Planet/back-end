@@ -45,7 +45,7 @@ public class Studio extends BasicColumn {
     public List<String> getCategoryTypes() {
         return portfolioCategoryMapList.stream()
                 .map(PortfolioCategoryMap::getCategory)
-                .map(Category::getCategoryName).collect(Collectors.toList());
+                .map(Category::getCategoryCode).collect(Collectors.toList());
     }
 
     public List<InstagramMedia> getPortfolioLinkUrls() {

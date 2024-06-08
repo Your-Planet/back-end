@@ -37,4 +37,10 @@ public class MemberRepository {
                 .setParameter("tel", tel)
                 .getResultStream().findAny();
     }
+
+    public Optional<Member> findByInstagramId(String instagramId) {
+        return em.createQuery("select m from Member m where m.instagramId = :instagramId", Member.class)
+                .setParameter("instagramId", instagramId)
+                .getResultStream().findAny();
+    }
 }
