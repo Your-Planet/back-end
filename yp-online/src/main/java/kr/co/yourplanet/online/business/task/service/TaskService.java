@@ -152,7 +152,7 @@ public class TaskService {
 
         // 요청자 존재여부
         if (member == null) {
-            throw new BusinessException(StatusCode.UNAUTHORIZED, "유효하지 않은 사용자 요청입니다.", false);
+            throw new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 사용자 요청입니다.", false);
         }
 
         // Task 존재여부
@@ -163,10 +163,10 @@ public class TaskService {
         // 요청자가 Task와 관련되어 있는지 체크 (요청자 = 작가 or 광고주)
         if (MemberType.AUTHOR.equals(member.getMemberType())) {
             if (!member.equals(task.getAuthor())) {
-                throw new BusinessException(StatusCode.UNAUTHORIZED, "사용자의 작업내역이 아닙니다", false);
+                throw new BusinessException(StatusCode.BAD_REQUEST, "사용자의 작업내역이 아닙니다", false);
             }
         } else if (MemberType.SPONSOR.equals(member.getMemberType()) && !member.equals(task.getSponsor())) {
-            throw new BusinessException(StatusCode.UNAUTHORIZED, "사용자의 작업내역이 아닙니다", false);
+            throw new BusinessException(StatusCode.BAD_REQUEST, "사용자의 작업내역이 아닙니다", false);
         }
     }
 }
