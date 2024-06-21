@@ -66,6 +66,8 @@ public class WebSecurityConfig {
                 .antMatchers(PERMIT_URL_ARRAY).permitAll()
                 .anyRequest().authenticated()
                 .and()
+                .exceptionHandling()
+                .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
             ;
         // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 넣음

@@ -1,8 +1,6 @@
 package kr.co.yourplanet.online.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import kr.co.yourplanet.core.enums.MemberType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,15 +45,21 @@ public class JwtTokenProvider {
     // 토큰 유효성 검증 (변조, 만료시간)
     public boolean validateToken(String token) {
         try {
-            if(!token.startsWith("Bearer ")){
+            if (!token.startsWith("Bearer ")) {
                 return false;
             }
             String originToken = token.substring(7);
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(originToken);
             return true;
+        } catch (IllegalArgumentException e) {
+            throw new JwtException("유효하지 않은 토큰");
+        } catch (ExpiredJwtException e) {
+            throw new JwtException("토큰 기한 만료");
+        } catch (SignatureException e) {
+            throw new JwtException("토큰 위변조 오류");
         } catch (Exception e) {
-            log.error("JWT 인증 확인 중 오류" + e.getMessage());
-            return false;
+            log.error("JWT 인증 확인 중 오류 " + e.getMessage());
+            throw new JwtException("JWT 인증 확인 중 오류");
         }
     }
 
