@@ -1,4 +1,4 @@
-package kr.co.yourplanet.online.jwt;
+package kr.co.yourplanet.online.properties;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

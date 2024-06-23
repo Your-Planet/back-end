@@ -2,6 +2,7 @@ package kr.co.yourplanet.online.common.encrypt;
 
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.common.exception.BusinessException;
+import kr.co.yourplanet.online.properties.EncryptProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
