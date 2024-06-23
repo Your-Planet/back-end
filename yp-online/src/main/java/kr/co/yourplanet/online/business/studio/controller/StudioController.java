@@ -11,8 +11,10 @@ import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.jwt.JwtPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -29,9 +31,10 @@ public class StudioController {
         return new ResponseForm<>(StatusCode.OK, studioBasicInfo);
     }
 
-    @PostMapping("/studio/profile")
-    public ResponseForm<Void> createStudioProfile(@AuthenticationPrincipal JwtPrincipal principal, @RequestBody StudioRegisterForm studioResiterForm) {
-        profileService.upsertAndDeleteStudio(principal.getId(), studioResiterForm);
+    @PostMapping(value = "/studio/profile", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseForm<Void> createStudioProfile(@AuthenticationPrincipal JwtPrincipal principal, @RequestPart StudioRegisterForm studioRegisterForm
+            , @RequestPart MultipartFile profileImage) {
+        profileService.upsertAndDeleteStudio(principal.getId(), studioRegisterForm, profileImage);
         return new ResponseForm<>(StatusCode.OK);
     }
 

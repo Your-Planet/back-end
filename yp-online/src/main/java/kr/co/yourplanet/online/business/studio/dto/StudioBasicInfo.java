@@ -17,6 +17,7 @@ public class StudioBasicInfo {
     private String description;
     private List<String> categories;
     private List<InstagramMedia> portfolios;
+    private String profileImageUrl;
 
     @Data
     @NoArgsConstructor

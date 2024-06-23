@@ -22,12 +22,15 @@ public class InstagramApiManager {
     @Value("${instagram.api-url}")
     private String instagramUrl;
 
+    private static final int INSTAGRAM_MEDIA_LIMIT = 100;
+
     public Mono<InstagramMediaApiForm> getInstagramUserMedia(String instagramId, String instagramAccessToken) {
-        String mediaFields = "fields=id,media_type,media_url,permalink,thumbnail_url,username,caption";
+        String mediaFields = "id,media_type,media_url,permalink,thumbnail_url,username,caption";
         URI uri = UriComponentsBuilder.fromUriString(instagramUrl)
                 .path("/{id}/media")
                 .queryParam("access_token", instagramAccessToken)
                 .queryParam("fields", mediaFields)
+                .queryParam("limit", INSTAGRAM_MEDIA_LIMIT)
                 .buildAndExpand(instagramId)
                 .encode(StandardCharsets.UTF_8)
                 .toUri();
@@ -40,6 +43,19 @@ public class InstagramApiManager {
                 .bodyToMono(InstagramMediaApiForm.class)
                 .onErrorResume(e -> {
                     log.error(instagramId + " : Instagram Media API call failed : " + e.getMessage());
+                    return Mono.just(new InstagramMediaApiForm());
+                });
+    }
+
+    public Mono<InstagramMediaApiForm> getInstagramUserMediaNext(String nextUrl) {
+        return webClient.mutate()
+                .build()
+                .get()
+                .uri(nextUrl)
+                .retrieve()
+                .bodyToMono(InstagramMediaApiForm.class)
+                .onErrorResume(e -> {
+                    log.error("Instagram Media API next URL call failed : " + e.getMessage());
                     return Mono.just(new InstagramMediaApiForm());
                 });
     }

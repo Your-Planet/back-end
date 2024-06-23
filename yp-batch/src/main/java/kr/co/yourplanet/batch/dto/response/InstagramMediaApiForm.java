@@ -34,6 +34,8 @@ public class InstagramMediaApiForm {
     @Getter
     public static class Paging {
         private Cursors cursors;
+        private String next;
+        private String previous;
     }
 
     @Getter
