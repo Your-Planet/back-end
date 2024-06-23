@@ -1,9 +1,9 @@
 spring:
   datasource:
-    url: jdbc:h2:tcp://localhost/~/yourplanet
-    username: sa
-    password: sa
-    driver-class-name: org.h2.Driver
+    url: jdbc:postgresql://svc.sel5.cloudtype.app:30131/postgres
+    username: root
+    password: 3wh3o2blr6j8vo3
+    driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:

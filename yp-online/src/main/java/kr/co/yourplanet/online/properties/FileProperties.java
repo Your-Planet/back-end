@@ -1,4 +1,4 @@
-package kr.co.yourplanet.online.jwt;
+package kr.co.yourplanet.online.properties;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -8,11 +8,10 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 @Getter
 @RequiredArgsConstructor
 @ConstructorBinding
-@ConfigurationProperties(prefix = "jwt")
-public class JwtProperties {
+@ConfigurationProperties(prefix = "file")
+public class FileProperties {
 
-    private final String header;
-    private final String secret;
-    private final long tokenValidityTime;
-
+    private final String profilePath;
+    private final String profileUrl;
+    private final String studioPath;
 }

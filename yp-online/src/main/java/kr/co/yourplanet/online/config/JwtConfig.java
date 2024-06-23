@@ -1,6 +1,6 @@
 package kr.co.yourplanet.online.config;
 
-import kr.co.yourplanet.online.jwt.JwtProperties;
+import kr.co.yourplanet.online.properties.JwtProperties;
 import kr.co.yourplanet.online.jwt.JwtTokenProvider;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
