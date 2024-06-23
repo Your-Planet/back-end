@@ -6,6 +6,7 @@ import kr.co.yourplanet.core.entity.studio.Category;
 import kr.co.yourplanet.core.entity.studio.PortfolioCategoryMap;
 import kr.co.yourplanet.core.entity.studio.PortfolioLink;
 import kr.co.yourplanet.core.entity.studio.Studio;
+import kr.co.yourplanet.core.enums.FileType;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.instagram.repository.InstagramMediaRepository;
 import kr.co.yourplanet.online.business.studio.dao.StudioBasicDao;
@@ -19,6 +20,8 @@ import kr.co.yourplanet.online.business.studio.repository.StudioRepository;
 import kr.co.yourplanet.online.business.studio.service.ProfileService;
 import kr.co.yourplanet.online.business.user.repository.MemberRepository;
 import kr.co.yourplanet.online.common.exception.BusinessException;
+import kr.co.yourplanet.online.common.util.FileManageUtil;
+import kr.co.yourplanet.online.common.util.FileUploadResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -27,6 +30,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -34,6 +39,8 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
+
+    private final FileManageUtil fileManageUtil;
     private final StudioRepository studioRepository;
     private final MemberRepository memberRepository;
     private final PortfolioCategoryMapRepository portfolioCategoryMapRepository;
@@ -54,11 +61,12 @@ public class ProfileServiceImpl implements ProfileService {
                 .description(studio.getDescription())
                 .categories(studio.getCategoryTypes())
                 .portfolios(medias)
+                .profileImageUrl(studio.getProfileImageUrl())
                 .build();
     }
 
     @Transactional
-    public void upsertAndDeleteStudio(Long memberId, StudioRegisterForm studioDto) {
+    public void upsertAndDeleteStudio(Long memberId, StudioRegisterForm studioDto, MultipartFile profileImageFile) {
         if (studioDto.isDuplicateIds()) {
             throw new BusinessException(StatusCode.BAD_REQUEST, "중복된 포트폴리오 ID가 포함되어 있습니다.", false);
         }
@@ -72,11 +80,11 @@ public class ProfileServiceImpl implements ProfileService {
 
         List<Category> categories = categoryRepository.findAllByCategoryCodeIn(studioDto.getCategories());
 
-        List<PortfolioLink> portfolioLinkList = new ArrayList<>();
-        List<PortfolioCategoryMap> portfolioCategoryMapList = new ArrayList<>();
-
         studio.updateStudioNameAndDescription(studioDto.getName(), studioDto.getDescription());
         studio = studioRepository.save(studio);
+
+        List<PortfolioLink> portfolioLinkList = new ArrayList<>();
+        List<PortfolioCategoryMap> portfolioCategoryMapList = new ArrayList<>();
 
         for (String id : studioDto.getPortfolioIds()) {
             InstagramMedia media = instagramMediaRepository.findById(id).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "존재하지 않는 미디어 ID가 포함되어 있습니다.", false));
@@ -103,6 +111,18 @@ public class ProfileServiceImpl implements ProfileService {
         if (optionalStudio.isPresent()) {
             portfolioLinkRepository.deleteAllByStudioAndCreateDateBeforeAndUpdateDateBefore(studio, now, now);
             portfolioCategoryMapRepository.deleteAllByStudioAndCreateDateBeforeAndUpdateDateBefore(studio, now, now);
+        }
+
+        // 모든 스튜디오 프로필 저장 로직이 완료된 후 프로필 이미지 저장처리
+        // 기존에 존재하는 프로필 이미지 삭제
+        if (StringUtils.hasText(studio.getProfileImagePath())) {
+            fileManageUtil.deleteFile(studio.getProfileImagePath());
+            studio.updateProfileImage("", "");
+        }
+        // 프로필 이미지 파일시스템 저장
+        if (profileImageFile != null && !profileImageFile.isEmpty()) {
+            FileUploadResult uploadResult = fileManageUtil.uploadFile(profileImageFile, FileType.PROFILE_IMAGE);
+            studio.updateProfileImage(uploadResult.getFilePath(), uploadResult.getFileUrl());
         }
     }
 

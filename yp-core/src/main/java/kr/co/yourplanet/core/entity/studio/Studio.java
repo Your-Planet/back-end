@@ -36,6 +36,12 @@ public class Studio extends BasicColumn {
     @Column(name = "toon_name")
     private String toonName;
 
+    @Column(name = "profile_image_path")
+    private String profileImagePath;
+
+    @Column(name = "profile_image_url")
+    private String profileImageUrl;
+
     @OneToMany(mappedBy = "studio", fetch = FetchType.LAZY)
     private List<PortfolioCategoryMap> portfolioCategoryMapList;
 
@@ -57,5 +63,10 @@ public class Studio extends BasicColumn {
     public void updateStudioNameAndDescription(String name, String description) {
         this.toonName = name;
         this.description = description;
+    }
+
+    public void updateProfileImage(String profileImagePath, String profileImageUrl) {
+        this.profileImagePath = profileImagePath;
+        this.profileImageUrl = profileImageUrl;
     }
 }
