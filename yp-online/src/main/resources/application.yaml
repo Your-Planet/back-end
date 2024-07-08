@@ -9,7 +9,7 @@ spring:
       enabled: always
   servlet:
     multipart:
-      max-file-size: 3MB
+      max-file-size: 20MB
 
 logging:
   level:
