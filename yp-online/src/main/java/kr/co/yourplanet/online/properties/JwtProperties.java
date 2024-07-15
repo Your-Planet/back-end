@@ -13,6 +13,7 @@ public class JwtProperties {
 
     private final String header;
     private final String secret;
-    private final long tokenValidityTime;
+    private final long accessTokenValidityTime;
+    private final long refreshTokenValidityTime;
 
 }
