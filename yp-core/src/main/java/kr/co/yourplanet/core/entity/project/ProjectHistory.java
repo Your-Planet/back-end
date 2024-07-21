@@ -1,12 +1,11 @@
-package kr.co.yourplanet.core.entity.task;
+package kr.co.yourplanet.core.entity.project;
 
+import kr.co.yourplanet.core.entity.BasicColumn;
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.util.StringListConverter;
-import kr.co.yourplanet.core.entity.BasicColumn;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
@@ -16,17 +15,17 @@ import java.util.List;
 
 @Entity
 @AllArgsConstructor
-@NoArgsConstructor
 @DynamicUpdate
 @Builder
 @Getter
-@IdClass(TaskHistoryKey.class)
-public class TaskHistory extends BasicColumn {
+@IdClass(ProjectHistoryKey.class)
+public class ProjectHistory extends BasicColumn {
 
     @Id
     @ManyToOne
-    @JoinColumn(name = "task_no")
-    private Task task;
+    @MapsId("projectId")
+    @JoinColumn(name = "project_id")
+    private Project project;
 
     @Id
     private Integer seq;
@@ -56,4 +55,8 @@ public class TaskHistory extends BasicColumn {
     @Builder.Default
     @Convert(converter = StringListConverter.class)
     private List<String> categoryList = new ArrayList<>();
+
+    public ProjectHistory() {
+        this.categoryList = new ArrayList<>();
+    }
 }

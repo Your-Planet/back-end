@@ -1,33 +1,32 @@
-package kr.co.yourplanet.core.entity.task;
+package kr.co.yourplanet.core.entity.project;
 
-import kr.co.yourplanet.core.entity.member.Member;
-import kr.co.yourplanet.core.util.StringListConverter;
 import kr.co.yourplanet.core.entity.BasicColumn;
-import kr.co.yourplanet.core.enums.TaskStatus;
+import kr.co.yourplanet.core.entity.member.Member;
+import kr.co.yourplanet.core.enums.ProjectStatus;
 import kr.co.yourplanet.core.enums.ValidEnum;
+import kr.co.yourplanet.core.util.StringListConverter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @AllArgsConstructor
-@NoArgsConstructor
 @DynamicUpdate
 @Getter
 @Builder
-public class Task extends BasicColumn {
+public class Project extends BasicColumn {
 
     @Id
     @GeneratedValue
-    @Column(name = "task_no")
-    private Long taskNo;
+    @Column(name = "id")
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "sponsor_id", referencedColumnName = "id")
@@ -37,6 +36,7 @@ public class Task extends BasicColumn {
     @JoinColumn(name = "author_id", referencedColumnName = "id")
     private Member author;
 
+    @NotBlank
     @Column(name = "title")
     private String title;
 
@@ -59,25 +59,29 @@ public class Task extends BasicColumn {
     @Column(name = "complete_date")
     private LocalDateTime completeDate;
 
-    @ValidEnum(enumClass = TaskStatus.class)
-    @Column(name = "task_status")
-    private TaskStatus taskStatus;
+    @ValidEnum(enumClass = ProjectStatus.class)
+    @Column(name = "project_status")
+    private ProjectStatus projectStatus;
 
     @Builder.Default
     @Convert(converter = StringListConverter.class)
     private List<String> categoryList = new ArrayList<>();
 
-    public void changeTaskStatus(TaskStatus taskStatus) {
-        this.taskStatus = taskStatus;
+    public Project() {
+        this.categoryList = new ArrayList<>();
     }
 
-    public void acceptTask(TaskHistory taskHistory) {
-        this.context = taskHistory.getContext();
-        this.fromDate = taskHistory.getFromDate();
-        this.toDate = taskHistory.getToDate();
-        this.payment = taskHistory.getPayment();
-        this.cutNumber = taskHistory.getCutNumber();
-        this.categoryList = taskHistory.getCategoryList();
-        this.taskStatus = TaskStatus.ACCEPT;
+    public void changeProjectStatus(ProjectStatus projectStatus) {
+        this.projectStatus = projectStatus;
+    }
+
+    public void acceptProject(ProjectHistory projectHistory) {
+        this.context = projectHistory.getContext();
+        this.fromDate = projectHistory.getFromDate();
+        this.toDate = projectHistory.getToDate();
+        this.payment = projectHistory.getPayment();
+        this.cutNumber = projectHistory.getCutNumber();
+        this.categoryList = projectHistory.getCategoryList();
+        this.projectStatus = ProjectStatus.ACCEPT;
     }
 }

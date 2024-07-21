@@ -1,4 +1,4 @@
-package kr.co.yourplanet.online.business.task.dto.response;
+package kr.co.yourplanet.online.business.project.dto.response;
 
 import kr.co.yourplanet.core.enums.MemberType;
 import lombok.AllArgsConstructor;
@@ -13,9 +13,9 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Builder
-public class TaskHistories {
+public class ProjectHistories {
 
-    private Long taskNo;
+    private Long id;
     private Integer seq;
     private String requestContext;
     private LocalDateTime fromDate;

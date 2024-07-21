@@ -1,4 +1,4 @@
-package kr.co.yourplanet.online.business.task.dto.request;
+package kr.co.yourplanet.online.business.project.dto.request;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,10 +10,10 @@ import java.util.List;
 
 @NoArgsConstructor
 @Getter
-public class TaskNegotiateForm {
+public class ProjectNegotiateForm {
 
     @NotNull
-    private Long taskNo;
+    private Long id;
 
     private String title;
 

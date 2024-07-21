@@ -1,4 +1,4 @@
-package kr.co.yourplanet.online.business.task.dto.request;
+package kr.co.yourplanet.online.business.project.dto.request;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +10,7 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor
-public class TaskRequestForm {
+public class ProjectRequestForm {
 
     @NotNull
     private Long authorId;
