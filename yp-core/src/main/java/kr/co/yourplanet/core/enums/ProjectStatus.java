@@ -1,6 +1,6 @@
 package kr.co.yourplanet.core.enums;
 
-public enum TaskStatus {
+public enum ProjectStatus {
 
     REQUEST,
     NEGOTIATION,
