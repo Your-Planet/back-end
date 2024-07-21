@@ -22,9 +22,10 @@ public class JwtTokenProvider {
 
     private final String jwtHeader;
     private final String secretKey; // Encoded Base64
-    private final long tokenValidityTime;
+    private final long accessTokenValidityTime;
+    private final long refreshTokenValidityTime;
 
-    public String createToken(Long id, String name, MemberType memberType) {
+    public String createAccessToken(Long id, String name, MemberType memberType) {
         Claims claims = Jwts.claims();
         claims.put("id", id);
         claims.put("name", name);
@@ -32,18 +33,29 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setExpiration(new Date(System.currentTimeMillis() + tokenValidityTime))
+                .setExpiration(new Date(System.currentTimeMillis() + accessTokenValidityTime))
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+    }
+
+    public String createRefreshToken(Long id) {
+        Claims claims = Jwts.claims();
+        claims.put("id", id);
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setExpiration(new Date(System.currentTimeMillis() + refreshTokenValidityTime))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
 
     // Request Header에서 token 가져오기
-    public String resolveToken(HttpServletRequest request) {
+    public String resolveAccessToken(HttpServletRequest request) {
         return request.getHeader(jwtHeader);
     }
 
     // 토큰 유효성 검증 (변조, 만료시간)
-    public boolean validateToken(String token) {
+    public boolean validateAccessToken(String token) {
         try {
             if (!token.startsWith("Bearer ")) {
                 return false;
@@ -74,6 +86,11 @@ public class JwtTokenProvider {
                 .build();
 
         return new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
+    }
+
+    public Long getMemberIdFromRefreshToken(String token) throws Exception {
+        Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+        return claims.get("id", Long.class);
     }
 
 }

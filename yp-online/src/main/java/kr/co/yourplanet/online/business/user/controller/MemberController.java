@@ -28,11 +28,9 @@ public class MemberController {
     }
 
     @PostMapping("/member/login")
-    public ResponseForm<String> login(@Valid @RequestBody LoginForm loginForm) {
+    public ResponseForm<RefreshAccessTokenForm> login(@Valid @RequestBody LoginForm loginForm) {
 
-        String jwtToken = memberService.login(loginForm);
-
-        return new ResponseForm<>(StatusCode.OK, jwtToken);
+        return new ResponseForm<>(StatusCode.OK, memberService.login(loginForm));
     }
 
     @PostMapping("/member/find-email")
@@ -53,7 +51,12 @@ public class MemberController {
     }
 
     @GetMapping("/member/detail")
-    public ResponseForm<MemberDetail> getMemberDetailInfo(@AuthenticationPrincipal JwtPrincipal principal) {;
+    public ResponseForm<MemberDetail> getMemberDetailInfo(@AuthenticationPrincipal JwtPrincipal principal) {
         return new ResponseForm<>(StatusCode.OK, memberService.getMemberDetailInfo(principal.getId()));
+    }
+
+    @PostMapping("/member/refresh-token")
+    public ResponseForm<RefreshAccessTokenForm> refreshAccessToken(@RequestBody RefreshAccessTokenForm refreshAccessTokenForm) {
+        return new ResponseForm<>(StatusCode.OK, memberService.refreshAccessToken(refreshAccessTokenForm));
     }
 }
