@@ -69,13 +69,13 @@ public class ProjectController {
                     .id(projectHistory.getProject().getId())
                     .seq(projectHistory.getSeq())
                     .additionalCuts(projectHistory.getAdditionalCuts())  // Integer additionalCuts
-                    .modificationCount(projectHistory.getModificationCount())  // Integer modificationCount
+                    .additionalModificationCount(projectHistory.getAdditionalModificationCount())  // Integer modificationCount
                     .additionalPostDurationMonth(projectHistory.getAdditionalPostDurationMonth())  // Integer additionalPostDurationMonth
-                    .isOriginFileRequest(projectHistory.isOriginFileRequest())  // boolean isOriginFileRequest
-                    .isRefinementRequest(projectHistory.isRefinementRequest())  // boolean isRefinementRequest
-                    .postDates(projectHistory.getPostDates())  // List<LocalDate> postDates
-                    .postFromDate(projectHistory.getPostFromDate())  // LocalDate postFromDate
-                    .postToDate(projectHistory.getPostToDate())  // LocalDate postToDate
+                    .isOriginFileRequested(projectHistory.getIsOriginFileRequested())  // boolean isOriginFileRequest
+                    .isRefinementRequested(projectHistory.getIsRefinementRequested())  // boolean isRefinementRequest
+                    .postSpecificDates(projectHistory.getPostSpecificDates())  // List<LocalDate> postDates
+                    .postStartDate(projectHistory.getPostStartDate())  // LocalDate postFromDate
+                    .postEndDate(projectHistory.getPostEndDate())  // LocalDate postToDate
                     .dueDate(projectHistory.getDueDate())  // LocalDate dueDate
                     .brandName(projectHistory.getBrandName())  // String brandName
                     .brandUrls(projectHistory.getBrandUrls())  // List<String> brandUrls

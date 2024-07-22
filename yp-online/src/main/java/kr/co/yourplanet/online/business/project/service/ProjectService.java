@@ -1,22 +1,23 @@
 package kr.co.yourplanet.online.business.project.service;
 
+import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.project.Project;
 import kr.co.yourplanet.core.entity.project.ProjectHistory;
+import kr.co.yourplanet.core.enums.MemberType;
 import kr.co.yourplanet.core.enums.ProjectStatus;
+import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectAcceptForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectNegotiateForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectRejectForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectRequestForm;
 import kr.co.yourplanet.online.business.project.repository.ProjectRepository;
-import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.online.business.user.repository.MemberRepository;
-import kr.co.yourplanet.core.enums.MemberType;
-import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -34,12 +35,28 @@ public class ProjectService {
         Member sponsor = memberRepository.findById(sponsorId).orElseThrow(() -> new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 광고주 정보입니다.", false));
         Member author = memberRepository.findById(projectRequestForm.getAuthorId()).orElseThrow(() -> new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 작가 정보입니다.", false));
 
+        // 1. 유효성 체크
         if (!MemberType.SPONSOR.equals(sponsor.getMemberType())) {
             throw new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 광고주 정보입니다.", false);
         }
 
         if (!MemberType.AUTHOR.equals(author.getMemberType())) {
             throw new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 작가 정보입니다.", false);
+        }
+
+        if (projectRequestForm.isDateSpecified()) { // 광고 날짜 지정시
+            if (CollectionUtils.isEmpty(projectRequestForm.getPostSpecificDates())) {
+                throw new BusinessException(StatusCode.BAD_REQUEST, "광고 날짜를 최소 1개 이상 선택해 주세요.", false);
+            } else if (projectRequestForm.getPostSpecificDates().size() > 10) {
+                throw new BusinessException(StatusCode.BAD_REQUEST, "광고 날짜를 최대 10개까지 선택 가능합니다.", false);
+            }
+        } else { // 광고 기간 선택시
+            if (projectRequestForm.getPostStartDate() == null || projectRequestForm.getPostEndDate() == null) {
+                throw new BusinessException(StatusCode.BAD_REQUEST, "광고 기간을 지정해주세요", false);
+            } else if (projectRequestForm.getPostStartDate().isAfter(projectRequestForm.getPostEndDate())) {
+                throw new BusinessException(StatusCode.BAD_REQUEST, "광고 시작일이 종료일보다 이후 일 수 없습니다.", false);
+            }
+
         }
 
         Project project = Project.builder()
@@ -54,13 +71,15 @@ public class ProjectService {
                 .project(project) // 필요한 Project 객체
                 .seq(1) // 시퀀스 번호
                 .additionalCuts(projectRequestForm.getAdditionalCuts()) // 추가 컷 수
-                .modificationCount(projectRequestForm.getModificationCount()) // 추가 수정 횟수
+                .isAuthorConsultationCuts(projectRequestForm.isAuthorConsultationCuts())
+                .additionalModificationCount(projectRequestForm.getAdditionalModificationCount()) // 추가 수정 횟수
                 .additionalPostDurationMonth(projectRequestForm.getAdditionalPostDurationMonth()) // 업로드 기간 연장 (월)
-                .isOriginFileRequest(projectRequestForm.isOriginFileRequest()) // 원본 파일 요청 여부
-                .isRefinementRequest(projectRequestForm.isRefinementRequest()) // 2차 활용 요청 여부
-                .postDates(projectRequestForm.getPostDates()) // 광고 기간 날짜 지정
-                .postFromDate(projectRequestForm.getPostFromDate()) // 광고 시작 날짜
-                .postToDate(projectRequestForm.getPostToDate()) // 광고 종료 날짜
+                .isOriginFileRequested(projectRequestForm.isOriginFileRequested()) // 원본 파일 요청 여부
+                .isRefinementRequested(projectRequestForm.isRefinementRequested()) // 2차 활용 요청 여부
+                .isDateSpecified(projectRequestForm.isDateSpecified()) // 날짜 지정 여부
+                .postSpecificDates(projectRequestForm.getPostSpecificDates()) // 광고 기간 날짜 지정
+                .postStartDate(projectRequestForm.getPostStartDate()) // 광고 시작 날짜
+                .postEndDate(projectRequestForm.getPostEndDate()) // 광고 종료 날짜
                 .dueDate(projectRequestForm.getDueDate()) // 작업 기한
                 .brandName(projectRequestForm.getBrandName()) // 브랜드명
                 .brandUrls(projectRequestForm.getBrandUrls()) // 브랜드 URL
@@ -110,13 +129,15 @@ public class ProjectService {
                 .project(project)
                 .seq(seq)
                 .additionalCuts(projectNegotiateForm.getAdditionalCuts()) // 추가 컷 수
-                .modificationCount(projectNegotiateForm.getModificationCount()) // 추가 수정 횟수
+                .isAuthorConsultationCuts(projectNegotiateForm.isAuthorConsultationCuts())
+                .additionalModificationCount(projectNegotiateForm.getAdditionalModificationCount()) // 추가 수정 횟수
                 .additionalPostDurationMonth(projectNegotiateForm.getAdditionalPostDurationMonth()) // 업로드 기간 연장 (월)
-                .isOriginFileRequest(projectNegotiateForm.isOriginFileRequest()) // 원본 파일 요청 여부
-                .isRefinementRequest(projectNegotiateForm.isRefinementRequest()) // 2차 활용 요청 여부
-                .postDates(projectNegotiateForm.getPostDates()) // 광고 기간 날짜 지정
-                .postFromDate(projectNegotiateForm.getPostFromDate()) // 광고 시작 날짜
-                .postToDate(projectNegotiateForm.getPostToDate()) // 광고 종료 날짜
+                .isOriginFileRequested(projectNegotiateForm.isOriginFileRequested()) // 원본 파일 요청 여부
+                .isRefinementRequested(projectNegotiateForm.isRefinementRequested()) // 2차 활용 요청 여부
+                .isDateSpecified(projectNegotiateForm.isDateSpecified()) // 광고 기간 날짜 지정
+                .postSpecificDates(projectNegotiateForm.getPostDates()) // 광고 기간 날짜 지정
+                .postStartDate(projectNegotiateForm.getPostFromDate()) // 광고 시작 날짜
+                .postEndDate(projectNegotiateForm.getPostToDate()) // 광고 종료 날짜
                 .dueDate(projectNegotiateForm.getDueDate()) // 작업 기한
                 .brandName(projectNegotiateForm.getBrandName()) // 브랜드명
                 .brandUrls(projectNegotiateForm.getBrandUrls()) // 브랜드 URL

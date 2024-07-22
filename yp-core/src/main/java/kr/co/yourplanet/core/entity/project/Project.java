@@ -42,11 +42,14 @@ public class Project extends BasicColumn {
     @Column(name = "additional_cuts")
     private Integer additionalCuts;
 
+    @Column(name = "author_consultation_cuts")
+    private Boolean isAuthorConsultationCuts;
+
     /**
      * 추가 수정 횟수
      */
-    @Column(name = "modification_count")
-    private Integer modificationCount;
+    @Column(name = "additional_modification_count")
+    private Integer additionalModificationCount;
 
     /**
      * 업로드 기간 연장
@@ -57,31 +60,36 @@ public class Project extends BasicColumn {
     /**
      * 원본 파일 요청 여부
      */
-    @Column(name = "origin_file_request")
-    private Boolean isOriginFileRequest;
+    @Column(name = "origin_file_requested")
+    private Boolean isOriginFileRequested;
 
     /**
      * 2차 활용 요청 여부
      */
-    @Column(name = "refinement_request")
-    private Boolean isRefinementRequest;
+    @Column(name = "refinement_requested")
+    private Boolean isRefinementRequested;
 
+    /**
+     * 날짜 지정 여부
+     */
+    @Column(name = "date_specified")
+    private Boolean isDateSpecified;
     /**
      * 광고 기간 - 날짜 지정
      */
-    @Column(name = "post_date")
-    private List<LocalDate> postDates;
+    @Column(name = "post_specific_dates")
+    private List<LocalDate> postSpecificDates;
     /**
      * 광고 기간 - 시작 기간 선택
      */
-    @Column(name = "post_from_date")
-    private LocalDate postFromDate;
+    @Column(name = "post_start_date")
+    private LocalDate postStartDate;
 
     /**
      * 광고 기간 - 종료 기간 선택
      */
-    @Column(name = "post_to_date")
-    private LocalDate postToDate;
+    @Column(name = "post_end_date")
+    private LocalDate postEndDate;
 
     /**
      * 작업 기한
@@ -99,7 +107,7 @@ public class Project extends BasicColumn {
      * 브랜드 URL
      */
     @Convert(converter = StringListConverter.class)
-    @Column(name = "brand_url")
+    @Column(name = "brand_urls")
     private List<String> brandUrls;
     /**
      * 캠페인 소개
@@ -110,7 +118,7 @@ public class Project extends BasicColumn {
      * 캠페인 URL
      */
     @Convert(converter = StringListConverter.class)
-    @Column(name = "campaign_url")
+    @Column(name = "campaign_urls")
     private List<String> campaignUrls;
     /**
      * 금액
@@ -130,6 +138,7 @@ public class Project extends BasicColumn {
 
     @Builder.Default
     @Convert(converter = StringListConverter.class)
+    @Column(name = "category_list")
     private List<String> categoryList = new ArrayList<>();
 
     public Project() {
@@ -142,13 +151,13 @@ public class Project extends BasicColumn {
 
     public void acceptProject(ProjectHistory projectHistory) {
         this.additionalCuts = projectHistory.getAdditionalCuts();
-        this.modificationCount = projectHistory.getModificationCount();
+        this.additionalModificationCount = projectHistory.getAdditionalModificationCount();
         this.additionalPostDurationMonth = projectHistory.getAdditionalPostDurationMonth();
-        this.isOriginFileRequest = projectHistory.isOriginFileRequest();
-        this.isRefinementRequest = projectHistory.isRefinementRequest();
-        this.postDates = projectHistory.getPostDates();
-        this.postFromDate = projectHistory.getPostFromDate();
-        this.postToDate = projectHistory.getPostToDate();
+        this.isOriginFileRequested = projectHistory.getIsOriginFileRequested();
+        this.isRefinementRequested = projectHistory.getIsRefinementRequested();
+        this.postSpecificDates = projectHistory.getPostSpecificDates();
+        this.postStartDate = projectHistory.getPostStartDate();
+        this.postEndDate = projectHistory.getPostEndDate();
         this.dueDate = projectHistory.getDueDate();
         this.brandName = projectHistory.getBrandName();
         this.brandUrls = projectHistory.getBrandUrls();

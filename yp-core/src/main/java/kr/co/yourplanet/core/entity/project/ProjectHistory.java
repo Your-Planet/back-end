@@ -35,53 +35,56 @@ public class ProjectHistory extends BasicColumn {
      * 추가 컷 수
      */
     @Column(name = "additional_cuts")
-    @Builder.Default
-    private Integer additionalCuts = 0;
+    private Integer additionalCuts;
+
+    @Column(name = "author_consultation_cuts")
+    private Boolean isAuthorConsultationCuts;
 
     /**
      * 추가 수정 횟수
      */
-    @Column(name = "modification_count")
-    @Builder.Default
-    private Integer modificationCount = 0;
+    @Column(name = "additional_modification_count")
+    private Integer additionalModificationCount;
 
     /**
      * 업로드 기간 연장
      */
     @Column(name = "additional_post_duration_month")
-    @Builder.Default
-    private Integer additionalPostDurationMonth = 0;
+    private Integer additionalPostDurationMonth;
 
     /**
      * 원본 파일 요청 여부
      */
-    @Column(name = "origin_file_request")
-    @Builder.Default
-    private boolean isOriginFileRequest = false;
+    @Column(name = "origin_file_requested")
+    private Boolean isOriginFileRequested;
 
     /**
      * 2차 활용 요청 여부
      */
-    @Column(name = "refinement_request")
-    @Builder.Default
-    private boolean isRefinementRequest = false;
+    @Column(name = "refinement_requested")
+    private Boolean isRefinementRequested;
 
+    /**
+     * 날짜 지정 여부
+     */
+    @Column(name = "date_specified")
+    private Boolean isDateSpecified;
     /**
      * 광고 기간 - 날짜 지정
      */
-    @Column(name = "post_date")
-    private List<LocalDate> postDates;
+    @Column(name = "post_specific_dates")
+    private List<LocalDate> postSpecificDates;
     /**
      * 광고 기간 - 시작 기간 선택
      */
-    @Column(name = "post_from_date")
-    private LocalDate postFromDate;
+    @Column(name = "post_start_date")
+    private LocalDate postStartDate;
 
     /**
      * 광고 기간 - 종료 기간 선택
      */
-    @Column(name = "post_to_date")
-    private LocalDate postToDate;
+    @Column(name = "post_end_date")
+    private LocalDate postEndDate;
 
     /**
      * 작업 기한
@@ -138,7 +141,7 @@ public class ProjectHistory extends BasicColumn {
 
     public ProjectHistory() {
         this.categoryList = new ArrayList<>();
-        this.postDates = new ArrayList<>();
+        this.postSpecificDates = new ArrayList<>();
         this.brandUrls = new ArrayList<>();
         this.campaignUrls = new ArrayList<>();
     }
