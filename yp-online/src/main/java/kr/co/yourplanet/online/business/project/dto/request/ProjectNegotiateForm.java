@@ -20,26 +20,34 @@ public class ProjectNegotiateForm {
      * 추가 컷 수
      */
     @PositiveOrZero(message = "추가 컷 수는 0 이상으로 입력해주세요")
-    private int additionalCuts = 0;
+    private Integer additionalCuts;
+    /**
+     * 추가 컷 수 작가 협의 여부
+     */
+    private boolean isAuthorConsultationCuts;
     /**
      * 추가 수정 횟수
      */
     @PositiveOrZero(message = "추가 수정 횟수는 0 이상으로 입력해주세요")
-    private int modificationCount = 0;
+    private Integer additionalModificationCount;
     /**
      * 업로드 기간 연장
      */
     @PositiveOrZero(message = "업로드 기간 연장은 0 이상으로 입력해주세요")
-    private int additionalPostDurationMonth = 0;
+    private Integer additionalPostDurationMonth;
     /**
      * 원본 파일 요청 여부
      */
-    private boolean isOriginFileRequest = false;
+    private boolean isOriginFileRequested;
     /**
      * 2차 활용 요청 여부
      */
-    private boolean isRefinementRequest = false;
+    private boolean isRefinementRequested;
 
+    /**
+     * 날짜 지정 여부
+     */
+    private boolean isDateSpecified;
     /**
      * 광고 기간 - 날짜 지정
      */

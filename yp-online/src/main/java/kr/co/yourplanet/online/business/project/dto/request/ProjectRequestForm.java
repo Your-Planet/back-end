@@ -25,38 +25,46 @@ public class ProjectRequestForm {
      * 추가 컷 수
      */
     @PositiveOrZero(message = "추가 컷 수는 0 이상으로 입력해주세요")
-    private int additionalCuts = 0;
+    private Integer additionalCuts;
+    /**
+     * 추가 컷 수 작가 협의 여부
+     */
+    private boolean isAuthorConsultationCuts;
     /**
      * 추가 수정 횟수
      */
     @PositiveOrZero(message = "추가 수정 횟수는 0 이상으로 입력해주세요")
-    private int modificationCount = 0;
+    private Integer additionalModificationCount;
     /**
      * 업로드 기간 연장
      */
     @PositiveOrZero(message = "업로드 기간 연장은 0 이상으로 입력해주세요")
-    private int additionalPostDurationMonth = 0;
+    private Integer additionalPostDurationMonth;
     /**
      * 원본 파일 요청 여부
      */
-    private boolean isOriginFileRequest = false;
+    private boolean isOriginFileRequested;
     /**
      * 2차 활용 요청 여부
      */
-    private boolean isRefinementRequest = false;
+    private boolean isRefinementRequested;
 
+    /**
+     * 날짜 지정 여부
+     */
+    private boolean isDateSpecified;
     /**
      * 광고 기간 - 날짜 지정
      */
-    private List<LocalDate> postDates;
+    private List<LocalDate> postSpecificDates;
     /**
      * 광고 기간 - 시작 기간 선택
      */
-    private LocalDate postFromDate;
+    private LocalDate postStartDate;
     /**
      * 광고 기간 - 종료 기간 선택
      */
-    private LocalDate postToDate;
+    private LocalDate postEndDate;
     /**
      * 작업 기한
      */
@@ -76,6 +84,7 @@ public class ProjectRequestForm {
      * 캠페인 소개
      */
     @NotBlank(message = "캠페인 소개는 필수입니다")
+    @Size(max = 500, message = "캠페인 소개는 500자까지 가능합니다")
     private String campaignDescription;
     /**
      * 캠페인 URL
