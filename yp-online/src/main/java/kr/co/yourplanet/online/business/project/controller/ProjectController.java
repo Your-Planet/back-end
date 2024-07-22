@@ -68,13 +68,23 @@ public class ProjectController {
             ProjectHistories projectHistories = ProjectHistories.builder()
                     .id(projectHistory.getProject().getId())
                     .seq(projectHistory.getSeq())
-                    .requestContext(projectHistory.getContext())
-                    .fromDate(projectHistory.getFromDate())
-                    .toDate(projectHistory.getToDate())
-                    .payment(projectHistory.getPayment())
-                    .cutNumber(projectHistory.getCutNumber())
-                    .categoryList(projectHistory.getCategoryList())
-                    .requestMemberType(projectHistory.getRequestMember().getMemberType())
+                    .additionalCuts(projectHistory.getAdditionalCuts())  // Integer additionalCuts
+                    .modificationCount(projectHistory.getModificationCount())  // Integer modificationCount
+                    .additionalPostDurationMonth(projectHistory.getAdditionalPostDurationMonth())  // Integer additionalPostDurationMonth
+                    .isOriginFileRequest(projectHistory.isOriginFileRequest())  // boolean isOriginFileRequest
+                    .isRefinementRequest(projectHistory.isRefinementRequest())  // boolean isRefinementRequest
+                    .postDates(projectHistory.getPostDates())  // List<LocalDate> postDates
+                    .postFromDate(projectHistory.getPostFromDate())  // LocalDate postFromDate
+                    .postToDate(projectHistory.getPostToDate())  // LocalDate postToDate
+                    .dueDate(projectHistory.getDueDate())  // LocalDate dueDate
+                    .brandName(projectHistory.getBrandName())  // String brandName
+                    .brandUrls(projectHistory.getBrandUrls())  // List<String> brandUrls
+                    .campaignDescription(projectHistory.getCampaignDescription())  // String campaignDescription
+                    .campaignUrls(projectHistory.getCampaignUrls())  // List<String> campaignUrls
+                    .offerPrice(projectHistory.getOfferPrice())  // Integer offerPrice
+                    .requestNotes(projectHistory.getRequestNotes())  // String requestNotes
+                    .categoryList(projectHistory.getCategoryList())  // List<String> categoryList
+                    .requestMemberType(projectHistory.getRequestMember().getMemberType())  // MemberType requestMemberType
                     .build();
 
             projectHistoriesList.add(projectHistories);

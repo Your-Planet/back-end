@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @AllArgsConstructor
@@ -17,11 +17,21 @@ public class ProjectHistories {
 
     private Long id;
     private Integer seq;
-    private String requestContext;
-    private LocalDateTime fromDate;
-    private LocalDateTime toDate;
-    private Long payment;
-    private Integer cutNumber;
+    private Integer additionalCuts;
+    private Integer modificationCount;
+    private Integer additionalPostDurationMonth;
+    private boolean isOriginFileRequest;
+    private boolean isRefinementRequest;
+    private List<LocalDate> postDates;
+    private LocalDate postFromDate;
+    private LocalDate postToDate;
+    private LocalDate dueDate;
+    private String brandName;
+    private List<String> brandUrls;
+    private String campaignDescription;
+    private List<String> campaignUrls;
+    private Integer offerPrice;
+    private String requestNotes;
     private List<String> categoryList;
     private MemberType requestMemberType;
 }

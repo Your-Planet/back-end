@@ -19,7 +19,7 @@ public class ProjectRepository {
         em.persist(project);
     }
 
-    public Project findProjectById(Long id) {
+    public Project findById(Long id) {
         return em.find(Project.class, id);
     }
 
@@ -29,7 +29,7 @@ public class ProjectRepository {
     }
 
     public List<ProjectHistory> findAllProjectHistoryListById(Project p) {
-        return em.createQuery("select th from ProjectHistory ph where ph.project = :p order by ph.seq asc", ProjectHistory.class)
+        return em.createQuery("select ph from ProjectHistory ph where ph.project = :p order by ph.seq asc", ProjectHistory.class)
                 .setParameter("p", p)
                 .getResultList();
     }
