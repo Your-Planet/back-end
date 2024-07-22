@@ -105,7 +105,7 @@ public class MemberService {
     }
 
     @Transactional
-    public RefreshAccessTokenForm login(LoginForm loginForm) {
+    public RefreshTokenForm login(LoginForm loginForm) {
         Optional<Member> findMember = memberRepository.findMemberByEmail(loginForm.getEmail());
 
         if (!findMember.isPresent()) {
@@ -128,12 +128,12 @@ public class MemberService {
         // Refresh 토큰 DB 저장
         RefreshToken refreshTokenEntity = refreshTokenRepository.findById(member.getId())
                 .orElse(RefreshToken.builder()
-                .member(member)
-                .build());
+                        .member(member)
+                        .build());
         refreshTokenEntity.updateRefreshToken(refreshToken);
         refreshTokenRepository.save(refreshTokenEntity);
 
-        return RefreshAccessTokenForm.builder()
+        return RefreshTokenForm.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
@@ -273,23 +273,33 @@ public class MemberService {
     }
 
     @Transactional
-    public RefreshAccessTokenForm refreshAccessToken(RefreshAccessTokenForm refreshAccessTokenForm) {
+    public RefreshTokenResult refreshAccessToken(RefreshTokenForm refreshTokenForm) {
         Long memberId;
         try {
-            memberId = jwtTokenProvider.getMemberIdFromRefreshToken(refreshAccessTokenForm.getRefreshToken());
+            memberId = jwtTokenProvider.getMemberIdFromRefreshToken(refreshTokenForm.getRefreshToken());
             RefreshToken refreshTokenEntity = refreshTokenRepository.findById(memberId).orElseThrow(() -> new BusinessException(StatusCode.UNAUTHORIZED, "재로그인이 필요합니다.", false));
-            if (StringUtils.hasText(refreshTokenEntity.getRefreshToken()) && refreshAccessTokenForm.getRefreshToken().equals(refreshTokenEntity.getRefreshToken())) {
+            if (StringUtils.hasText(refreshTokenEntity.getRefreshToken()) && refreshTokenForm.getRefreshToken().equals(refreshTokenEntity.getRefreshToken())) {
                 Member member = refreshTokenEntity.getMember();
                 String accessToken = jwtTokenProvider.createAccessToken(member.getId(), member.getName(), member.getMemberType());
                 String refreshToken = jwtTokenProvider.createRefreshToken(memberId);
                 refreshTokenEntity.updateRefreshToken(refreshToken);
-                return RefreshAccessTokenForm.builder()
-                        .accessToken(accessToken)
-                        .refreshToken(refreshToken)
+                refreshTokenRepository.save(refreshTokenEntity);
+
+                return RefreshTokenResult.builder()
+                        .refreshTokenForm(RefreshTokenForm.builder()
+                                .accessToken(accessToken)
+                                .refreshToken(refreshToken)
+                                .build())
+                        .message("토큰이 성공적으로 갱신되었습니다.")
+                        .statusCode(StatusCode.OK)
                         .build();
             } else {
                 refreshTokenEntity.deleteRefreshToken();
-                throw new BusinessException(StatusCode.UNAUTHORIZED, "재로그인이 필요합니다.", false);
+                refreshTokenRepository.save(refreshTokenEntity);
+                return RefreshTokenResult.builder()
+                        .message("제로그인이 필요합니다.")
+                        .statusCode(StatusCode.UNAUTHORIZED)
+                        .build();
             }
         } catch (Exception e) {
             throw new BusinessException(StatusCode.UNAUTHORIZED, "재로그인이 필요합니다.", false);
