@@ -158,7 +158,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         // switch문 리펙토링 진행할지
         // keywordType Enum으로 생설할 것 인지
-        switch (keywordType) {
+        switch (keywordType != null ? keywordType : "") {
             case "toonName":
                 toonName = keyword;
                 break;
