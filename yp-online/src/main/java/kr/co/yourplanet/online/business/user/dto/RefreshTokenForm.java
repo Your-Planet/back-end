@@ -5,18 +5,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
-
 @Getter
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class RefreshAccessTokenForm {
+public class RefreshTokenForm {
 
-    @NotBlank
     String accessToken;
-
-    @NotBlank
     String refreshToken;
 
 }

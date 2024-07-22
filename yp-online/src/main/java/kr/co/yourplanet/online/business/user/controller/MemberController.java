@@ -28,7 +28,7 @@ public class MemberController {
     }
 
     @PostMapping("/member/login")
-    public ResponseForm<RefreshAccessTokenForm> login(@Valid @RequestBody LoginForm loginForm) {
+    public ResponseForm<RefreshTokenForm> login(@Valid @RequestBody LoginForm loginForm) {
 
         return new ResponseForm<>(StatusCode.OK, memberService.login(loginForm));
     }
@@ -56,7 +56,9 @@ public class MemberController {
     }
 
     @PostMapping("/member/refresh-token")
-    public ResponseForm<RefreshAccessTokenForm> refreshAccessToken(@RequestBody RefreshAccessTokenForm refreshAccessTokenForm) {
-        return new ResponseForm<>(StatusCode.OK, memberService.refreshAccessToken(refreshAccessTokenForm));
+    public ResponseForm<RefreshTokenForm> refreshAccessToken(@RequestBody RefreshTokenForm refreshTokenForm) {
+        RefreshTokenResult refreshTokenResult = memberService.refreshAccessToken(refreshTokenForm);
+
+        return new ResponseForm<>(refreshTokenResult.getStatusCode(), refreshTokenResult.getMessage(), refreshTokenResult.getRefreshTokenForm(), false);
     }
 }
