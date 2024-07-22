@@ -11,8 +11,8 @@ import lombok.Getter;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import java.time.LocalDateTime;
+import javax.validation.constraints.Size;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,28 +36,93 @@ public class Project extends BasicColumn {
     @JoinColumn(name = "author_id", referencedColumnName = "id")
     private Member author;
 
-    @NotBlank
-    @Column(name = "title")
-    private String title;
+    /**
+     * 추가 컷 수
+     */
+    @Column(name = "additional_cuts")
+    private Integer additionalCuts;
 
-    // 비고
-    @Column(name = "context")
-    private String context;
+    /**
+     * 추가 수정 횟수
+     */
+    @Column(name = "modification_count")
+    private Integer modificationCount;
 
-    @Column(name = "from_date")
-    private LocalDateTime fromDate;
+    /**
+     * 업로드 기간 연장
+     */
+    @Column(name = "additional_post_duration_month")
+    private Integer additionalPostDurationMonth;
 
-    @Column(name = "to_date")
-    private LocalDateTime toDate;
+    /**
+     * 원본 파일 요청 여부
+     */
+    @Column(name = "origin_file_request")
+    private Boolean isOriginFileRequest;
 
-    @Column(name = "payment")
-    private Long payment;
+    /**
+     * 2차 활용 요청 여부
+     */
+    @Column(name = "refinement_request")
+    private Boolean isRefinementRequest;
 
-    @Column(name = "cut_number")
-    private Integer cutNumber;
+    /**
+     * 광고 기간 - 날짜 지정
+     */
+    @Column(name = "post_date")
+    private List<LocalDate> postDates;
+    /**
+     * 광고 기간 - 시작 기간 선택
+     */
+    @Column(name = "post_from_date")
+    private LocalDate postFromDate;
 
-    @Column(name = "complete_date")
-    private LocalDateTime completeDate;
+    /**
+     * 광고 기간 - 종료 기간 선택
+     */
+    @Column(name = "post_to_date")
+    private LocalDate postToDate;
+
+    /**
+     * 작업 기한
+     */
+    @Column(name = "due_date")
+    private LocalDate dueDate;
+
+    /**
+     * 브랜드명
+     */
+    @Size(max = 30)
+    @Column(name = "brand_name")
+    private String brandName;
+    /**
+     * 브랜드 URL
+     */
+    @Convert(converter = StringListConverter.class)
+    @Column(name = "brand_url")
+    private List<String> brandUrls;
+    /**
+     * 캠페인 소개
+     */
+    @Column(name = "campaign_description")
+    private String campaignDescription;
+    /**
+     * 캠페인 URL
+     */
+    @Convert(converter = StringListConverter.class)
+    @Column(name = "campaign_url")
+    private List<String> campaignUrls;
+    /**
+     * 금액
+     */
+    @Column(name = "price")
+    private Integer price;
+
+    /**
+     * 기타 요청사항
+     */
+    @Column(name = "request_notes")
+    private String requestNotes;
 
     @ValidEnum(enumClass = ProjectStatus.class)
     @Column(name = "project_status")
@@ -76,11 +141,20 @@ public class Project extends BasicColumn {
     }
 
     public void acceptProject(ProjectHistory projectHistory) {
-        this.context = projectHistory.getContext();
-        this.fromDate = projectHistory.getFromDate();
-        this.toDate = projectHistory.getToDate();
-        this.payment = projectHistory.getPayment();
-        this.cutNumber = projectHistory.getCutNumber();
+        this.additionalCuts = projectHistory.getAdditionalCuts();
+        this.modificationCount = projectHistory.getModificationCount();
+        this.additionalPostDurationMonth = projectHistory.getAdditionalPostDurationMonth();
+        this.isOriginFileRequest = projectHistory.isOriginFileRequest();
+        this.isRefinementRequest = projectHistory.isRefinementRequest();
+        this.postDates = projectHistory.getPostDates();
+        this.postFromDate = projectHistory.getPostFromDate();
+        this.postToDate = projectHistory.getPostToDate();
+        this.dueDate = projectHistory.getDueDate();
+        this.brandName = projectHistory.getBrandName();
+        this.brandUrls = projectHistory.getBrandUrls();
+        this.campaignDescription = projectHistory.getCampaignDescription();
+        this.campaignUrls = projectHistory.getCampaignUrls();
+        this.price = projectHistory.getOfferPrice();
         this.categoryList = projectHistory.getCategoryList();
         this.projectStatus = ProjectStatus.ACCEPT;
     }
