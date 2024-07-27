@@ -273,32 +273,28 @@ public class MemberService {
     }
 
     @Transactional
-    public RefreshTokenResult refreshAccessToken(RefreshTokenForm refreshTokenForm) {
+    public RefreshTokenForm refreshAccessToken(String previousRefreshToken) {
         Long memberId;
         try {
-            memberId = jwtTokenProvider.getMemberIdFromRefreshToken(refreshTokenForm.getRefreshToken());
+            memberId = jwtTokenProvider.getMemberIdFromRefreshToken(previousRefreshToken);
             RefreshToken refreshTokenEntity = refreshTokenRepository.findById(memberId).orElseThrow(() -> new BusinessException(StatusCode.UNAUTHORIZED, "재로그인이 필요합니다.", false));
-            if (StringUtils.hasText(refreshTokenEntity.getRefreshToken()) && refreshTokenForm.getRefreshToken().equals(refreshTokenEntity.getRefreshToken())) {
+            if (StringUtils.hasText(refreshTokenEntity.getRefreshToken()) && previousRefreshToken.equals(refreshTokenEntity.getRefreshToken())) {
                 Member member = refreshTokenEntity.getMember();
                 String accessToken = jwtTokenProvider.createAccessToken(member.getId(), member.getName(), member.getMemberType());
                 String refreshToken = jwtTokenProvider.createRefreshToken(memberId);
                 refreshTokenEntity.updateRefreshToken(refreshToken);
                 refreshTokenRepository.save(refreshTokenEntity);
 
-                return RefreshTokenResult.builder()
-                        .refreshTokenForm(RefreshTokenForm.builder()
-                                .accessToken(accessToken)
-                                .refreshToken(refreshToken)
-                                .build())
-                        .message("토큰이 성공적으로 갱신되었습니다.")
-                        .statusCode(StatusCode.OK)
+                return RefreshTokenForm.builder()
+                        .accessToken(accessToken)
+                        .refreshToken(refreshToken)
                         .build();
             } else {
                 refreshTokenEntity.deleteRefreshToken();
                 refreshTokenRepository.save(refreshTokenEntity);
-                return RefreshTokenResult.builder()
-                        .message("제로그인이 필요합니다.")
-                        .statusCode(StatusCode.UNAUTHORIZED)
+                return RefreshTokenForm.builder()
+                        .refreshToken("")
+                        .accessToken("")
                         .build();
             }
         } catch (Exception e) {
