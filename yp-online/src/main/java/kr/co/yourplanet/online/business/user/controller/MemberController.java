@@ -8,8 +8,12 @@ import kr.co.yourplanet.online.jwt.JwtPrincipal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @Slf4j
@@ -28,9 +32,14 @@ public class MemberController {
     }
 
     @PostMapping("/member/login")
-    public ResponseForm<RefreshTokenForm> login(@Valid @RequestBody LoginForm loginForm) {
+    public ResponseForm<String> login(@Valid @RequestBody LoginForm loginForm, HttpServletResponse response) {
 
-        return new ResponseForm<>(StatusCode.OK, memberService.login(loginForm));
+        RefreshTokenForm refreshTokenForm = memberService.login(loginForm);
+
+        // Refresh Token 쿠키 설정
+        response.addCookie(getRefreshTokenCookie(refreshTokenForm.getRefreshToken()));
+
+        return new ResponseForm<>(StatusCode.OK, refreshTokenForm.getAccessToken());
     }
 
     @PostMapping("/member/find-email")
@@ -56,9 +65,45 @@ public class MemberController {
     }
 
     @PostMapping("/member/refresh-token")
-    public ResponseForm<RefreshTokenForm> refreshAccessToken(@RequestBody RefreshTokenForm refreshTokenForm) {
-        RefreshTokenResult refreshTokenResult = memberService.refreshAccessToken(refreshTokenForm);
+    public ResponseForm<String> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
 
-        return new ResponseForm<>(refreshTokenResult.getStatusCode(), refreshTokenResult.getMessage(), refreshTokenResult.getRefreshTokenForm(), false);
+        // 기존 Refresh Token 가져오기
+        Cookie[] cookies = request.getCookies();
+        String refreshToken = null;
+
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    refreshToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        if (!StringUtils.hasText(refreshToken)) {
+            return new ResponseForm<>(StatusCode.UNAUTHORIZED, "재로그인이 필요합니다.", false);
+        }
+
+        // 신규 Refresh, Access Token 발급
+        RefreshTokenForm refreshTokenForm = memberService.refreshAccessToken(refreshToken);
+
+        if (!StringUtils.hasText(refreshTokenForm.getRefreshToken())) {
+            return new ResponseForm<>(StatusCode.UNAUTHORIZED, "재로그인이 필요합니다.", false);
+        }
+
+        response.addCookie(getRefreshTokenCookie(refreshTokenForm.getRefreshToken()));
+
+        return new ResponseForm<>(StatusCode.OK, "토큰 발급에 성공하였습니다.", refreshTokenForm.getAccessToken(), false);
+    }
+
+    private Cookie getRefreshTokenCookie(String refreshToken) {
+        // Refresh Token 쿠키 설정
+        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+        refreshTokenCookie.setHttpOnly(true); // 자바스크립트에서 접근 불가
+        //refreshTokenCookie.setSecure(false);   // HTTPS에서만 전송. ssl 설정 완료 후 주석해제 필요
+        refreshTokenCookie.setPath("/");      // 전체 도메인에서 접근 가능
+        refreshTokenCookie.setMaxAge(60 * 60 * 24); // 쿠키 만료 시간 (1일)
+
+        return refreshTokenCookie;
     }
 }
