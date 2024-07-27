@@ -40,7 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(String.format("{\"statusCode\":403, \"message\":\"%s\"}", e.getMessage()));
+        response.getWriter().write(String.format("{\"statusCode\":401, \"message\":\"%s\"}", e.getMessage()));
         response.getWriter().flush();
     }
 }
