@@ -62,7 +62,7 @@ public class StudioController {
         return new ResponseForm<>(StatusCode.OK);
     }
 
-    @GetMapping("/studios")
+    @GetMapping("/studio")
     public ResponseForm<Page<StudioBasicSearch>> searchStudios(@RequestParam(name = "categories", required = false) List<String> categories,
                                                                @RequestParam(name = "keywordType", required = false) String keywordType,
                                                                @RequestParam(name = "keyword", required = false) String keyword,
