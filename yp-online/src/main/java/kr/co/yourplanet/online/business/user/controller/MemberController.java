@@ -7,6 +7,8 @@ import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.jwt.JwtPrincipal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -65,7 +67,7 @@ public class MemberController {
     }
 
     @PostMapping("/member/refresh-token")
-    public ResponseForm<String> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<ResponseForm<String>> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
 
         // 기존 Refresh Token 가져오기
         Cookie[] cookies = request.getCookies();
@@ -81,19 +83,19 @@ public class MemberController {
         }
 
         if (!StringUtils.hasText(refreshToken)) {
-            return new ResponseForm<>(StatusCode.UNAUTHORIZED, "재로그인이 필요합니다.", false);
+            return new ResponseEntity<>(new ResponseForm<>(StatusCode.UNAUTHORIZED, "재로그인이 필요합니다.", false), HttpStatus.UNAUTHORIZED);
         }
 
         // 신규 Refresh, Access Token 발급
         RefreshTokenForm refreshTokenForm = memberService.refreshAccessToken(refreshToken);
 
         if (!StringUtils.hasText(refreshTokenForm.getRefreshToken())) {
-            return new ResponseForm<>(StatusCode.UNAUTHORIZED, "재로그인이 필요합니다.", false);
+            return new ResponseEntity<>(new ResponseForm<>(StatusCode.UNAUTHORIZED, "재로그인이 필요합니다.", false), HttpStatus.UNAUTHORIZED);
         }
 
         response.addCookie(getRefreshTokenCookie(refreshTokenForm.getRefreshToken()));
 
-        return new ResponseForm<>(StatusCode.OK, "토큰 발급에 성공하였습니다.", refreshTokenForm.getAccessToken(), false);
+        return new ResponseEntity<>(new ResponseForm<>(StatusCode.OK, "토큰 발급에 성공하였습니다.", refreshTokenForm.getAccessToken(), false), HttpStatus.OK);
     }
 
     private Cookie getRefreshTokenCookie(String refreshToken) {
