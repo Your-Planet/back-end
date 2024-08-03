@@ -34,12 +34,14 @@ public class WebSecurityConfig {
             "/webjars/**",
             /* swagger v3 */
             "/v3/api-docs/**",
-            "/swagger-ui/**"
+            "/swagger-ui/**",
+            /* business */
+            "/auth/**"
     };
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web.ignoring().antMatchers();
+        return web -> web.ignoring().antMatchers(PERMIT_URL_ARRAY);
     }
 
     // 비밀번호 암호화
@@ -62,7 +64,6 @@ public class WebSecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 토큰 기반 인증이므로 세션 사용 안함
                 .and()
                 .authorizeRequests()
-                .antMatchers("/member/**").permitAll()
                 .antMatchers("/files/**").permitAll()
                 .antMatchers(PERMIT_URL_ARRAY).permitAll()
                 .anyRequest().authenticated()
