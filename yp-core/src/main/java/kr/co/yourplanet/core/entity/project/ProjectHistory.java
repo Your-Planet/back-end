@@ -37,9 +37,6 @@ public class ProjectHistory extends BasicColumn {
     @Column(name = "additional_cuts")
     private Integer additionalCuts;
 
-    @Column(name = "author_consultation_cuts")
-    private Boolean isAuthorConsultationCuts;
-
     /**
      * 추가 수정 횟수
      */

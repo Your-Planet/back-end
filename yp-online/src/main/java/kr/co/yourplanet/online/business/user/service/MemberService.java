@@ -58,7 +58,7 @@ public class MemberService {
         }
 
         // 작가 인스타그램 계정 기가입 여부 확인
-        if (MemberType.AUTHOR.equals(joinForm.getMemberType()) && memberRepository.findByInstagramId(joinForm.getInstagramId()).isPresent()) {
+        if (MemberType.CREATOR.equals(joinForm.getMemberType()) && memberRepository.findByInstagramId(joinForm.getInstagramId()).isPresent()) {
             throw new BusinessException(StatusCode.BAD_REQUEST, "이미 가입된 인스타그램 계정입니다.", false);
         }
 

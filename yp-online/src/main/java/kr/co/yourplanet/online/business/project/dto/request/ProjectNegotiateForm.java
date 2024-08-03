@@ -22,10 +22,6 @@ public class ProjectNegotiateForm {
     @PositiveOrZero(message = "추가 컷 수는 0 이상으로 입력해주세요")
     private Integer additionalCuts;
     /**
-     * 추가 컷 수 작가 협의 여부
-     */
-    private boolean isAuthorConsultationCuts;
-    /**
      * 추가 수정 횟수
      */
     @PositiveOrZero(message = "추가 수정 횟수는 0 이상으로 입력해주세요")
