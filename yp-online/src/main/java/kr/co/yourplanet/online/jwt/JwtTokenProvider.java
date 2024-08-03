@@ -57,8 +57,8 @@ public class JwtTokenProvider {
     // 토큰 유효성 검증 (변조, 만료시간)
     public boolean validateAccessToken(String token) {
         try {
-            if (!token.startsWith("Bearer ")) {
-                return false;
+            if (token == null || !token.startsWith("Bearer ")) {
+                throw new JwtException("유효하지 않은 토큰");
             }
             String originToken = token.substring(7);
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(originToken);
@@ -71,7 +71,7 @@ public class JwtTokenProvider {
             throw new JwtException("토큰 위변조 오류");
         } catch (Exception e) {
             log.error("JWT 인증 확인 중 오류 " + e.getMessage());
-            throw new JwtException("JWT 인증 확인 중 오류");
+            throw new JwtException("유효하지 않은 토큰");
         }
     }
 
