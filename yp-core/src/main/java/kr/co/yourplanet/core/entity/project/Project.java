@@ -33,17 +33,14 @@ public class Project extends BasicColumn {
     private Member sponsor;
 
     @ManyToOne
-    @JoinColumn(name = "author_id", referencedColumnName = "id")
-    private Member author;
+    @JoinColumn(name = "creator_id", referencedColumnName = "id")
+    private Member creator;
 
     /**
      * 추가 컷 수
      */
     @Column(name = "additional_cuts")
     private Integer additionalCuts;
-
-    @Column(name = "author_consultation_cuts")
-    private Boolean isAuthorConsultationCuts;
 
     /**
      * 추가 수정 횟수

@@ -18,7 +18,6 @@ public class ProjectHistories {
     private Long id;
     private Integer seq;
     private Integer additionalCuts;
-    private boolean isAuthorConsultationCuts;
     private Integer additionalModificationCount;
     private Integer additionalPostDurationMonth;
     private boolean isOriginFileRequested;

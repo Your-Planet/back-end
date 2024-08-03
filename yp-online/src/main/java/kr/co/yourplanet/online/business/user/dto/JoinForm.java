@@ -29,7 +29,7 @@ public class JoinForm {
     TermsInfo termsInfo;
     private String birthDate; // YYYYMMDD
 
-    // Author
+    // Creator
     private String instagramId;
     private String instagramUsername;
     private String instagramAccessToken;

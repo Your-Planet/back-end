@@ -33,14 +33,14 @@ public class ProjectService {
     @Transactional
     public void requestProject(ProjectRequestForm projectRequestForm, Long sponsorId) {
         Member sponsor = memberRepository.findById(sponsorId).orElseThrow(() -> new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 광고주 정보입니다.", false));
-        Member author = memberRepository.findById(projectRequestForm.getAuthorId()).orElseThrow(() -> new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 작가 정보입니다.", false));
+        Member creator = memberRepository.findById(projectRequestForm.getCreatorId()).orElseThrow(() -> new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 작가 정보입니다.", false));
 
         // 1. 유효성 체크
         if (!MemberType.SPONSOR.equals(sponsor.getMemberType())) {
             throw new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 광고주 정보입니다.", false);
         }
 
-        if (!MemberType.AUTHOR.equals(author.getMemberType())) {
+        if (!MemberType.CREATOR.equals(creator.getMemberType())) {
             throw new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 작가 정보입니다.", false);
         }
 
@@ -60,7 +60,7 @@ public class ProjectService {
         }
 
         Project project = Project.builder()
-                .author(author)
+                .creator(creator)
                 .sponsor(sponsor)
                 .projectStatus(ProjectStatus.REQUEST)
                 .build();
@@ -71,7 +71,6 @@ public class ProjectService {
                 .project(project) // 필요한 Project 객체
                 .seq(1) // 시퀀스 번호
                 .additionalCuts(projectRequestForm.getAdditionalCuts()) // 추가 컷 수
-                .isAuthorConsultationCuts(projectRequestForm.isAuthorConsultationCuts())
                 .additionalModificationCount(projectRequestForm.getAdditionalModificationCount()) // 추가 수정 횟수
                 .additionalPostDurationMonth(projectRequestForm.getAdditionalPostDurationMonth()) // 업로드 기간 연장 (월)
                 .isOriginFileRequested(projectRequestForm.isOriginFileRequested()) // 원본 파일 요청 여부
@@ -129,7 +128,6 @@ public class ProjectService {
                 .project(project)
                 .seq(seq)
                 .additionalCuts(projectNegotiateForm.getAdditionalCuts()) // 추가 컷 수
-                .isAuthorConsultationCuts(projectNegotiateForm.isAuthorConsultationCuts())
                 .additionalModificationCount(projectNegotiateForm.getAdditionalModificationCount()) // 추가 수정 횟수
                 .additionalPostDurationMonth(projectNegotiateForm.getAdditionalPostDurationMonth()) // 업로드 기간 연장 (월)
                 .isOriginFileRequested(projectNegotiateForm.isOriginFileRequested()) // 원본 파일 요청 여부
@@ -160,7 +158,7 @@ public class ProjectService {
 
         checkProjectValidation(member, project);
 
-        if (!MemberType.AUTHOR.equals(member.getMemberType())) {
+        if (!MemberType.CREATOR.equals(member.getMemberType())) {
             throw new BusinessException(StatusCode.BAD_REQUEST, "작업수락은 작가만 할 수 있습니다", false);
         }
 
@@ -201,8 +199,8 @@ public class ProjectService {
         }
 
         // 요청자가 Project와 관련되어 있는지 체크 (요청자 = 작가 or 광고주)
-        if (MemberType.AUTHOR.equals(member.getMemberType())) {
-            if (!member.equals(project.getAuthor())) {
+        if (MemberType.CREATOR.equals(member.getMemberType())) {
+            if (!member.equals(project.getCreator())) {
                 throw new BusinessException(StatusCode.BAD_REQUEST, "사용자의 작업내역이 아닙니다", false);
             }
         } else if (MemberType.SPONSOR.equals(member.getMemberType()) && !member.equals(project.getSponsor())) {
