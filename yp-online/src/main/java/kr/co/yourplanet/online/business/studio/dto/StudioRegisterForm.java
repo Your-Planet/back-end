@@ -18,7 +18,6 @@ public class StudioRegisterForm {
     @NotBlank
     private String name;
     private String description;
-    private Boolean profileImageChanged;
     private List<String> categories;
     private List<String> portfolioIds;
 

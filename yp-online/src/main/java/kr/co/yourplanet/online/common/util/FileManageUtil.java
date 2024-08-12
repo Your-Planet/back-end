@@ -24,7 +24,7 @@ import java.util.UUID;
 public class FileManageUtil {
 
     private static final List<String> IMAGE_VALID_EXTENSIONS = Arrays.asList("jpg", "jpeg", "png", "gif");
-    private static long MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+    private static final long MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
     private final FileProperties fileProperties;
 
@@ -45,7 +45,7 @@ public class FileManageUtil {
                     .fileUrl(fileUrl)
                     .build();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("파일 저장 오류 : " + fileUrl);
             throw new BusinessException(StatusCode.INTERNAL_SERVER_ERROR, "파일 저장 중 오류가 발생하였습니다.", false);
         }
     }
@@ -55,7 +55,8 @@ public class FileManageUtil {
         try {
             Files.delete(path);
         } catch (IOException e) {
-            log.error("파일 삭제 오류 : " + path.toString());
+            log.error("파일 삭제 오류 : " + path);
+            throw new BusinessException(StatusCode.INTERNAL_SERVER_ERROR, "파일 저장 중 오류가 발생하였습니다.", false);
         }
     }
 

@@ -22,6 +22,7 @@ encrypt:
   secret: yourplanet123456
 
 file:
+  base-url: http://ec2-15-164-160-23.ap-northeast-2.compute.amazonaws.com:8080
   profile-path: /app/files/upload/profile/
   profile-url: /files/profile/
   studio-path: /app/files/upload/studio/
