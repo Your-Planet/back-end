@@ -11,6 +11,7 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 @ConfigurationProperties(prefix = "file")
 public class FileProperties {
 
+    private final String baseUrl;
     private final String profilePath;
     private final String profileUrl;
     private final String studioPath;

@@ -22,6 +22,7 @@ import kr.co.yourplanet.online.business.user.repository.MemberRepository;
 import kr.co.yourplanet.online.common.exception.BusinessException;
 import kr.co.yourplanet.online.common.util.FileManageUtil;
 import kr.co.yourplanet.online.common.util.FileUploadResult;
+import kr.co.yourplanet.online.properties.FileProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -47,6 +48,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final PortfolioLinkRepository portfolioLinkRepository;
     private final CategoryRepository categoryRepository;
     private final InstagramMediaRepository instagramMediaRepository;
+    private final FileProperties fileProperties;
 
     public StudioBasicInfo getStudio(Long memberId) {
         Optional<Studio> optionalStudio = studioRepository.findById(memberId);
@@ -61,7 +63,7 @@ public class ProfileServiceImpl implements ProfileService {
                 .description(studio.getDescription())
                 .categories(studio.getCategoryTypes())
                 .portfolios(medias)
-                .profileImageUrl(studio.getProfileImageUrl())
+                .profileImageUrl(fileProperties.getBaseUrl() + studio.getProfileImageUrl())
                 .build();
     }
 
@@ -69,11 +71,6 @@ public class ProfileServiceImpl implements ProfileService {
     public void upsertAndDeleteStudio(Long memberId, StudioRegisterForm studioDto, MultipartFile profileImageFile) {
         if (studioDto.isDuplicateIds()) {
             throw new BusinessException(StatusCode.BAD_REQUEST, "중복된 포트폴리오 ID가 포함되어 있습니다.", false);
-        }
-
-        // 프로필 이미지 변경 되었을 경우
-        if (Boolean.TRUE.equals(studioDto.getProfileImageChanged())) {
-            fileManageUtil.validateImageFile(profileImageFile);
         }
 
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "해당 회원 정보가 존재하지 않습니다.", false));
@@ -120,7 +117,8 @@ public class ProfileServiceImpl implements ProfileService {
         }
 
         // 프로필 이미지 저장 부분
-        if (Boolean.TRUE.equals(studioDto.getProfileImageChanged())) {
+        if (profileImageFile != null && !profileImageFile.isEmpty()) {
+            fileManageUtil.validateImageFile(profileImageFile);
             // 모든 스튜디오 프로필 저장 로직이 완료된 후 프로필 이미지 저장처리
             // 기존에 존재하는 프로필 이미지 삭제
             if (StringUtils.hasText(studio.getProfileImagePath())) {

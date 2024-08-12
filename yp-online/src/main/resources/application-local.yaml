@@ -33,6 +33,7 @@ encrypt:
   secret: yourplanet123456
 
 file:
+  base-url: localhost:8080
   profile-path: /Users/fong/files/upload/profile/
   profile-url: /files/profile/
   studio-path: /Users/fong/files/upload/studio/
