@@ -13,5 +13,5 @@ public class StudioBasicDao {
     private String toonName;
     private String description;
     private String instagramUsername;
-    private String categoryName;
+    private String categoryCode;
 }

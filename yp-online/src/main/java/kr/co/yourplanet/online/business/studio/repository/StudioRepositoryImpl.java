@@ -80,7 +80,7 @@ public class StudioRepositoryImpl implements StudioRepositoryCustom {
         List<Long> studiosIds = studioQuery.getResultList();
 
         // 2.1 스튜디오 기본 정보 조회
-        String studioBasicQuery = "select new kr.co.yourplanet.online.business.studio.dao.StudioBasicDao(s.id, s.toonName, s.description, m.instagramUsername, pcm.category.categoryName) " +
+        String studioBasicQuery = "select new kr.co.yourplanet.online.business.studio.dao.StudioBasicDao(s.id, s.toonName, s.description, m.instagramUsername, pcm.category.categoryCode) " +
                 "from Studio s " +
                 "join PortfolioCategoryMap pcm on s.id = pcm.studio.id " +
                 "join Member m on s.id = m.id " +

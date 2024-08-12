@@ -181,7 +181,7 @@ public class ProfileServiceImpl implements ProfileService {
             StudioBasicSearch studioBasicSearch = studioBasicSearchMap.get(studioId);
             if (studioBasicSearch == null) {
                 List<String> categoryList = new ArrayList<>();
-                categoryList.add(studioBasicDao.getCategoryName());
+                categoryList.add(studioBasicDao.getCategoryCode());
                 studioBasicSearchMap.put(studioId, StudioBasicSearch.builder()
                         .id(studioBasicDao.getId())
                         .name(studioBasicDao.getToonName())
@@ -190,7 +190,7 @@ public class ProfileServiceImpl implements ProfileService {
                         .categories(categoryList)
                         .build());
             } else {
-                studioBasicSearch.getCategories().add(studioBasicDao.getCategoryName());
+                studioBasicSearch.getCategories().add(studioBasicDao.getCategoryCode());
             }
         }
 
