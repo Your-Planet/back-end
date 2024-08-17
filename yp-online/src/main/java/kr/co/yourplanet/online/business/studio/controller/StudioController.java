@@ -33,7 +33,7 @@ public class StudioController {
 
     @PostMapping(value = "/studio/profile", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseForm<Void> createStudioProfile(@AuthenticationPrincipal JwtPrincipal principal, @RequestPart StudioRegisterForm studioRegisterForm
-            , @RequestPart MultipartFile profileImage) {
+            , @RequestPart(required = false) MultipartFile profileImage) {
         profileService.upsertAndDeleteStudio(principal.getId(), studioRegisterForm, profileImage);
         return new ResponseForm<>(StatusCode.OK);
     }
