@@ -1,10 +1,10 @@
 package kr.co.yourplanet.online.business.studio.service;
 
-import kr.co.yourplanet.online.business.studio.dto.PriceForm;
+import kr.co.yourplanet.online.business.studio.dto.PriceInfo;
 
 public interface PriceService {
-    PriceForm getPrice(Long memberId);
-    void savePrice(Long memberId, PriceForm priceForm);
-    PriceForm getTempPrice(Long memberId);
-    void saveTempPrice(Long memberId, PriceForm priceForm);
+    PriceInfo getPrice(Long memberId);
+    void savePrice(Long memberId, PriceInfo priceInfo);
+    PriceInfo getTempPrice(Long memberId);
+    void saveTempPrice(Long memberId, PriceInfo priceInfo);
 }

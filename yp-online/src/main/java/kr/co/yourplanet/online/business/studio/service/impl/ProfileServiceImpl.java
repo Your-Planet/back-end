@@ -10,8 +10,8 @@ import kr.co.yourplanet.core.enums.FileType;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.instagram.repository.InstagramMediaRepository;
 import kr.co.yourplanet.online.business.studio.dao.StudioBasicDao;
+import kr.co.yourplanet.online.business.studio.dto.ProfileInfo;
 import kr.co.yourplanet.online.business.studio.dto.StudioBasicInfo;
-import kr.co.yourplanet.online.business.studio.dto.StudioBasicSearch;
 import kr.co.yourplanet.online.business.studio.dto.StudioRegisterForm;
 import kr.co.yourplanet.online.business.studio.repository.CategoryRepository;
 import kr.co.yourplanet.online.business.studio.repository.PortfolioCategoryMapRepository;
@@ -50,7 +50,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final InstagramMediaRepository instagramMediaRepository;
     private final FileProperties fileProperties;
 
-    public StudioBasicInfo getStudio(Long memberId) {
+    public ProfileInfo getStudio(Long memberId) {
         Optional<Studio> optionalStudio = studioRepository.findById(memberId);
         if (!optionalStudio.isPresent()) {
             throw new BusinessException(StatusCode.NOT_FOUND, "스튜디오 정보가 존재하지 않습니다.", false);
@@ -58,7 +58,7 @@ public class ProfileServiceImpl implements ProfileService {
         Studio studio = optionalStudio.get();
         List<InstagramMedia> medias = studio.getPortfolioLinkUrls();
 
-        return StudioBasicInfo.builder()
+        return ProfileInfo.builder()
                 .name(studio.getToonName())
                 .description(studio.getDescription())
                 .categories(studio.getCategoryTypes())
@@ -132,7 +132,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public Page<StudioBasicSearch> searchStudios(List<String> inputCategories, String keywordType, String keyword, Integer minPrice, Integer maxPrice, Integer inputPageNumber, Integer inputPageSize) {
+    public Page<StudioBasicInfo> searchStudios(List<String> inputCategories, String keywordType, String keyword, Integer minPrice, Integer maxPrice, Integer inputPageNumber, Integer inputPageSize) {
         List<Category> categories = new ArrayList<>();
         String toonName = "";
         String description = "";
@@ -173,16 +173,16 @@ public class ProfileServiceImpl implements ProfileService {
 
         List<StudioBasicDao> studioBasicDaoList = studioRepository.findStudioBasicsWithFilters(categories, toonName, description, instagramUsername, minPrice, maxPrice, pageable);
 
-        Map<Long, StudioBasicSearch> studioBasicSearchMap = new HashMap<>();
+        Map<Long, StudioBasicInfo> studioBasicSearchMap = new HashMap<>();
 
         // 카테고리 Grouping
         for (StudioBasicDao studioBasicDao : studioBasicDaoList) {
             Long studioId = studioBasicDao.getId();
-            StudioBasicSearch studioBasicSearch = studioBasicSearchMap.get(studioId);
-            if (studioBasicSearch == null) {
+            StudioBasicInfo studioBasicInfo = studioBasicSearchMap.get(studioId);
+            if (studioBasicInfo == null) {
                 List<String> categoryList = new ArrayList<>();
                 categoryList.add(studioBasicDao.getCategoryCode());
-                studioBasicSearchMap.put(studioId, StudioBasicSearch.builder()
+                studioBasicSearchMap.put(studioId, StudioBasicInfo.builder()
                         .id(studioBasicDao.getId())
                         .name(studioBasicDao.getToonName())
                         .description(studioBasicDao.getDescription())
@@ -190,7 +190,7 @@ public class ProfileServiceImpl implements ProfileService {
                         .categories(categoryList)
                         .build());
             } else {
-                studioBasicSearch.getCategories().add(studioBasicDao.getCategoryCode());
+                studioBasicInfo.getCategories().add(studioBasicDao.getCategoryCode());
             }
         }
 

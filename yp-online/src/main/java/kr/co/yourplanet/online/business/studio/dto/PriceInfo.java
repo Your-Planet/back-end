@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PriceForm {
+public class PriceInfo {
     @Valid
     @NotNull
     private DefaultOption service;
