@@ -22,48 +22,48 @@ public class PriceServiceImpl implements PriceService {
     private final PriceRepository priceRepository;
     private final TempPriceRepository tempPriceRepository;
     private final StudioRepository studioRepository;
-    public PriceForm getPrice(Long memberId) {
+    public PriceInfo getPrice(Long memberId) {
         Price price = priceRepository.findById(memberId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "가격 정보가 존재하지 않습니다.", false));
         return convertPriceToPriceForm(price);
     }
 
     @Transactional
-    public void savePrice(Long memberId, PriceForm priceForm) {
+    public void savePrice(Long memberId, PriceInfo priceInfo) {
         Optional<Price> optionalPrice = priceRepository.findById(memberId);
         Price price;
         if (optionalPrice.isPresent()){
             price = optionalPrice.get();
             price.updateDefaultOption(
-                    priceForm.getService().getPrice(),
-                    priceForm.getService().getWorkingDays(),
-                    priceForm.getService().getModificationCount(),
-                    priceForm.getService().getDefaultCuts(),
-                    priceForm.getService().getPostDurationMonthType()
+                    priceInfo.getService().getPrice(),
+                    priceInfo.getService().getWorkingDays(),
+                    priceInfo.getService().getModificationCount(),
+                    priceInfo.getService().getDefaultCuts(),
+                    priceInfo.getService().getPostDurationMonthType()
             );
             price.updateAdditionalCutOption(
-                    priceForm.getOption().getAdditionalPanel().getPrice(),
-                    priceForm.getOption().getAdditionalPanel().getWorkingDays(),
-                    priceForm.getOption().getAdditionalPanel().getProvisionType()
+                    priceInfo.getOption().getAdditionalPanel().getPrice(),
+                    priceInfo.getOption().getAdditionalPanel().getWorkingDays(),
+                    priceInfo.getOption().getAdditionalPanel().getProvisionType()
             );
             price.updateAdditionalModificationOption(
-                    priceForm.getOption().getAdditionalModification().getPrice(),
-                    priceForm.getOption().getAdditionalModification().getWorkingDays(),
-                    priceForm.getOption().getAdditionalModification().getProvisionType()
+                    priceInfo.getOption().getAdditionalModification().getPrice(),
+                    priceInfo.getOption().getAdditionalModification().getWorkingDays(),
+                    priceInfo.getOption().getAdditionalModification().getProvisionType()
             );
             price.updateRefinementOption(
-                    priceForm.getOption().getRefinement().getPrice(),
-                    priceForm.getOption().getRefinement().getProvisionType()
+                    priceInfo.getOption().getRefinement().getPrice(),
+                    priceInfo.getOption().getRefinement().getProvisionType()
             );
             price.updateOriginFileOption(
-                    priceForm.getOption().getOriginFile().getPrice(),
-                    priceForm.getOption().getOriginFile().getProvisionType()
+                    priceInfo.getOption().getOriginFile().getPrice(),
+                    priceInfo.getOption().getOriginFile().getProvisionType()
             );
             price.updatePostDurationExtensionOption(
-                    priceForm.getOption().getPostDurationExtension().getPrice(),
-                    priceForm.getOption().getPostDurationExtension().getProvisionType()
+                    priceInfo.getOption().getPostDurationExtension().getPrice(),
+                    priceInfo.getOption().getPostDurationExtension().getProvisionType()
             );
         } else {
-            price = convertPriceFormToPrice(memberId, priceForm);
+            price = convertPriceFormToPrice(memberId, priceInfo);
         }
         priceRepository.save(price);
 
@@ -71,55 +71,55 @@ public class PriceServiceImpl implements PriceService {
         tempPriceRepository.findById(memberId).ifPresent(tempPriceRepository::delete);
     }
 
-    public PriceForm getTempPrice(Long memberId) {
+    public PriceInfo getTempPrice(Long memberId) {
         TempPrice tempPrice = tempPriceRepository.findById(memberId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "임시 가격 정보가 존재하지 않습니다.", false));
         return convertTempPriceToPriceForm(tempPrice);
     }
 
     @Transactional
-    public void saveTempPrice(Long memberId, PriceForm priceForm) {
+    public void saveTempPrice(Long memberId, PriceInfo priceInfo) {
         Optional<TempPrice> optionalTempPrice = tempPriceRepository.findById(memberId);
         TempPrice tempPrice;
 
         if (optionalTempPrice.isPresent()){
             tempPrice = optionalTempPrice.get();
             tempPrice.updateDefaultOption(
-                    priceForm.getService().getPrice(),
-                    priceForm.getService().getWorkingDays(),
-                    priceForm.getService().getModificationCount(),
-                    priceForm.getService().getDefaultCuts(),
-                    priceForm.getService().getPostDurationMonthType()
+                    priceInfo.getService().getPrice(),
+                    priceInfo.getService().getWorkingDays(),
+                    priceInfo.getService().getModificationCount(),
+                    priceInfo.getService().getDefaultCuts(),
+                    priceInfo.getService().getPostDurationMonthType()
             );
             tempPrice.updateAdditionalCutOption(
-                    priceForm.getOption().getAdditionalPanel().getPrice(),
-                    priceForm.getOption().getAdditionalPanel().getWorkingDays(),
-                    priceForm.getOption().getAdditionalPanel().getProvisionType()
+                    priceInfo.getOption().getAdditionalPanel().getPrice(),
+                    priceInfo.getOption().getAdditionalPanel().getWorkingDays(),
+                    priceInfo.getOption().getAdditionalPanel().getProvisionType()
             );
             tempPrice.updateAdditionalModificationOption(
-                    priceForm.getOption().getAdditionalModification().getPrice(),
-                    priceForm.getOption().getAdditionalModification().getWorkingDays(),
-                    priceForm.getOption().getAdditionalModification().getProvisionType()
+                    priceInfo.getOption().getAdditionalModification().getPrice(),
+                    priceInfo.getOption().getAdditionalModification().getWorkingDays(),
+                    priceInfo.getOption().getAdditionalModification().getProvisionType()
             );
             tempPrice.updateRefinementOption(
-                    priceForm.getOption().getRefinement().getPrice(),
-                    priceForm.getOption().getRefinement().getProvisionType()
+                    priceInfo.getOption().getRefinement().getPrice(),
+                    priceInfo.getOption().getRefinement().getProvisionType()
             );
             tempPrice.updateOriginFileOption(
-                    priceForm.getOption().getOriginFile().getPrice(),
-                    priceForm.getOption().getOriginFile().getProvisionType()
+                    priceInfo.getOption().getOriginFile().getPrice(),
+                    priceInfo.getOption().getOriginFile().getProvisionType()
             );
             tempPrice.updatePostDurationExtensionOption(
-                    priceForm.getOption().getPostDurationExtension().getPrice(),
-                    priceForm.getOption().getPostDurationExtension().getProvisionType()
+                    priceInfo.getOption().getPostDurationExtension().getPrice(),
+                    priceInfo.getOption().getPostDurationExtension().getProvisionType()
             );
         } else {
-            tempPrice = convertPriceFormToTempPrice(memberId, priceForm);
+            tempPrice = convertPriceFormToTempPrice(memberId, priceInfo);
         }
         tempPriceRepository.save(tempPrice);
     }
 
-    private PriceForm convertPriceToPriceForm(Price price) {
-        PriceForm.DefaultOption defaultOption = PriceForm.DefaultOption.builder()
+    private PriceInfo convertPriceToPriceForm(Price price) {
+        PriceInfo.DefaultOption defaultOption = PriceInfo.DefaultOption.builder()
                 .price(price.getPrice())
                 .workingDays(price.getWorkingDays())
                 .defaultCuts(price.getCuts())
@@ -127,72 +127,72 @@ public class PriceServiceImpl implements PriceService {
                 .postDurationMonthType(price.getPostDurationType())
                 .build();
 
-        PriceForm.AdditionalModification additionalModification = PriceForm.AdditionalModification.builder()
+        PriceInfo.AdditionalModification additionalModification = PriceInfo.AdditionalModification.builder()
                 .provisionType(price.getAdditionalModificationOptionType())
                 .workingDays(price.getModificationOptionWorkingDays())
                 .price(price.getModificationOptionPrice())
                 .build();
 
-        PriceForm.AdditionalPanel additionalPanel = PriceForm.AdditionalPanel.builder()
+        PriceInfo.AdditionalPanel additionalPanel = PriceInfo.AdditionalPanel.builder()
                 .provisionType(price.getAdditionalCutOptionType())
                 .workingDays(price.getCutOptionWorkingDays())
                 .price(price.getCutOptionPrice())
                 .build();
 
-        PriceForm.Refinement refineMent = PriceForm.Refinement.builder()
+        PriceInfo.Refinement refineMent = PriceInfo.Refinement.builder()
                 .provisionType(price.getAdditionalRefinementOptionType())
                 .price(price.getRefinementPrice())
                 .build();
 
-        PriceForm.OriginFile originFile = PriceForm.OriginFile.builder()
+        PriceInfo.OriginFile originFile = PriceInfo.OriginFile.builder()
                 .provisionType(price.getAdditionalOriginFileOptionType())
                 .price(price.getOriginFileOptionPrice())
                 .build();
 
-        PriceForm.PostDurationExtension postDurationExtension = PriceForm.PostDurationExtension.builder()
+        PriceInfo.PostDurationExtension postDurationExtension = PriceInfo.PostDurationExtension.builder()
                 .provisionType(price.getAdditionalPostDurationExtensionType())
                 .price(price.getPostDurationExtensionPrice())
                 .build();
 
-        PriceForm.AdditionalPriceForm additionalOption = PriceForm.AdditionalPriceForm.builder()
+        PriceInfo.AdditionalPriceForm additionalOption = PriceInfo.AdditionalPriceForm.builder()
                 .additionalModification(additionalModification)
                 .additionalPanel(additionalPanel)
                 .refinement(refineMent)
                 .originFile(originFile)
                 .postDurationExtension(postDurationExtension)
                 .build();
-        return PriceForm.builder()
+        return PriceInfo.builder()
                 .service(defaultOption)
                 .option(additionalOption)
                 .build();
     }
 
-    private Price convertPriceFormToPrice(Long memberId, PriceForm priceForm) {
+    private Price convertPriceFormToPrice(Long memberId, PriceInfo priceInfo) {
         Studio studio = studioRepository.findById(memberId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "가격을 저장할 스튜디오가 존재하지 않습니다.", false));
         return Price.builder()
                 .studio(studio)
-                .price(priceForm.getService().getPrice())
-                .workingDays(priceForm.getService().getWorkingDays())
-                .cuts(priceForm.getService().getDefaultCuts())
-                .modificationCount(priceForm.getService().getModificationCount())
-                .postDurationType(priceForm.getService().getPostDurationMonthType())
-                .additionalModificationOptionType(priceForm.getOption().getAdditionalModification().getProvisionType())
-                .modificationOptionWorkingDays(priceForm.getOption().getAdditionalModification().getWorkingDays())
-                .modificationOptionPrice(priceForm.getOption().getAdditionalModification().getPrice())
-                .additionalCutOptionType(priceForm.getOption().getAdditionalPanel().getProvisionType())
-                .cutOptionWorkingDays(priceForm.getOption().getAdditionalPanel().getWorkingDays())
-                .cutOptionPrice(priceForm.getOption().getAdditionalPanel().getPrice())
-                .additionalRefinementOptionType(priceForm.getOption().getRefinement().getProvisionType())
-                .refinementPrice(priceForm.getOption().getRefinement().getPrice())
-                .additionalOriginFileOptionType(priceForm.getOption().getOriginFile().getProvisionType())
-                .originFileOptionPrice(priceForm.getOption().getOriginFile().getPrice())
-                .additionalPostDurationExtensionType(priceForm.getOption().getPostDurationExtension().getProvisionType())
-                .postDurationExtensionPrice(priceForm.getOption().getPostDurationExtension().getPrice())
+                .price(priceInfo.getService().getPrice())
+                .workingDays(priceInfo.getService().getWorkingDays())
+                .cuts(priceInfo.getService().getDefaultCuts())
+                .modificationCount(priceInfo.getService().getModificationCount())
+                .postDurationType(priceInfo.getService().getPostDurationMonthType())
+                .additionalModificationOptionType(priceInfo.getOption().getAdditionalModification().getProvisionType())
+                .modificationOptionWorkingDays(priceInfo.getOption().getAdditionalModification().getWorkingDays())
+                .modificationOptionPrice(priceInfo.getOption().getAdditionalModification().getPrice())
+                .additionalCutOptionType(priceInfo.getOption().getAdditionalPanel().getProvisionType())
+                .cutOptionWorkingDays(priceInfo.getOption().getAdditionalPanel().getWorkingDays())
+                .cutOptionPrice(priceInfo.getOption().getAdditionalPanel().getPrice())
+                .additionalRefinementOptionType(priceInfo.getOption().getRefinement().getProvisionType())
+                .refinementPrice(priceInfo.getOption().getRefinement().getPrice())
+                .additionalOriginFileOptionType(priceInfo.getOption().getOriginFile().getProvisionType())
+                .originFileOptionPrice(priceInfo.getOption().getOriginFile().getPrice())
+                .additionalPostDurationExtensionType(priceInfo.getOption().getPostDurationExtension().getProvisionType())
+                .postDurationExtensionPrice(priceInfo.getOption().getPostDurationExtension().getPrice())
                 .build();
     }
 
-    private PriceForm convertTempPriceToPriceForm(TempPrice tempPrice) {
-        PriceForm.DefaultOption defaultOption = PriceForm.DefaultOption.builder()
+    private PriceInfo convertTempPriceToPriceForm(TempPrice tempPrice) {
+        PriceInfo.DefaultOption defaultOption = PriceInfo.DefaultOption.builder()
                 .price(tempPrice.getPrice())
                 .workingDays(tempPrice.getWorkingDays())
                 .defaultCuts(tempPrice.getCuts())
@@ -200,67 +200,67 @@ public class PriceServiceImpl implements PriceService {
                 .postDurationMonthType(tempPrice.getPostDurationType())
                 .build();
 
-        PriceForm.AdditionalModification additionalModification = PriceForm.AdditionalModification.builder()
+        PriceInfo.AdditionalModification additionalModification = PriceInfo.AdditionalModification.builder()
                 .provisionType(tempPrice.getAdditionalModificationOptionType())
                 .workingDays(tempPrice.getModificationOptionWorkingDays())
                 .price(tempPrice.getModificationOptionPrice())
                 .build();
 
-        PriceForm.AdditionalPanel additionalPanel = PriceForm.AdditionalPanel.builder()
+        PriceInfo.AdditionalPanel additionalPanel = PriceInfo.AdditionalPanel.builder()
                 .provisionType(tempPrice.getAdditionalCutOptionType())
                 .workingDays(tempPrice.getCutOptionWorkingDays())
                 .price(tempPrice.getCutOptionPrice())
                 .build();
 
-        PriceForm.Refinement refineMent = PriceForm.Refinement.builder()
+        PriceInfo.Refinement refineMent = PriceInfo.Refinement.builder()
                 .provisionType(tempPrice.getAdditionalRefinementOptionType())
                 .price(tempPrice.getRefinementPrice())
                 .build();
 
-        PriceForm.OriginFile originFile = PriceForm.OriginFile.builder()
+        PriceInfo.OriginFile originFile = PriceInfo.OriginFile.builder()
                 .provisionType(tempPrice.getAdditionalOriginFileOptionType())
                 .price(tempPrice.getOriginFileOptionPrice())
                 .build();
 
-        PriceForm.PostDurationExtension postDurationExtension = PriceForm.PostDurationExtension.builder()
+        PriceInfo.PostDurationExtension postDurationExtension = PriceInfo.PostDurationExtension.builder()
                 .provisionType(tempPrice.getAdditionalPostDurationExtensionType())
                 .price(tempPrice.getPostDurationExtensionPrice())
                 .build();
 
-        PriceForm.AdditionalPriceForm additionalOption = PriceForm.AdditionalPriceForm.builder()
+        PriceInfo.AdditionalPriceForm additionalOption = PriceInfo.AdditionalPriceForm.builder()
                 .additionalModification(additionalModification)
                 .additionalPanel(additionalPanel)
                 .refinement(refineMent)
                 .originFile(originFile)
                 .postDurationExtension(postDurationExtension)
                 .build();
-        return PriceForm.builder()
+        return PriceInfo.builder()
                 .service(defaultOption)
                 .option(additionalOption)
                 .build();
     }
 
-    private TempPrice convertPriceFormToTempPrice(Long memberId, PriceForm priceForm) {
+    private TempPrice convertPriceFormToTempPrice(Long memberId, PriceInfo priceInfo) {
         Studio studio = studioRepository.findById(memberId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "가격을 저장할 스튜디오가 존재하지 않습니다.", false));
         return TempPrice.builder()
                 .studio(studio)
-                .price(priceForm.getService().getPrice())
-                .workingDays(priceForm.getService().getWorkingDays())
-                .cuts(priceForm.getService().getDefaultCuts())
-                .modificationCount(priceForm.getService().getModificationCount())
-                .postDurationType(priceForm.getService().getPostDurationMonthType())
-                .additionalModificationOptionType(priceForm.getOption().getAdditionalModification().getProvisionType())
-                .modificationOptionWorkingDays(priceForm.getOption().getAdditionalModification().getWorkingDays())
-                .modificationOptionPrice(priceForm.getOption().getAdditionalModification().getPrice())
-                .additionalCutOptionType(priceForm.getOption().getAdditionalPanel().getProvisionType())
-                .cutOptionWorkingDays(priceForm.getOption().getAdditionalPanel().getWorkingDays())
-                .cutOptionPrice(priceForm.getOption().getAdditionalPanel().getPrice())
-                .additionalRefinementOptionType(priceForm.getOption().getRefinement().getProvisionType())
-                .refinementPrice(priceForm.getOption().getRefinement().getPrice())
-                .additionalOriginFileOptionType(priceForm.getOption().getOriginFile().getProvisionType())
-                .originFileOptionPrice(priceForm.getOption().getOriginFile().getPrice())
-                .additionalPostDurationExtensionType(priceForm.getOption().getPostDurationExtension().getProvisionType())
-                .postDurationExtensionPrice(priceForm.getOption().getPostDurationExtension().getPrice())
+                .price(priceInfo.getService().getPrice())
+                .workingDays(priceInfo.getService().getWorkingDays())
+                .cuts(priceInfo.getService().getDefaultCuts())
+                .modificationCount(priceInfo.getService().getModificationCount())
+                .postDurationType(priceInfo.getService().getPostDurationMonthType())
+                .additionalModificationOptionType(priceInfo.getOption().getAdditionalModification().getProvisionType())
+                .modificationOptionWorkingDays(priceInfo.getOption().getAdditionalModification().getWorkingDays())
+                .modificationOptionPrice(priceInfo.getOption().getAdditionalModification().getPrice())
+                .additionalCutOptionType(priceInfo.getOption().getAdditionalPanel().getProvisionType())
+                .cutOptionWorkingDays(priceInfo.getOption().getAdditionalPanel().getWorkingDays())
+                .cutOptionPrice(priceInfo.getOption().getAdditionalPanel().getPrice())
+                .additionalRefinementOptionType(priceInfo.getOption().getRefinement().getProvisionType())
+                .refinementPrice(priceInfo.getOption().getRefinement().getPrice())
+                .additionalOriginFileOptionType(priceInfo.getOption().getOriginFile().getProvisionType())
+                .originFileOptionPrice(priceInfo.getOption().getOriginFile().getPrice())
+                .additionalPostDurationExtensionType(priceInfo.getOption().getPostDurationExtension().getProvisionType())
+                .postDurationExtensionPrice(priceInfo.getOption().getPostDurationExtension().getPrice())
                 .build();
     }
 }
