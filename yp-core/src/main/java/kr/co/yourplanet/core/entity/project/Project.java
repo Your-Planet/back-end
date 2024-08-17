@@ -2,6 +2,7 @@ package kr.co.yourplanet.core.entity.project;
 
 import kr.co.yourplanet.core.entity.BasicColumn;
 import kr.co.yourplanet.core.entity.member.Member;
+import kr.co.yourplanet.core.enums.DemandType;
 import kr.co.yourplanet.core.enums.ProjectStatus;
 import kr.co.yourplanet.core.enums.ValidEnum;
 import kr.co.yourplanet.core.util.StringListConverter;
@@ -39,8 +40,8 @@ public class Project extends BasicColumn {
     /**
      * 추가 컷 수
      */
-    @Column(name = "additional_cuts")
-    private Integer additionalCuts;
+    @Column(name = "additional_panel_count")
+    private Integer additionalPanelCount;
 
     /**
      * 추가 수정 횟수
@@ -49,44 +50,29 @@ public class Project extends BasicColumn {
     private Integer additionalModificationCount;
 
     /**
-     * 업로드 기간 연장
-     */
-    @Column(name = "additional_post_duration_month")
-    private Integer additionalPostDurationMonth;
-
-    /**
      * 원본 파일 요청 여부
      */
-    @Column(name = "origin_file_requested")
-    private Boolean isOriginFileRequested;
+    @Column(name = "origin_file_demand_type")
+    private DemandType originFileDemandType;
 
     /**
      * 2차 활용 요청 여부
      */
-    @Column(name = "refinement_requested")
-    private Boolean isRefinementRequested;
+    @Column(name = "refinement_demand_type")
+    private DemandType refinementDemandType;
 
     /**
-     * 날짜 지정 여부
+     * 업로드 기간 연장
      */
-    @Column(name = "date_specified")
-    private Boolean isDateSpecified;
-    /**
-     * 광고 기간 - 날짜 지정
-     */
-    @Column(name = "post_specific_dates")
-    private List<LocalDate> postSpecificDates;
+    @Column(name = "post_duration_extension_months")
+    private Integer postDurationExtensionMonths;
+
     /**
      * 광고 기간 - 시작 기간 선택
      */
-    @Column(name = "post_start_date")
-    private LocalDate postStartDate;
-
-    /**
-     * 광고 기간 - 종료 기간 선택
-     */
-    @Column(name = "post_end_date")
-    private LocalDate postEndDate;
+    @Convert(converter = StringListConverter.class)
+    @Column(name = "post_start_dates")
+    private List<LocalDate> postStartDates;
 
     /**
      * 작업 기한
@@ -100,23 +86,20 @@ public class Project extends BasicColumn {
     @Size(max = 30)
     @Column(name = "brand_name")
     private String brandName;
-    /**
-     * 브랜드 URL
-     */
-    @Convert(converter = StringListConverter.class)
-    @Column(name = "brand_urls")
-    private List<String> brandUrls;
+
     /**
      * 캠페인 소개
      */
     @Column(name = "campaign_description")
     private String campaignDescription;
+
     /**
-     * 캠페인 URL
+     * 참고 URL
      */
     @Convert(converter = StringListConverter.class)
-    @Column(name = "campaign_urls")
-    private List<String> campaignUrls;
+    @Column(name = "reference_urls")
+    private List<String> referenceUrls;
+
     /**
      * 금액
      */
@@ -126,8 +109,8 @@ public class Project extends BasicColumn {
     /**
      * 기타 요청사항
      */
-    @Column(name = "request_notes")
-    private String requestNotes;
+    @Column(name = "message")
+    private String message;
 
     @ValidEnum(enumClass = ProjectStatus.class)
     @Column(name = "project_status")
@@ -147,19 +130,16 @@ public class Project extends BasicColumn {
     }
 
     public void acceptProject(ProjectHistory projectHistory) {
-        this.additionalCuts = projectHistory.getAdditionalCuts();
+        this.additionalPanelCount = projectHistory.getAdditionalPanelCount();
         this.additionalModificationCount = projectHistory.getAdditionalModificationCount();
-        this.additionalPostDurationMonth = projectHistory.getAdditionalPostDurationMonth();
-        this.isOriginFileRequested = projectHistory.getIsOriginFileRequested();
-        this.isRefinementRequested = projectHistory.getIsRefinementRequested();
-        this.postSpecificDates = projectHistory.getPostSpecificDates();
-        this.postStartDate = projectHistory.getPostStartDate();
-        this.postEndDate = projectHistory.getPostEndDate();
+        this.postDurationExtensionMonths = projectHistory.getPostDurationExtensionMonths();
+        this.originFileDemandType = projectHistory.getOriginFileDemandType();
+        this.refinementDemandType = projectHistory.getRefinementDemandType();
+        this.postStartDates = projectHistory.getPostStartDates();
         this.dueDate = projectHistory.getDueDate();
         this.brandName = projectHistory.getBrandName();
-        this.brandUrls = projectHistory.getBrandUrls();
+        this.referenceUrls = projectHistory.getReferenceUrls();
         this.campaignDescription = projectHistory.getCampaignDescription();
-        this.campaignUrls = projectHistory.getCampaignUrls();
         this.price = projectHistory.getOfferPrice();
         this.categoryList = projectHistory.getCategoryList();
         this.projectStatus = ProjectStatus.ACCEPT;
