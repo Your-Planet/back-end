@@ -186,6 +186,7 @@ public class ProfileServiceImpl implements ProfileService {
                         .id(studioBasicDao.getId())
                         .name(studioBasicDao.getToonName())
                         .description(studioBasicDao.getDescription())
+                        .profileImageUrl(fileProperties.getBaseUrl() + studioBasicDao.getProfileImageUrl())
                         .instagramUsername(studioBasicDao.getInstagramUsername())
                         .categories(categoryList)
                         .build());
