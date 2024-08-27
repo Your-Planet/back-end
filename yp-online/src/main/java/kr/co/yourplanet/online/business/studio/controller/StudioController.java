@@ -24,13 +24,12 @@ public class StudioController {
 
     @GetMapping("/studio/profile")
     public ResponseForm<ProfileInfo> getStudioProfile(@AuthenticationPrincipal JwtPrincipal principal) {
-        ProfileInfo profileInfo = profileService.getStudio(principal.getId());
+        ProfileInfo profileInfo = profileService.getStudioProfile(principal.getId());
         return new ResponseForm<>(StatusCode.OK, profileInfo);
     }
 
     @PostMapping(value = "/studio/profile", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseForm<Void> createStudioProfile(@AuthenticationPrincipal JwtPrincipal principal, @RequestPart StudioRegisterForm studioRegisterForm
-            , @RequestPart(required = false) MultipartFile profileImage) {
+    public ResponseForm<Void> createStudioProfile(@RequestPart StudioRegisterForm studioRegisterForm, @RequestPart(required = false) MultipartFile profileImage, @AuthenticationPrincipal JwtPrincipal principal) {
         profileService.upsertAndDeleteStudio(principal.getId(), studioRegisterForm, profileImage);
         return new ResponseForm<>(StatusCode.OK);
     }
@@ -42,7 +41,7 @@ public class StudioController {
     }
 
     @PostMapping("/studio/price")
-    public ResponseForm<Void> savePrice(@AuthenticationPrincipal JwtPrincipal principal, @RequestBody @Valid PriceInfo priceInfo) {
+    public ResponseForm<Void> savePrice(@RequestBody @Valid PriceInfo priceInfo, @AuthenticationPrincipal JwtPrincipal principal) {
         priceService.savePrice(principal.getId(), priceInfo);
         return new ResponseForm<>(StatusCode.OK);
     }
@@ -54,7 +53,7 @@ public class StudioController {
     }
 
     @PostMapping("/studio/price-temp")
-    public ResponseForm<Void> saveTempPrice(@AuthenticationPrincipal JwtPrincipal principal, @RequestBody @Valid PriceInfo priceInfo) {
+    public ResponseForm<Void> saveTempPrice(@RequestBody @Valid PriceInfo priceInfo, @AuthenticationPrincipal JwtPrincipal principal) {
         priceService.saveTempPrice(principal.getId(), priceInfo);
         return new ResponseForm<>(StatusCode.OK);
     }
@@ -73,9 +72,9 @@ public class StudioController {
     }
 
     @GetMapping("/studio/{id}")
-    public ResponseForm<StudioDetailInfo> getCreatorStudioInfo(@PathVariable(name = "id") Long studioId) {
+    public ResponseForm<StudioDetailInfo> getCreatorStudioInfo(@PathVariable(name = "id") Long studioId, @AuthenticationPrincipal JwtPrincipal principal) {
 
-        StudioDetailInfo studioDetailInfo = new StudioDetailInfo();
+        StudioDetailInfo studioDetailInfo = profileService.getStudioDetail(studioId, principal.getId());
         return new ResponseForm<>(StatusCode.OK, studioDetailInfo);
     }
 }

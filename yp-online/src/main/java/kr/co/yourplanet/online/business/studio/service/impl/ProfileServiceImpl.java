@@ -7,16 +7,16 @@ import kr.co.yourplanet.core.entity.studio.PortfolioCategoryMap;
 import kr.co.yourplanet.core.entity.studio.PortfolioLink;
 import kr.co.yourplanet.core.entity.studio.Studio;
 import kr.co.yourplanet.core.enums.FileType;
+import kr.co.yourplanet.core.enums.MemberType;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.instagram.repository.InstagramMediaRepository;
 import kr.co.yourplanet.online.business.studio.dao.StudioBasicDao;
-import kr.co.yourplanet.online.business.studio.dto.ProfileInfo;
-import kr.co.yourplanet.online.business.studio.dto.StudioBasicInfo;
-import kr.co.yourplanet.online.business.studio.dto.StudioRegisterForm;
+import kr.co.yourplanet.online.business.studio.dto.*;
 import kr.co.yourplanet.online.business.studio.repository.CategoryRepository;
 import kr.co.yourplanet.online.business.studio.repository.PortfolioCategoryMapRepository;
 import kr.co.yourplanet.online.business.studio.repository.PortfolioLinkRepository;
 import kr.co.yourplanet.online.business.studio.repository.StudioRepository;
+import kr.co.yourplanet.online.business.studio.service.PriceService;
 import kr.co.yourplanet.online.business.studio.service.ProfileService;
 import kr.co.yourplanet.online.business.user.repository.MemberRepository;
 import kr.co.yourplanet.online.common.exception.BusinessException;
@@ -50,7 +50,9 @@ public class ProfileServiceImpl implements ProfileService {
     private final InstagramMediaRepository instagramMediaRepository;
     private final FileProperties fileProperties;
 
-    public ProfileInfo getStudio(Long memberId) {
+    private final PriceService priceService;
+
+    public ProfileInfo getStudioProfile(Long memberId) {
         Optional<Studio> optionalStudio = studioRepository.findById(memberId);
         if (!optionalStudio.isPresent()) {
             throw new BusinessException(StatusCode.NOT_FOUND, "스튜디오 정보가 존재하지 않습니다.", false);
@@ -195,5 +197,25 @@ public class ProfileServiceImpl implements ProfileService {
         }
 
         return new PageImpl<>(new ArrayList<>(studioBasicSearchMap.values()), pageable, 0);
+    }
+
+    @Override
+    public StudioDetailInfo getStudioDetail(Long studioId, Long requestMemberId) {
+        Member requestMember = memberRepository.findById(requestMemberId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "해당 회원 정보가 존재하지 않습니다.", false));
+
+        // 광고주만 작가 상세 조회 가능
+        if (!MemberType.SPONSOR.equals(requestMember.getMemberType())) {
+            throw new BusinessException(StatusCode.FORBIDDEN, "작가 조회는 광고주만 가능해요.", false);
+        }
+
+        ProfileInfo profile = getStudioProfile(studioId);
+        PriceInfo price = priceService.getPrice(studioId);
+        PriceInfoWithoutPrice priceInfoWithoutPrice = PriceInfoWithoutPrice.from(price);
+
+        return StudioDetailInfo.builder()
+                .id(studioId)
+                .profile(profile)
+                .price(priceInfoWithoutPrice)
+                .build();
     }
 }
