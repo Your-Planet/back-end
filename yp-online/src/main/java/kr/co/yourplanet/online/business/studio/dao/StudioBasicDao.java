@@ -12,6 +12,7 @@ public class StudioBasicDao {
     private Long id;
     private String toonName;
     private String description;
+    private String profileImageUrl;
     private String instagramUsername;
     private String categoryCode;
 }

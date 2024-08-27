@@ -15,6 +15,7 @@ public class StudioBasicInfo {
     private Long id;
     private String name;
     private String description;
+    private String profileImageUrl;
     private String instagramUsername;
     private List<String> categories;
 
