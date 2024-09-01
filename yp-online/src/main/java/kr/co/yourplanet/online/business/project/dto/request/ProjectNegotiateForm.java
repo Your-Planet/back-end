@@ -14,82 +14,74 @@ import java.util.List;
 public class ProjectNegotiateForm {
 
     @NotNull
-    private Long id;
+    private Long projectId;
 
     /**
-     * 추가 컷 수
+     * 추가 컷
      */
-    @PositiveOrZero(message = "추가 컷 수는 0 이상으로 입력해주세요")
-    private Integer additionalCuts;
+    @NotNull
+    private ProjectCommonAttribute.ProjectAdditionalPanel additionalPanel;
+
     /**
-     * 추가 수정 횟수
+     * 추가 수정
      */
-    @PositiveOrZero(message = "추가 수정 횟수는 0 이상으로 입력해주세요")
-    private Integer additionalModificationCount;
+    @NotNull
+    private ProjectCommonAttribute.ProjectAdditionalModification additionalModification;
+
+    /**
+     * 원본 파일
+     */
+    @NotNull
+    private ProjectCommonAttribute.ProjectOriginFile originFile;
+
+    /**
+     * 2차 활용
+     */
+    @NotNull
+    private ProjectCommonAttribute.ProjectRefinement refinement;
+
     /**
      * 업로드 기간 연장
      */
-    @PositiveOrZero(message = "업로드 기간 연장은 0 이상으로 입력해주세요")
-    private Integer additionalPostDurationMonth;
-    /**
-     * 원본 파일 요청 여부
-     */
-    private boolean isOriginFileRequested;
-    /**
-     * 2차 활용 요청 여부
-     */
-    private boolean isRefinementRequested;
+    @NotNull
+    private ProjectCommonAttribute.ProjectPostDurationExtension postDurationExtension;
 
-    /**
-     * 날짜 지정 여부
-     */
-    private boolean isDateSpecified;
-    /**
-     * 광고 기간 - 날짜 지정
-     */
-    private List<LocalDate> postDates;
-    /**
-     * 광고 기간 - 시작 기간 선택
-     */
-    private LocalDate postFromDate;
-    /**
-     * 광고 기간 - 종료 기간 선택
-     */
-    private LocalDate postToDate;
+    @NotNull
+    @Size(min = 1, message = "광고 날짜를 최소 1개 이상 선택해 주세요.")
+    @Size(max = 10, message = "광고 날짜는 최대 10개까지 선택 가능합니다.")
+    private List<LocalDate> postStartDates;
+
     /**
      * 작업 기한
      */
     @NotNull(message = "작업 기한은 필수입니다")
     private LocalDate dueDate;
+
     /**
      * 브랜드명
      */
     @NotBlank(message = "브랜드명은 필수입니다")
     @Size(max = 30, message = "브랜드명은 최대 30자까지 가능합니다")
     private String brandName;
-    /**
-     * 브랜드 URL
-     */
-    private List<String> brandUrls;
+
     /**
      * 캠페인 소개
      */
     @NotBlank(message = "캠페인 소개는 필수입니다")
+    @Size(max = 500)
     private String campaignDescription;
-    /**
-     * 캠페인 URL
-     */
-    private List<String> campaignUrls;
-    /**
-     * 제안 금액
-     */
-    @Positive(message = "제안 금액은 양수여야 합니다")
-    private int offerPrice;
 
     /**
      * 기타 요청사항
      */
-    private String requestNotes;
+    @Size(max = 1000)
+    private String message;
 
-    private List<String> categoryList;
+    @NotNull
+    private List<String> referenceUrls;
+
+    @NotNull
+    @Positive(message = "제안 금액은 양수여야 합니다")
+    private Integer offerPrice;
+
 }

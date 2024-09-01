@@ -2,6 +2,8 @@ package kr.co.yourplanet.core.entity.project;
 
 import kr.co.yourplanet.core.entity.BasicColumn;
 import kr.co.yourplanet.core.entity.member.Member;
+import kr.co.yourplanet.core.enums.DemandType;
+import kr.co.yourplanet.core.enums.ValidEnum;
 import kr.co.yourplanet.core.util.StringListConverter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,8 +36,11 @@ public class ProjectHistory extends BasicColumn {
     /**
      * 추가 컷 수
      */
-    @Column(name = "additional_cuts")
-    private Integer additionalCuts;
+    @Column(name = "additional_panel_count")
+    private Integer additionalPanelCount;
+
+    @Column(name = "additional_panel_negotiable")
+    private Boolean additionalPanelNegotiable;
 
     /**
      * 추가 수정 횟수
@@ -44,77 +49,57 @@ public class ProjectHistory extends BasicColumn {
     private Integer additionalModificationCount;
 
     /**
-     * 업로드 기간 연장
-     */
-    @Column(name = "additional_post_duration_month")
-    private Integer additionalPostDurationMonth;
-
-    /**
      * 원본 파일 요청 여부
      */
-    @Column(name = "origin_file_requested")
-    private Boolean isOriginFileRequested;
+    @ValidEnum(enumClass = DemandType.class)
+    @Column(name = "origin_file_demand_type")
+    private DemandType originFileDemandType;
 
     /**
      * 2차 활용 요청 여부
      */
-    @Column(name = "refinement_requested")
-    private Boolean isRefinementRequested;
+    @ValidEnum(enumClass = DemandType.class)
+    @Column(name = "refinement_demand_type")
+    private DemandType refinementDemandType;
 
     /**
-     * 날짜 지정 여부
+     * 업로드 기간 연장
      */
-    @Column(name = "date_specified")
-    private Boolean isDateSpecified;
-    /**
-     * 광고 기간 - 날짜 지정
-     */
-    @Column(name = "post_specific_dates")
-    private List<LocalDate> postSpecificDates;
+    @Column(name = "post_duration_extension_months")
+    private Integer postDurationExtensionMonths;
+
     /**
      * 광고 기간 - 시작 기간 선택
      */
-    @Column(name = "post_start_date")
-    private LocalDate postStartDate;
-
-    /**
-     * 광고 기간 - 종료 기간 선택
-     */
-    @Column(name = "post_end_date")
-    private LocalDate postEndDate;
+    @Column(name = "post_start_dates")
+    private List<LocalDate> postStartDates;
 
     /**
      * 작업 기한
      */
-    @NotNull
     @Column(name = "due_date")
     private LocalDate dueDate;
 
     /**
      * 브랜드명
      */
-    @NotBlank
     @Size(max = 30)
     @Column(name = "brand_name")
     private String brandName;
-    /**
-     * 브랜드 URL
-     */
-    @Convert(converter = StringListConverter.class)
-    @Column(name = "brand_url")
-    private List<String> brandUrls;
+
     /**
      * 캠페인 소개
      */
-    @NotBlank
     @Column(name = "campaign_description")
     private String campaignDescription;
+
     /**
-     * 캠페인 URL
+     * 참고 URL
      */
     @Convert(converter = StringListConverter.class)
-    @Column(name = "campaign_url")
-    private List<String> campaignUrls;
+    @Column(name = "reference_urls")
+    private List<String> referenceUrls;
+
     /**
      * 제안 금액
      */
@@ -125,8 +110,8 @@ public class ProjectHistory extends BasicColumn {
     /**
      * 기타 요청사항
      */
-    @Column(name = "request_notes")
-    private String requestNotes;
+    @Column(name = "message")
+    private String message;
 
     @ManyToOne
     @JoinColumn(name = "request_member_id", referencedColumnName = "id")
@@ -138,9 +123,8 @@ public class ProjectHistory extends BasicColumn {
 
     public ProjectHistory() {
         this.categoryList = new ArrayList<>();
-        this.postSpecificDates = new ArrayList<>();
-        this.brandUrls = new ArrayList<>();
-        this.campaignUrls = new ArrayList<>();
+        this.postStartDates = new ArrayList<>();
+        this.referenceUrls = new ArrayList<>();
     }
 
 }
