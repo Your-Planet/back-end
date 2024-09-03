@@ -11,9 +11,11 @@ import kr.co.yourplanet.online.common.ResponseForm;
 import kr.co.yourplanet.online.jwt.JwtPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -24,10 +26,10 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
-    @PostMapping("/project")
-    public ResponseEntity<ResponseForm<String>> requestNewProject(@Valid @RequestBody ProjectRequestForm projectRequestForm, @AuthenticationPrincipal JwtPrincipal principal) {
+    @PostMapping(value = "/project", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<ResponseForm<String>> requestNewProject(@Valid @RequestPart ProjectRequestForm projectRequestForm, @RequestPart(required = false) List<MultipartFile> referenceFiles, @AuthenticationPrincipal JwtPrincipal principal) {
 
-        projectService.requestProject(projectRequestForm, principal.getId());
+        projectService.requestProject(projectRequestForm, referenceFiles, principal.getId());
 
         return new ResponseEntity<>(new ResponseForm<>(StatusCode.OK), HttpStatus.OK);
     }
@@ -65,4 +67,11 @@ public class ProjectController {
 
         return new ResponseEntity<>(responseForm, HttpStatus.OK);
     }
+
+    @GetMapping("/project/{id}")
+    public void getProjectDetail(@PathVariable(name = "id") Long projectId, @AuthenticationPrincipal JwtPrincipal principal) {
+
+    }
+
+
 }

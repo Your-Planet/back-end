@@ -37,3 +37,5 @@ file:
   profile-path: /Users/fong/files/upload/profile/
   profile-url: /files/profile/
   studio-path: /Users/fong/files/upload/studio/
+  project-reference-file-path: /Users/fong/files/upload/project/reference/
+  project-reference-file-url: /files/project/reference/

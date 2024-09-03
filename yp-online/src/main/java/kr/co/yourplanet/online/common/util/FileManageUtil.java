@@ -31,8 +31,8 @@ public class FileManageUtil {
     public FileUploadResult uploadFile(MultipartFile multipartFile, FileType fileType) {
         validateFile(multipartFile);
 
-        String originalFilename = multipartFile.getOriginalFilename();
-        String randomFileName = generateRandomFileName(originalFilename);
+        String originalFileName = multipartFile.getOriginalFilename();
+        String randomFileName = generateRandomFileName(originalFileName);
         Path fileAbsolutePath = generateFileAbsolutePath(fileType, randomFileName);
         String fileUrl = generateFileUrl(fileType, randomFileName);
 
@@ -40,7 +40,8 @@ public class FileManageUtil {
             Files.write(fileAbsolutePath, multipartFile.getBytes());
 
             return FileUploadResult.builder()
-                    .fileName(randomFileName)
+                    .originalFileName(originalFileName)
+                    .randomFileName(randomFileName)
                     .filePath(fileAbsolutePath.toString())
                     .fileUrl(fileUrl)
                     .build();
@@ -95,6 +96,8 @@ public class FileManageUtil {
     private Path generateFileAbsolutePath(FileType fileType, String fileName) {
         if (FileType.PROFILE_IMAGE.equals(fileType)) {
             return Paths.get(fileProperties.getProfilePath()).resolve(fileName);
+        } else if (FileType.PROJECT_REFERENCE_FILE.equals(fileType)) {
+            return Paths.get(fileProperties.getProjectReferenceFilePath()).resolve(fileName);
         } else {
             throw new BusinessException(StatusCode.BAD_REQUEST, "지원하지 않는 파일 타입입니다.", false);
         }
@@ -104,6 +107,8 @@ public class FileManageUtil {
         String propertyUrl = "";
         if (FileType.PROFILE_IMAGE.equals(fileType)) {
             propertyUrl += fileProperties.getProfileUrl();
+        } else if (FileType.PROJECT_REFERENCE_FILE.equals(fileType)) {
+            propertyUrl += fileProperties.getProjectReferenceFileUrl();
         } else {
             throw new BusinessException(StatusCode.BAD_REQUEST, "지원하지 않는 파일 타입입니다.", false);
         }
