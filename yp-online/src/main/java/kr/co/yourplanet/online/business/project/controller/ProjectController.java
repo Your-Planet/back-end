@@ -5,6 +5,7 @@ import kr.co.yourplanet.online.business.project.dto.request.ProjectAcceptForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectNegotiateForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectRejectForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectRequestForm;
+import kr.co.yourplanet.online.business.project.dto.response.ProjectBasicInfo;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectHistoryForm;
 import kr.co.yourplanet.online.business.project.service.ProjectService;
 import kr.co.yourplanet.online.common.ResponseForm;
@@ -68,9 +69,18 @@ public class ProjectController {
         return new ResponseEntity<>(responseForm, HttpStatus.OK);
     }
 
-    @GetMapping("/project/{id}")
-    public void getProjectDetail(@PathVariable(name = "id") Long projectId, @AuthenticationPrincipal JwtPrincipal principal) {
+    @GetMapping("/project/mine")
+    public ResponseEntity<ResponseForm<List<ProjectBasicInfo>>> getMemberProjectsBasicInfo(@AuthenticationPrincipal JwtPrincipal principal) {
+        List<ProjectBasicInfo> memberProjectBasicInfoList = projectService.getMemberProjectsBasicInfo(principal.getId());
 
+        ResponseForm<List<ProjectBasicInfo>> responseForm = new ResponseForm<>(StatusCode.OK, memberProjectBasicInfoList);
+
+        return new ResponseEntity<>(responseForm, HttpStatus.OK);
+    }
+    @GetMapping("/project/{id}")
+    public void getProjectDetailInfo(@PathVariable(name = "id") Long projectId, @AuthenticationPrincipal JwtPrincipal principal) {
+
+        
     }
 
 
