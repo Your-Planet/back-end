@@ -26,3 +26,5 @@ file:
   profile-path: /app/files/upload/profile/
   profile-url: /files/profile/
   studio-path: /app/files/upload/studio/
+  project-reference-file-path: /app/files/upload/project/reference/
+  project-reference-file-url: /files/project/reference/

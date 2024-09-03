@@ -15,4 +15,6 @@ public class FileProperties {
     private final String profilePath;
     private final String profileUrl;
     private final String studioPath;
+    private final String projectReferenceFilePath;
+    private final String projectReferenceFileUrl;
 }

@@ -3,19 +3,25 @@ package kr.co.yourplanet.online.business.project.service;
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.project.Project;
 import kr.co.yourplanet.core.entity.project.ProjectHistory;
+import kr.co.yourplanet.core.entity.project.ProjectReferenceFile;
+import kr.co.yourplanet.core.enums.FileType;
 import kr.co.yourplanet.core.enums.MemberType;
 import kr.co.yourplanet.core.enums.ProjectStatus;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.project.dto.request.*;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectHistoryForm;
+import kr.co.yourplanet.online.business.project.repository.ProjectReferenceFileRepository;
 import kr.co.yourplanet.online.business.project.repository.ProjectRepository;
 import kr.co.yourplanet.online.business.user.repository.MemberRepository;
 import kr.co.yourplanet.online.common.exception.BusinessException;
+import kr.co.yourplanet.online.common.util.FileManageUtil;
+import kr.co.yourplanet.online.common.util.FileUploadResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +32,14 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class ProjectService {
 
+    private final FileManageUtil fileManageUtil;
+
     private final ProjectRepository projectRepository;
+    private final ProjectReferenceFileRepository projectReferenceFileRepository;
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void requestProject(ProjectRequestForm projectRequestForm, Long sponsorId) {
+    public void requestProject(ProjectRequestForm projectRequestForm, List<MultipartFile> referenceFiles, Long sponsorId) {
         Member sponsor = memberRepository.findById(sponsorId).orElseThrow(() -> new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 광고주 정보입니다.", false));
         Member creator = memberRepository.findById(projectRequestForm.getCreatorId()).orElseThrow(() -> new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 작가 정보입니다.", false));
 
@@ -77,6 +86,25 @@ public class ProjectService {
                 .build();
 
         projectRepository.saveProjectHistory(projectHistory);
+
+        // 참고자료 저장
+        if (!CollectionUtils.isEmpty(referenceFiles)) {
+            int seq = 1;
+            for (MultipartFile referenceFile : referenceFiles) {
+                FileUploadResult uploadResult = fileManageUtil.uploadFile(referenceFile, FileType.PROJECT_REFERENCE_FILE);
+                ProjectReferenceFile projectReferenceFile = ProjectReferenceFile.builder()
+                        .project(project)
+                        .seq(seq)
+                        .originalFileName(uploadResult.getOriginalFileName())
+                        .randomFileName(uploadResult.getRandomFileName())
+                        .referenceFilePath(uploadResult.getFilePath())
+                        .referenceFileUrl(uploadResult.getFileUrl())
+                        .build();
+                projectReferenceFileRepository.save(projectReferenceFile);
+                seq++;
+            }
+        }
+
     }
 
     @Transactional

@@ -9,7 +9,8 @@ import lombok.Getter;
 @Builder
 public class FileUploadResult {
 
-    private String fileName;
+    private String originalFileName;
+    private String randomFileName;
     private String filePath;
     private String fileUrl;
 }
