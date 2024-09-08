@@ -73,6 +73,7 @@ public class Project extends BasicColumn {
      * 프로젝트 히스토리
      */
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+    @OrderBy("seq ASC")
     private List<ProjectHistory> projectHistories;
 
     /**
