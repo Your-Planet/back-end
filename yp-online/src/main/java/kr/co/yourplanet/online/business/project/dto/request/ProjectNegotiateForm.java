@@ -58,20 +58,6 @@ public class ProjectNegotiateForm {
     private LocalDate dueDate;
 
     /**
-     * 브랜드명
-     */
-    @NotBlank(message = "브랜드명은 필수입니다")
-    @Size(max = 30, message = "브랜드명은 최대 30자까지 가능합니다")
-    private String brandName;
-
-    /**
-     * 캠페인 소개
-     */
-    @NotBlank(message = "캠페인 소개는 필수입니다")
-    @Size(max = 500)
-    private String campaignDescription;
-
-    /**
      * 기타 요청사항
      */
     @Size(max = 1000)

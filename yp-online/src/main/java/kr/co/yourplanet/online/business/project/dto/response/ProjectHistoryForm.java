@@ -51,21 +51,9 @@ public class ProjectHistoryForm {
     private LocalDate dueDate;
 
     /**
-     * 브랜드명
-     */
-    private String brandName;
-
-    /**
-     * 캠페인 소개
-     */
-    private String campaignDescription;
-
-    /**
      * 기타 요청사항
      */
     private String message;
-
-    private List<String> referenceUrls;
 
     /**
      * 제안 금액
