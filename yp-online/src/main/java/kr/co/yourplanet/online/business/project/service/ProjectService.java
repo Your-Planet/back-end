@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -70,6 +71,7 @@ public class ProjectService {
                 .brandName(projectRequestForm.getBrandName())
                 .referenceUrls(projectRequestForm.getReferenceUrls()) // 캠페인 URL
                 .campaignDescription(projectRequestForm.getCampaignDescription()) // 캠페인 소개
+                .requestDateTime(LocalDateTime.now())
                 .build();
         projectRepository.save(project);
 

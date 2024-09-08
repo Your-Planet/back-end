@@ -62,12 +62,38 @@ public class Project extends BasicColumn {
     @Column(name = "campaign_description")
     private String campaignDescription;
 
+    /*
+     * 시간 관련
+     * 프로젝트 의뢰, 수락, 반려, 완료 등
+     */
+    /**
+     * 의뢰 의뢰일
+     */
+    private LocalDateTime requestDateTime;
+    /**
+     * 의뢰 수락일
+     */
+    private LocalDateTime acceptDateTime;
+    /**
+     * 의뢰 거절일
+     */
+    private LocalDateTime rejectDateTime;
+    /**
+     * 의뢰 취소
+     */
+    private LocalDateTime cancelDateTime;
+
     /**
      * 참고 URL
      */
     @Convert(converter = StringListConverter.class)
     @Column(name = "reference_urls")
     private List<String> referenceUrls;
+    /**
+     * 참고 자료
+     */
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+    private List<ProjectReferenceFile> referenceFiles;
 
     /**
      * 프로젝트 히스토리
@@ -75,25 +101,11 @@ public class Project extends BasicColumn {
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
     @OrderBy("seq ASC")
     private List<ProjectHistory> projectHistories;
-
     /**
      * 수락된 프로젝트 히스토리 ID
      */
     @Column(name = "selected_history_id")
     private Long selectedHistoryId;
-
-    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
-    private List<ProjectReferenceFile> referenceFiles;
-
-    /*
-     * 시간 관련
-     * 프로젝트 수락, 반려, 완료 등
-     */
-
-    /**
-     * 의뢰 수락일
-     */
-    private LocalDateTime acceptDateTime;
 
     public Project() {
         this.projectHistories = new ArrayList<>();
