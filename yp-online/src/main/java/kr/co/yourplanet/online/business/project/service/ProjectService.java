@@ -62,50 +62,47 @@ public class ProjectService {
             throw new BusinessException(StatusCode.BAD_REQUEST, "광고 날짜는 최대 10개까지 선택 가능합니다.", false);
         }
 
+        // 프로젝트 저장
         Project project = Project.builder()
                 .creator(creator)
                 .sponsor(sponsor)
                 .projectStatus(ProjectStatus.REQUEST)
+                .brandName(projectRequestForm.getBrandName())
+                .referenceUrls(projectRequestForm.getReferenceUrls()) // 캠페인 URL
+                .campaignDescription(projectRequestForm.getCampaignDescription()) // 캠페인 소개
                 .build();
-
         projectRepository.save(project);
 
+        // 프로젝트 히스토리 저장
         ProjectHistory projectHistory = ProjectHistory.builder()
                 .project(project) // 필요한 Project 객체
                 .seq(1) // 시퀀스 번호
                 .additionalPanelCount(projectRequestForm.getAdditionalModification().getCount()) // 추가 컷 수
+                .additionalPanelNegotiable(projectRequestForm.getAdditionalPanel().getIsNegotiable())
                 .additionalModificationCount(projectRequestForm.getAdditionalModification().getCount()) // 추가 수정 횟수
-                .postDurationExtensionMonths(projectRequestForm.getPostDurationExtension().getMonths()) // 업로드 기간 연장 (월)
                 .originFileDemandType(projectRequestForm.getOriginFile().getDemandType()) // 원본 파일 요청 여부
                 .refinementDemandType(projectRequestForm.getRefinement().getDemandType()) // 2차 활용 요청 여부
+                .postDurationExtensionMonths(projectRequestForm.getPostDurationExtension().getMonths()) // 업로드 기간 연장 (월)
                 .postStartDates(projectRequestForm.getPostStartDates()) // 광고 시작 날짜 리스트
                 .dueDate(projectRequestForm.getDueDate()) // 작업 기한
-                .brandName(projectRequestForm.getBrandName()) // 브랜드명
-                .campaignDescription(projectRequestForm.getCampaignDescription()) // 캠페인 소개
-                .referenceUrls(projectRequestForm.getReferenceUrls()) // 캠페인 URL
                 .offerPrice(projectRequestForm.getOfferPrice()) // 제안 금액
                 .message(projectRequestForm.getMessage()) // 기타 요청사항
                 .requestMember(sponsor) // 요청한 회원 (실제 Member 객체 필요)
-                //.categoryList(projectRequestForm.getCategoryList()) // 카테고리 리스트
                 .build();
-
         projectHistoryRepository.save(projectHistory);
 
         // 참고자료 저장
         if (!CollectionUtils.isEmpty(referenceFiles)) {
-            int seq = 1;
             for (MultipartFile referenceFile : referenceFiles) {
                 FileUploadResult uploadResult = fileManageUtil.uploadFile(referenceFile, FileType.PROJECT_REFERENCE_FILE);
                 ProjectReferenceFile projectReferenceFile = ProjectReferenceFile.builder()
                         .project(project)
-                        .seq(seq)
                         .originalFileName(uploadResult.getOriginalFileName())
                         .randomFileName(uploadResult.getRandomFileName())
                         .referenceFilePath(uploadResult.getFilePath())
                         .referenceFileUrl(uploadResult.getFileUrl())
                         .build();
                 projectReferenceFileRepository.save(projectReferenceFile);
-                seq++;
             }
         }
 
@@ -137,8 +134,11 @@ public class ProjectService {
             throw new BusinessException(StatusCode.BAD_REQUEST, "현재 취소할 수 없는 상태입니다 : " + project.getProjectStatus(), false);
         }
 
+        // 프로젝트 업데이트
         project.changeProjectStatus(ProjectStatus.NEGOTIATION);
+        project.getReferenceUrls().addAll(projectNegotiateForm.getReferenceUrls());
 
+        // 프로젝트 히스토리 적재
         List<ProjectHistory> projectHistoryList = projectHistoryRepository.findAllByProject(project);
         Integer seq = projectHistoryList.get(projectHistoryList.size() - 1).getSeq() + 1;
 
@@ -152,14 +152,10 @@ public class ProjectService {
                 .refinementDemandType(projectNegotiateForm.getRefinement().getDemandType()) // 2차 활용 요청 여부
                 .postStartDates(projectNegotiateForm.getPostStartDates()) // 광고 시작 날짜 리스트
                 .dueDate(projectNegotiateForm.getDueDate()) // 작업 기한
-                .brandName(projectNegotiateForm.getBrandName()) // 브랜드명
-                .campaignDescription(projectNegotiateForm.getCampaignDescription()) // 캠페인 소개
-                .referenceUrls(projectNegotiateForm.getReferenceUrls()) // 캠페인 URL
                 .offerPrice(projectNegotiateForm.getOfferPrice()) // 제안 금액
                 .message(projectNegotiateForm.getMessage()) // 기타 요청사항
                 .requestMember(requestMember) // 요청한 회원 (실제 Member 객체 필요)
                 .build();
-
         projectHistoryRepository.save(projectHistory);
 
     }
@@ -226,9 +222,6 @@ public class ProjectService {
                             .build())
                     .postStartDates(projectHistory.getPostStartDates())
                     .dueDate(projectHistory.getDueDate())
-                    .brandName(projectHistory.getBrandName())
-                    .campaignDescription(projectHistory.getCampaignDescription())
-                    .referenceUrls(projectHistory.getReferenceUrls())
                     .offerPrice(projectHistory.getOfferPrice())
                     .message(projectHistory.getMessage())
                     .requestMemberType(projectHistory.getRequestMember().getMemberType())  // 요청 멤버의 타입을 가져옵니다.

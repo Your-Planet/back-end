@@ -15,17 +15,15 @@ import javax.persistence.*;
 @DynamicUpdate
 @Builder
 @Getter
-@IdClass(ProjectReferenceFileKey.class)
 public class ProjectReferenceFile extends BasicColumn {
 
     @Id
-    @ManyToOne
-    @MapsId("projectId")
+    @GeneratedValue
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
-
-    @Id
-    private Integer seq;
 
     @Column(name = "original_file_name")
     private String originalFileName;

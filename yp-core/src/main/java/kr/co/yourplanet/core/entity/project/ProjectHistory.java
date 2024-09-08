@@ -4,14 +4,13 @@ import kr.co.yourplanet.core.entity.BasicColumn;
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.enums.DemandType;
 import kr.co.yourplanet.core.enums.ValidEnum;
-import kr.co.yourplanet.core.util.StringListConverter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
+import javax.validation.constraints.Positive;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,16 +20,16 @@ import java.util.List;
 @DynamicUpdate
 @Builder
 @Getter
-@IdClass(ProjectHistoryKey.class)
 public class ProjectHistory extends BasicColumn {
 
     @Id
-    @ManyToOne
-    @MapsId("projectId")
+    @GeneratedValue
+    private Long id;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
 
-    @Id
     private Integer seq;
 
     /**
@@ -39,6 +38,9 @@ public class ProjectHistory extends BasicColumn {
     @Column(name = "additional_panel_count")
     private Integer additionalPanelCount;
 
+    /**
+     * 추가 컷 협의여부
+     */
     @Column(name = "additional_panel_negotiable")
     private Boolean additionalPanelNegotiable;
 
@@ -81,26 +83,6 @@ public class ProjectHistory extends BasicColumn {
     private LocalDate dueDate;
 
     /**
-     * 브랜드명
-     */
-    @Size(max = 30)
-    @Column(name = "brand_name")
-    private String brandName;
-
-    /**
-     * 캠페인 소개
-     */
-    @Column(name = "campaign_description")
-    private String campaignDescription;
-
-    /**
-     * 참고 URL
-     */
-    @Convert(converter = StringListConverter.class)
-    @Column(name = "reference_urls")
-    private List<String> referenceUrls;
-
-    /**
      * 제안 금액
      */
     @Positive
@@ -113,18 +95,12 @@ public class ProjectHistory extends BasicColumn {
     @Column(name = "message")
     private String message;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "request_member_id", referencedColumnName = "id")
     private Member requestMember;
 
-    @Builder.Default
-    @Convert(converter = StringListConverter.class)
-    private List<String> categoryList = new ArrayList<>();
-
     public ProjectHistory() {
-        this.categoryList = new ArrayList<>();
         this.postStartDates = new ArrayList<>();
-        this.referenceUrls = new ArrayList<>();
     }
 
 }

@@ -2,7 +2,6 @@ package kr.co.yourplanet.core.entity.project;
 
 import kr.co.yourplanet.core.entity.BasicColumn;
 import kr.co.yourplanet.core.entity.member.Member;
-import kr.co.yourplanet.core.enums.DemandType;
 import kr.co.yourplanet.core.enums.ProjectStatus;
 import kr.co.yourplanet.core.enums.ValidEnum;
 import kr.co.yourplanet.core.util.StringListConverter;
@@ -13,7 +12,7 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,56 +28,26 @@ public class Project extends BasicColumn {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne
+    /**
+     * 광고주
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sponsor_id", referencedColumnName = "id")
     private Member sponsor;
 
-    @ManyToOne
+    /**
+     * 작가
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id", referencedColumnName = "id")
     private Member creator;
 
     /**
-     * 추가 컷 수
+     * 프로젝트 상태
      */
-    @Column(name = "additional_panel_count")
-    private Integer additionalPanelCount;
-
-    /**
-     * 추가 수정 횟수
-     */
-    @Column(name = "additional_modification_count")
-    private Integer additionalModificationCount;
-
-    /**
-     * 원본 파일 요청 여부
-     */
-    @Column(name = "origin_file_demand_type")
-    private DemandType originFileDemandType;
-
-    /**
-     * 2차 활용 요청 여부
-     */
-    @Column(name = "refinement_demand_type")
-    private DemandType refinementDemandType;
-
-    /**
-     * 업로드 기간 연장
-     */
-    @Column(name = "post_duration_extension_months")
-    private Integer postDurationExtensionMonths;
-
-    /**
-     * 광고 기간 - 시작 기간 선택
-     */
-    @Convert(converter = StringListConverter.class)
-    @Column(name = "post_start_dates")
-    private List<LocalDate> postStartDates;
-
-    /**
-     * 작업 기한
-     */
-    @Column(name = "due_date")
-    private LocalDate dueDate;
+    @ValidEnum(enumClass = ProjectStatus.class)
+    @Column(name = "project_status")
+    private ProjectStatus projectStatus;
 
     /**
      * 브랜드명
@@ -101,28 +70,34 @@ public class Project extends BasicColumn {
     private List<String> referenceUrls;
 
     /**
-     * 금액
+     * 프로젝트 히스토리
      */
-    @Column(name = "price")
-    private Integer price;
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+    private List<ProjectHistory> projectHistories;
 
     /**
-     * 기타 요청사항
+     * 수락된 프로젝트 히스토리 ID
      */
-    @Column(name = "message")
-    private String message;
+    @Column(name = "selected_history_id")
+    private Long selectedHistoryId;
 
-    @ValidEnum(enumClass = ProjectStatus.class)
-    @Column(name = "project_status")
-    private ProjectStatus projectStatus;
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+    private List<ProjectReferenceFile> referenceFiles;
 
-    @Builder.Default
-    @Convert(converter = StringListConverter.class)
-    @Column(name = "category_list")
-    private List<String> categoryList = new ArrayList<>();
+    /*
+     * 시간 관련
+     * 프로젝트 수락, 반려, 완료 등
+     */
+
+    /**
+     * 의뢰 수락일
+     */
+    private LocalDateTime acceptDateTime;
 
     public Project() {
-        this.categoryList = new ArrayList<>();
+        this.projectHistories = new ArrayList<>();
+        this.referenceUrls = new ArrayList<>();
+        this.referenceFiles = new ArrayList<>();
     }
 
     public void changeProjectStatus(ProjectStatus projectStatus) {
@@ -130,18 +105,15 @@ public class Project extends BasicColumn {
     }
 
     public void acceptProject(ProjectHistory projectHistory) {
-        this.additionalPanelCount = projectHistory.getAdditionalPanelCount();
-        this.additionalModificationCount = projectHistory.getAdditionalModificationCount();
-        this.postDurationExtensionMonths = projectHistory.getPostDurationExtensionMonths();
-        this.originFileDemandType = projectHistory.getOriginFileDemandType();
-        this.refinementDemandType = projectHistory.getRefinementDemandType();
-        this.postStartDates = projectHistory.getPostStartDates();
-        this.dueDate = projectHistory.getDueDate();
-        this.brandName = projectHistory.getBrandName();
-        this.referenceUrls = projectHistory.getReferenceUrls();
-        this.campaignDescription = projectHistory.getCampaignDescription();
-        this.price = projectHistory.getOfferPrice();
-        this.categoryList = projectHistory.getCategoryList();
+        this.selectedHistoryId = projectHistory.getId();
         this.projectStatus = ProjectStatus.ACCEPT;
+        this.acceptDateTime = LocalDateTime.now();
+    }
+
+    public ProjectHistory getSelectedHistory() {
+        return projectHistories.stream()
+                .filter(history -> history.getId().equals(selectedHistoryId))
+                .findFirst()
+                .orElse(null);
     }
 }
