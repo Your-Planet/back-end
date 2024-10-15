@@ -4,20 +4,28 @@ import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.project.Project;
 import kr.co.yourplanet.core.entity.project.ProjectHistory;
 import kr.co.yourplanet.core.entity.project.ProjectReferenceFile;
+import kr.co.yourplanet.core.entity.studio.Price;
 import kr.co.yourplanet.core.enums.FileType;
 import kr.co.yourplanet.core.enums.MemberType;
 import kr.co.yourplanet.core.enums.ProjectStatus;
 import kr.co.yourplanet.core.enums.StatusCode;
-import kr.co.yourplanet.online.business.project.dto.request.*;
+import kr.co.yourplanet.online.business.project.dto.request.ProjectAcceptForm;
+import kr.co.yourplanet.online.business.project.dto.request.ProjectNegotiateForm;
+import kr.co.yourplanet.online.business.project.dto.request.ProjectRejectForm;
+import kr.co.yourplanet.online.business.project.dto.request.ProjectRequestForm;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectBasicInfo;
+import kr.co.yourplanet.online.business.project.dto.response.ProjectDetailInfo;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectHistoryForm;
+import kr.co.yourplanet.online.business.project.dto.response.ReferenceFileInfo;
 import kr.co.yourplanet.online.business.project.repository.ProjectHistoryRepository;
 import kr.co.yourplanet.online.business.project.repository.ProjectReferenceFileRepository;
 import kr.co.yourplanet.online.business.project.repository.ProjectRepository;
+import kr.co.yourplanet.online.business.studio.repository.PriceRepository;
 import kr.co.yourplanet.online.business.user.repository.MemberRepository;
 import kr.co.yourplanet.online.common.exception.BusinessException;
 import kr.co.yourplanet.online.common.util.FileManageUtil;
 import kr.co.yourplanet.online.common.util.FileUploadResult;
+import kr.co.yourplanet.online.properties.FileProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -37,23 +45,25 @@ import java.util.stream.Collectors;
 public class ProjectService {
 
     private final FileManageUtil fileManageUtil;
+    private final FileProperties fileProperties;
 
     private final ProjectRepository projectRepository;
     private final ProjectHistoryRepository projectHistoryRepository;
     private final ProjectReferenceFileRepository projectReferenceFileRepository;
     private final MemberRepository memberRepository;
+    private final PriceRepository priceRepository;
 
     @Transactional
     public void requestProject(ProjectRequestForm projectRequestForm, List<MultipartFile> referenceFiles, Long sponsorId) {
         Member sponsor = memberRepository.findById(sponsorId).orElseThrow(() -> new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 광고주 정보입니다.", false));
-        Member creator = memberRepository.findById(projectRequestForm.getCreatorId()).orElseThrow(() -> new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 작가 정보입니다.", false));
+        Price creatorPrice = priceRepository.findById(projectRequestForm.getStudioId()).orElseThrow(() -> new BusinessException(StatusCode.BAD_REQUEST, "작가의 스튜디오 정보가 존재하지 않습니다", false));
 
         // 1. 유효성 체크
         if (!MemberType.SPONSOR.equals(sponsor.getMemberType())) {
             throw new BusinessException(StatusCode.BAD_REQUEST, "광고주만 프로젝트 의뢰할 수 있습니다.", false);
         }
 
-        if (!MemberType.CREATOR.equals(creator.getMemberType())) {
+        if (!MemberType.CREATOR.equals(creatorPrice.getStudio().getMember().getMemberType())) {
             throw new BusinessException(StatusCode.BAD_REQUEST, "작가에게만 의뢰할 수 있습니다.", false);
         }
 
@@ -65,13 +75,14 @@ public class ProjectService {
 
         // 프로젝트 저장
         Project project = Project.builder()
-                .creator(creator)
+                .creator(creatorPrice.getStudio().getMember())
                 .sponsor(sponsor)
                 .projectStatus(ProjectStatus.REQUEST)
                 .brandName(projectRequestForm.getBrandName())
                 .referenceUrls(projectRequestForm.getReferenceUrls()) // 캠페인 URL
                 .campaignDescription(projectRequestForm.getCampaignDescription()) // 캠페인 소개
                 .requestDateTime(LocalDateTime.now())
+                .creatorPrice(creatorPrice)
                 .build();
         projectRepository.save(project);
 
@@ -203,32 +214,7 @@ public class ProjectService {
         }
 
         for (ProjectHistory projectHistory : projectHistoryList) {
-            ProjectHistoryForm projectHistoryForm = ProjectHistoryForm.builder()
-                    .id(projectHistory.getProject().getId())  // Project ID를 가져옵니다.
-                    .seq(projectHistory.getSeq())
-                    .additionalPanel(ProjectCommonAttribute.ProjectAdditionalPanel.builder()
-                            .count(projectHistory.getAdditionalPanelCount())
-                            .isNegotiable(projectHistory.getAdditionalPanelNegotiable())
-                            .build())
-                    .additionalModification(ProjectCommonAttribute.ProjectAdditionalModification.builder()
-                            .count(projectHistory.getAdditionalModificationCount())
-                            .build())
-                    .originFile(ProjectCommonAttribute.ProjectOriginFile.builder()
-                            .demandType(projectHistory.getOriginFileDemandType())
-                            .build())
-                    .refinement(ProjectCommonAttribute.ProjectRefinement.builder()
-                            .demandType(projectHistory.getRefinementDemandType())
-                            .build())
-                    .postDurationExtension(ProjectCommonAttribute.ProjectPostDurationExtension.builder()
-                            .months(projectHistory.getPostDurationExtensionMonths())
-                            .build())
-                    .postStartDates(projectHistory.getPostStartDates())
-                    .dueDate(projectHistory.getDueDate())
-                    .offerPrice(projectHistory.getOfferPrice())
-                    .message(projectHistory.getMessage())
-                    .requestMemberType(projectHistory.getRequestMember().getMemberType())  // 요청 멤버의 타입을 가져옵니다.
-                    .build();
-
+            ProjectHistoryForm projectHistoryForm = new ProjectHistoryForm(projectHistory);
             projectHistoryFormList.add(projectHistoryForm);
         }
 
@@ -262,6 +248,55 @@ public class ProjectService {
         return projectBasicInfoList;
     }
 
+    public ProjectDetailInfo getProjectDetailInfo(Long projectId, Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 사용자 요청입니다.", false));
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "존재하지 않는 의뢰입니다.", false));
+
+        checkProjectValidation(member, project);
+
+        ProjectHistory latestProjectHistory = project.getLatestHistory().orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "의뢰 내역이 존재하지 않습니다.", false));
+        Price creatorPrice = project.getCreatorPrice();
+        List<ReferenceFileInfo> referenceFileInfoList = new ArrayList<>();
+
+        if (!CollectionUtils.isEmpty(project.getReferenceFiles())) {
+            referenceFileInfoList = project.getReferenceFiles().stream()
+                    .map(projectReferenceFile -> ReferenceFileInfo.builder()
+                            .originalFileName(projectReferenceFile.getOriginalFileName())
+                            .fileUrl(fileProperties.getBaseUrl() + projectReferenceFile.getReferenceFileUrl())
+                            .build()
+                    ).collect(Collectors.toList());
+        }
+
+        // DTO 생성
+        ProjectDetailInfo.Overview overview = ProjectDetailInfo.Overview.builder()
+                .sponsorName(project.getSponsor().getName())
+                .brandName(project.getBrandName())
+                .dueDate(latestProjectHistory.getDueDate())
+                .defaultPanelCount(creatorPrice.getCuts())
+                .additionalPanelCount(latestProjectHistory.getAdditionalPanelCount())
+                .defaultModificationCount(creatorPrice.getModificationCount())
+                .additionalModificationCount(latestProjectHistory.getAdditionalModificationCount())
+                .offerPrice(latestProjectHistory.getOfferPrice())
+                .build();
+
+        ProjectDetailInfo.Detail detail = ProjectDetailInfo.Detail.builder()
+                .campaignDescription(project.getCampaignDescription())
+                .referenceUrls(project.getReferenceUrls())
+                .referenceFiles(referenceFileInfoList)
+                .latestProjectHistory(new ProjectHistoryForm(latestProjectHistory))
+                .build();
+
+        ProjectDetailInfo projectDetailInfo = ProjectDetailInfo.builder()
+                .overview(overview)
+                .detail(detail)
+                .projectHistories(project.getProjectHistories().stream()
+                        .map(ProjectHistoryForm::new)
+                        .collect(Collectors.toList()))
+                .build();
+
+        return projectDetailInfo;
+    }
+
     private void checkProjectValidation(Member member, Project project) {
         // Validation Check
 
@@ -281,7 +316,7 @@ public class ProjectService {
                 throw new BusinessException(StatusCode.BAD_REQUEST, "사용자의 작업의뢰가 아닙니다", false);
             }
         } else if (MemberType.SPONSOR.equals(member.getMemberType()) && !member.equals(project.getSponsor())) {
-            throw new BusinessException(StatusCode.BAD_REQUEST, "사용자의 작업의뢰가 아닙니다", false);
+            throw new BusinessException(StatusCode.BAD_REQUEST, "사용자가 의뢰한 작업이 아닙니다", false);
         }
     }
 }

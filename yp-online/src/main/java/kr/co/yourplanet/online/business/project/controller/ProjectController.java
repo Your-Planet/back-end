@@ -6,6 +6,7 @@ import kr.co.yourplanet.online.business.project.dto.request.ProjectNegotiateForm
 import kr.co.yourplanet.online.business.project.dto.request.ProjectRejectForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectRequestForm;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectBasicInfo;
+import kr.co.yourplanet.online.business.project.dto.response.ProjectDetailInfo;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectHistoryForm;
 import kr.co.yourplanet.online.business.project.service.ProjectService;
 import kr.co.yourplanet.online.common.ResponseForm;
@@ -77,10 +78,14 @@ public class ProjectController {
 
         return new ResponseEntity<>(responseForm, HttpStatus.OK);
     }
-    @GetMapping("/project/{id}")
-    public void getProjectDetailInfo(@PathVariable(name = "id") Long projectId, @AuthenticationPrincipal JwtPrincipal principal) {
 
-        
+    @GetMapping("/project/{id}")
+    public ResponseEntity<ResponseForm<ProjectDetailInfo>> getProjectDetailInfo(@PathVariable(name = "id") Long projectId, @AuthenticationPrincipal JwtPrincipal principal) {
+        ProjectDetailInfo projectDetailInfo = projectService.getProjectDetailInfo(projectId, principal.getId());
+
+        ResponseForm<ProjectDetailInfo> responseForm = new ResponseForm<>(StatusCode.OK, projectDetailInfo);
+
+        return new ResponseEntity<>(responseForm, HttpStatus.OK);
     }
 
 
