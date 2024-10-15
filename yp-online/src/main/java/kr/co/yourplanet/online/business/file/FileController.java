@@ -46,4 +46,24 @@ public class FileController {
         }
 
     }
+
+    @GetMapping(value = "/project/reference/{fileName:.+}", produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<Resource> getProjectReferenceFile(@PathVariable String fileName) {
+        Path file = Paths.get(fileProperties.getProjectReferenceFilePath()).resolve(fileName);
+
+        try {
+            Resource resource = new UrlResource(file.toUri());
+
+            if (!resource.exists()) {
+                throw new BusinessException(StatusCode.NOT_FOUND, "파일을 찾을 수 없습니다.", false);
+            }
+
+            return new ResponseEntity<>(resource, HttpStatus.OK);
+
+        } catch (MalformedURLException e) {
+            log.error("MalformedURLException URI:{}. {} ", file.toUri(), e.getMessage());
+            throw new BusinessException(StatusCode.INTERNAL_SERVER_ERROR);
+        }
+
+    }
 }

@@ -1,5 +1,6 @@
 package kr.co.yourplanet.online.business.project.dto.response;
 
+import kr.co.yourplanet.core.entity.project.ProjectHistory;
 import kr.co.yourplanet.core.enums.MemberType;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectCommonAttribute;
 import lombok.AllArgsConstructor;
@@ -61,4 +62,30 @@ public class ProjectHistoryForm {
     private Integer offerPrice;
 
     private MemberType requestMemberType;
+
+    public ProjectHistoryForm(ProjectHistory projectHistory) {
+        this.id = projectHistory.getProject().getId();
+        this.seq = projectHistory.getSeq();
+        this.additionalPanel = ProjectCommonAttribute.ProjectAdditionalPanel.builder()
+                .count(projectHistory.getAdditionalPanelCount())
+                .isNegotiable(projectHistory.getAdditionalPanelNegotiable())
+                .build();
+        this.additionalModification = ProjectCommonAttribute.ProjectAdditionalModification.builder()
+                .count(projectHistory.getAdditionalModificationCount())
+                .build();
+        this.originFile = ProjectCommonAttribute.ProjectOriginFile.builder()
+                .demandType(projectHistory.getOriginFileDemandType())
+                .build();
+        this.refinement = ProjectCommonAttribute.ProjectRefinement.builder()
+                .demandType(projectHistory.getRefinementDemandType())
+                .build();
+        this.postDurationExtension = ProjectCommonAttribute.ProjectPostDurationExtension.builder()
+                .months(projectHistory.getPostDurationExtensionMonths())
+                .build();
+        this.postStartDates = projectHistory.getPostStartDates();
+        this.dueDate = projectHistory.getDueDate();
+        this.offerPrice = projectHistory.getOfferPrice();
+        this.message = projectHistory.getMessage();
+        this.requestMemberType = projectHistory.getRequestMember().getMemberType(); // 요청 멤버의 타입을 가져옵니다.
+    }
 }

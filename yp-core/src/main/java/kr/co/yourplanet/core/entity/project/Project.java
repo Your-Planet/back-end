@@ -2,6 +2,7 @@ package kr.co.yourplanet.core.entity.project;
 
 import kr.co.yourplanet.core.entity.BasicColumn;
 import kr.co.yourplanet.core.entity.member.Member;
+import kr.co.yourplanet.core.entity.studio.Price;
 import kr.co.yourplanet.core.enums.ProjectStatus;
 import kr.co.yourplanet.core.enums.ValidEnum;
 import kr.co.yourplanet.core.util.StringListConverter;
@@ -9,12 +10,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.util.CollectionUtils;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @AllArgsConstructor
@@ -41,6 +44,13 @@ public class Project extends BasicColumn {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id", referencedColumnName = "id")
     private Member creator;
+
+    /**
+     * 작가
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "creator_price_id", referencedColumnName = "id")
+    private Price creatorPrice;
 
     /**
      * 프로젝트 상태
@@ -104,8 +114,8 @@ public class Project extends BasicColumn {
     /**
      * 수락된 프로젝트 히스토리 ID
      */
-    @Column(name = "selected_history_id")
-    private Long selectedHistoryId;
+    @Column(name = "accepted_history_id")
+    private Long acceptedHistoryId;
 
     public Project() {
         this.projectHistories = new ArrayList<>();
@@ -118,15 +128,35 @@ public class Project extends BasicColumn {
     }
 
     public void acceptProject(ProjectHistory projectHistory) {
-        this.selectedHistoryId = projectHistory.getId();
+        this.acceptedHistoryId = projectHistory.getId();
         this.projectStatus = ProjectStatus.ACCEPT;
         this.acceptDateTime = LocalDateTime.now();
     }
 
-    public ProjectHistory getSelectedHistory() {
+    /**
+     * 의뢰 수락된 프로젝트 히스토리를 반환하는 메소드입니다.
+     *
+     * @return 의뢰 수락된 ProjectHistory 객체를 반환합니다.
+     * 만약 히스토리가 없을 경우 null을 반환합니다.
+     */
+    public Optional<ProjectHistory> getAcceptedHistory() {
+        if (projectHistories == null) {
+            return Optional.empty();  // 리스트가 null인 경우에도 Optional.empty() 반환
+        }
         return projectHistories.stream()
-                .filter(history -> history.getId().equals(selectedHistoryId))
-                .findFirst()
-                .orElse(null);
+                .filter(history -> history.getId().equals(acceptedHistoryId))
+                .findFirst();
+    }
+
+    /**
+     * 최신 프로젝트 히스토리를 반환하는 메소드
+     *
+     * @return 최신의 ProjectHistory 객체를 Optional로 감싸서 반환합니다.
+     * 만약 히스토리가 없을 경우 Optional.empty()를 반환합니다.
+     */
+    public Optional<ProjectHistory> getLatestHistory() {
+        return !CollectionUtils.isEmpty(projectHistories)
+                ? Optional.of(projectHistories.get(projectHistories.size() - 1)) // 가장 최신 히스토리
+                : Optional.empty(); // 히스토리가 없으면 빈 Optional 반환
     }
 }
