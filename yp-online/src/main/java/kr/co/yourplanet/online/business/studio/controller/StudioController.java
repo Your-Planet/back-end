@@ -24,7 +24,7 @@ public class StudioController {
 
     @GetMapping("/studio/profile")
     public ResponseForm<ProfileInfo> getStudioProfile(@AuthenticationPrincipal JwtPrincipal principal) {
-        ProfileInfo profileInfo = profileService.getStudioProfile(principal.getId());
+        ProfileInfo profileInfo = profileService.getStudioProfileByMemberId(principal.getId());
         return new ResponseForm<>(StatusCode.OK, profileInfo);
     }
 
@@ -36,7 +36,7 @@ public class StudioController {
 
     @GetMapping("/studio/price")
     public ResponseForm<PriceInfo> getPrice(@AuthenticationPrincipal JwtPrincipal principal) {
-        PriceInfo price = priceService.getPrice(principal.getId());
+        PriceInfo price = priceService.getPriceInfoByMemberId(principal.getId());
         return new ResponseForm<>(StatusCode.OK, price);
     }
 
@@ -66,7 +66,7 @@ public class StudioController {
                                                              @RequestParam(name = "maxPrice", required = false) Integer maxPrice,
                                                              @RequestParam(name = "pageNumber", required = false) Integer pageNumber,
                                                              @RequestParam(name = "pageSize", required = false) Integer pageSize, @AuthenticationPrincipal JwtPrincipal principal) {
-        Page<StudioBasicInfo> searchResults = profileService.searchStudios(categories, keywordType, keyword, minPrice, maxPrice, pageNumber, pageSize);
+        Page<StudioBasicInfo> searchResults = profileService.searchStudios(principal.getId(), categories, keywordType, keyword, minPrice, maxPrice, pageNumber, pageSize);
         return new ResponseForm<>(StatusCode.OK, searchResults);
 
     }

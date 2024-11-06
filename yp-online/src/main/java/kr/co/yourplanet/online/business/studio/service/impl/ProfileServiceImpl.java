@@ -3,9 +3,9 @@ package kr.co.yourplanet.online.business.studio.service.impl;
 import kr.co.yourplanet.core.entity.instagram.InstagramMedia;
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.studio.Category;
-import kr.co.yourplanet.core.entity.studio.PortfolioCategoryMap;
 import kr.co.yourplanet.core.entity.studio.PortfolioLink;
 import kr.co.yourplanet.core.entity.studio.Studio;
+import kr.co.yourplanet.core.entity.studio.StudioCategoryMap;
 import kr.co.yourplanet.core.enums.FileType;
 import kr.co.yourplanet.core.enums.MemberType;
 import kr.co.yourplanet.core.enums.StatusCode;
@@ -13,7 +13,7 @@ import kr.co.yourplanet.online.business.instagram.repository.InstagramMediaRepos
 import kr.co.yourplanet.online.business.studio.dao.StudioBasicDao;
 import kr.co.yourplanet.online.business.studio.dto.*;
 import kr.co.yourplanet.online.business.studio.repository.CategoryRepository;
-import kr.co.yourplanet.online.business.studio.repository.PortfolioCategoryMapRepository;
+import kr.co.yourplanet.online.business.studio.repository.StudioCategoryMapRepository;
 import kr.co.yourplanet.online.business.studio.repository.PortfolioLinkRepository;
 import kr.co.yourplanet.online.business.studio.repository.StudioRepository;
 import kr.co.yourplanet.online.business.studio.service.PriceService;
@@ -34,8 +34,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +44,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final FileManageUtil fileManageUtil;
     private final StudioRepository studioRepository;
     private final MemberRepository memberRepository;
-    private final PortfolioCategoryMapRepository portfolioCategoryMapRepository;
+    private final StudioCategoryMapRepository studioCategoryMapRepository;
     private final PortfolioLinkRepository portfolioLinkRepository;
     private final CategoryRepository categoryRepository;
     private final InstagramMediaRepository instagramMediaRepository;
@@ -52,20 +52,36 @@ public class ProfileServiceImpl implements ProfileService {
 
     private final PriceService priceService;
 
-    public ProfileInfo getStudioProfile(Long memberId) {
-        Optional<Studio> optionalStudio = studioRepository.findById(memberId);
-        if (!optionalStudio.isPresent()) {
-            throw new BusinessException(StatusCode.NOT_FOUND, "스튜디오 정보가 존재하지 않습니다.", false);
-        }
-        Studio studio = optionalStudio.get();
+    public ProfileInfo getStudioProfileByMemberId(Long memberId) {
+        Studio studio = studioRepository.findByMemberId(memberId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "스튜디오 정보가 존재하지 않습니다.", false));
+
+        return getProfileInfoByStudio(studio);
+    }
+
+    public ProfileInfo getStudioProfileByStudioId(Long studioId) {
+        Studio studio = studioRepository.findById(studioId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "스튜디오 정보가 존재하지 않습니다.", false));
+
+        return getProfileInfoByStudio(studio);
+    }
+
+    private ProfileInfo getProfileInfoByStudio(Studio studio) {
         List<InstagramMedia> medias = studio.getPortfolioLinkUrls();
 
+        List<PortfolioInfo> portfolioInfoList = new ArrayList<>();
+
+        if (!CollectionUtils.isEmpty(medias)) {
+            portfolioInfoList = medias.stream().map(PortfolioInfo::new)
+                    .collect(Collectors.toList());
+        }
+
         return ProfileInfo.builder()
+                .id(studio.getId())
                 .name(studio.getToonName())
                 .description(studio.getDescription())
                 .categories(studio.getCategoryTypes())
-                .portfolios(medias)
+                .portfolios(portfolioInfoList)
                 .profileImageUrl(fileProperties.getBaseUrl() + studio.getProfileImageUrl())
+                .instagramUsername(studio.getMember().getInstagramUsername())
                 .build();
     }
 
@@ -76,7 +92,7 @@ public class ProfileServiceImpl implements ProfileService {
         }
 
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "해당 회원 정보가 존재하지 않습니다.", false));
-        Optional<Studio> optionalStudio = studioRepository.findById(memberId);
+        Optional<Studio> optionalStudio = studioRepository.findByMemberId(memberId);
         Studio studio = optionalStudio.orElseGet(() -> Studio.builder()
                 .member(member)
                 .toonName(studioDto.getName())
@@ -89,7 +105,7 @@ public class ProfileServiceImpl implements ProfileService {
         studio = studioRepository.save(studio);
 
         List<PortfolioLink> portfolioLinkList = new ArrayList<>();
-        List<PortfolioCategoryMap> portfolioCategoryMapList = new ArrayList<>();
+        List<StudioCategoryMap> studioCategoryMapList = new ArrayList<>();
 
         for (String id : studioDto.getPortfolioIds()) {
             InstagramMedia media = instagramMediaRepository.findById(id).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "존재하지 않는 미디어 ID가 포함되어 있습니다.", false));
@@ -103,20 +119,20 @@ public class ProfileServiceImpl implements ProfileService {
             throw new BusinessException(StatusCode.BAD_REQUEST, "존재하지 않는 카테고리 코드가 포함되어 있습니다.", false);
         }
         for (Category category : categories) {
-            portfolioCategoryMapList.add(PortfolioCategoryMap.builder()
+            studioCategoryMapList.add(StudioCategoryMap.builder()
                     .category(category)
                     .studio(studio)
                     .build());
         }
 
-        LocalDateTime now = LocalDateTime.now();
-        portfolioLinkRepository.saveAll(portfolioLinkList);
-        portfolioCategoryMapRepository.saveAll(portfolioCategoryMapList);
-
         if (optionalStudio.isPresent()) {
-            portfolioLinkRepository.deleteAllByStudioAndCreateDateBeforeAndUpdateDateBefore(studio, now, now);
-            portfolioCategoryMapRepository.deleteAllByStudioAndCreateDateBeforeAndUpdateDateBefore(studio, now, now);
+            portfolioLinkRepository.deleteAllByStudio(studio);
+            studioCategoryMapRepository.deleteAllByStudio(studio);
         }
+
+        portfolioLinkRepository.saveAll(portfolioLinkList);
+        studioCategoryMapRepository.saveAll(studioCategoryMapList);
+
 
         // 프로필 이미지 저장 부분
         if (profileImageFile != null && !profileImageFile.isEmpty()) {
@@ -134,11 +150,18 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public Page<StudioBasicInfo> searchStudios(List<String> inputCategories, String keywordType, String keyword, Integer minPrice, Integer maxPrice, Integer inputPageNumber, Integer inputPageSize) {
+    public Page<StudioBasicInfo> searchStudios(Long requestMemberId, List<String> inputCategories, String keywordType, String keyword, Integer minPrice, Integer maxPrice, Integer inputPageNumber, Integer inputPageSize) {
         List<Category> categories = new ArrayList<>();
         String toonName = "";
         String description = "";
         String instagramUsername = "";
+
+        Member requestMember = memberRepository.findById(requestMemberId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "해당 회원 정보가 존재하지 않습니다.", false));
+
+        // 광고주만 작가 상세 조회 가능
+        if (!MemberType.SPONSOR.equals(requestMember.getMemberType())) {
+            throw new BusinessException(StatusCode.FORBIDDEN, "작가 조회는 광고주만 가능해요.", false);
+        }
 
         int pageNumber = (inputPageNumber != null) ? inputPageNumber : 0;
         int pageSize = (inputPageSize != null) ? inputPageSize : 50;
@@ -209,9 +232,8 @@ public class ProfileServiceImpl implements ProfileService {
             throw new BusinessException(StatusCode.FORBIDDEN, "작가 조회는 광고주만 가능해요.", false);
         }
 
-        ProfileInfo profile = getStudioProfile(studioId);
-        PriceInfo price = priceService.getPrice(studioId);
-        PriceInfoWithoutPrice priceInfoWithoutPrice = PriceInfoWithoutPrice.from(price);
+        ProfileInfo profile = getStudioProfileByStudioId(studioId);
+        PriceInfoWithoutPrice priceInfoWithoutPrice = priceService.getPriceInfoWithoutPriceByStudioId(studioId);
 
         return StudioDetailInfo.builder()
                 .id(studioId)

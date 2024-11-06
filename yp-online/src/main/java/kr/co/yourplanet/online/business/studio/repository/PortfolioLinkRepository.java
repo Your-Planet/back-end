@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
 
-public interface PortfolioLinkRepository extends JpaRepository<PortfolioLink, Long>{
+public interface PortfolioLinkRepository extends JpaRepository<PortfolioLink, Long> {
     void deleteAllByStudioAndCreateDateBeforeAndUpdateDateBefore(Studio studio, LocalDateTime localDateTime, LocalDateTime localDateTime2);
+
+    void deleteAllByStudio(Studio studio);
 }

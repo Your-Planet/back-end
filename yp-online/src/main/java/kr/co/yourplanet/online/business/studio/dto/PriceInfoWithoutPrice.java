@@ -12,11 +12,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class PriceInfoWithoutPrice {
+    private Long id;
     private DefaultOptionWithoutPrice service;
     private AdditionalPriceFormWithoutPrice option;
 
-    public static PriceInfoWithoutPrice from(PriceInfo priceInfo) {
+    public static PriceInfoWithoutPrice from(PriceInfo priceInfo, Long priceId) {
         return PriceInfoWithoutPrice.builder()
+                .id(priceId)
                 .service(new DefaultOptionWithoutPrice(priceInfo.getService()))
                 .option(new AdditionalPriceFormWithoutPrice(priceInfo.getOption()))
                 .build();

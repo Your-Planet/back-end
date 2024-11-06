@@ -21,11 +21,11 @@ public class StudioRepositoryImpl implements StudioRepositoryCustom {
     public List<StudioBasicDao> findStudioBasicsWithFilters(List<Category> categories, String toonName, String description, String instagramUsername, Integer minPrice, Integer maxPrice, Pageable pageable) {
 
         // 1-1 조회조건에 맞는 스튜디오ID 조회
-        StringBuilder findStduioIdsQuery = new StringBuilder("select distinct s.id " +
+        StringBuilder findStudioIdsQuery = new StringBuilder("select distinct s.id " +
                 "from Studio s " +
-                "join PortfolioCategoryMap pcm on s.id = pcm.studio.id " +
-                "join Member m on s.id = m.id " +
-                "join Price p on s.id = p.id ");
+                "join StudioCategoryMap scm on s.id = scm.studio.id " +
+                "join Member m on s.member.id = m.id " +
+                "join Price p on p.studio.id = s.id and p.isLatest = true");
 
         // 1-2 조회조건 추가
         List<String> conditions = new ArrayList<>();
@@ -39,7 +39,7 @@ public class StudioRepositoryImpl implements StudioRepositoryCustom {
             conditions.add("m.instagramUsername like concat('%', :instagramUsername, '%')");
         }
         if (!CollectionUtils.isEmpty(categories)) {
-            conditions.add("exists (select 1 from PortfolioCategoryMap pcm2 where pcm.studio = pcm2.studio and pcm2.category in :categories)");
+            conditions.add("exists (select 1 from StudioCategoryMap scm2 where scm.studio = scm2.studio and scm2.category in :categories)");
         }
         if (minPrice != null) {
             conditions.add("p.price >= :minPrice");
@@ -48,11 +48,11 @@ public class StudioRepositoryImpl implements StudioRepositoryCustom {
             conditions.add("p.price <= :maxPrice");
         }
         if (!CollectionUtils.isEmpty(conditions)) {
-            findStduioIdsQuery.append(" where ");
-            findStduioIdsQuery.append(String.join(" and ", conditions));
+            findStudioIdsQuery.append(" where ");
+            findStudioIdsQuery.append(String.join(" and ", conditions));
         }
 
-        TypedQuery<Long> studioQuery = entityManager.createQuery(findStduioIdsQuery.toString(), Long.class);
+        TypedQuery<Long> studioQuery = entityManager.createQuery(findStudioIdsQuery.toString(), Long.class);
 
         if (StringUtils.hasText(toonName)) {
             studioQuery.setParameter("toonName", toonName);
@@ -80,11 +80,11 @@ public class StudioRepositoryImpl implements StudioRepositoryCustom {
         List<Long> studiosIds = studioQuery.getResultList();
 
         // 2.1 스튜디오 기본 정보 조회
-        String studioBasicQuery = "select new kr.co.yourplanet.online.business.studio.dao.StudioBasicDao(s.id, s.toonName, s.description, s.profileImageUrl, m.instagramUsername, pcm.category.categoryCode) " +
+        String studioBasicQuery = "select new kr.co.yourplanet.online.business.studio.dao.StudioBasicDao(s.id, s.toonName, s.description, s.profileImageUrl, m.instagramUsername, scm.category.categoryCode) " +
                 "from Studio s " +
-                "join PortfolioCategoryMap pcm on s.id = pcm.studio.id " +
-                "join Member m on s.id = m.id " +
-                "join Price p on s.id = p.id " +
+                "join StudioCategoryMap scm on s.id = scm.studio.id " +
+                "join Member m on s.member.id = m.id " +
+                "join Price p on p.studio.id = s.id and p.isLatest = true " +
                 "where s.id in :studiosIds";
 
         return entityManager.createQuery(studioBasicQuery, StudioBasicDao.class)

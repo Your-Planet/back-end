@@ -11,6 +11,7 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Entity
@@ -22,13 +23,18 @@ import java.util.stream.Collectors;
 public class Studio extends BasicColumn {
 
     @Id
+    @GeneratedValue
     @Column(name = "id")
     private Long id;
 
-    @OneToOne
-    @MapsId
-    @JoinColumn(name = "id", referencedColumnName = "id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", referencedColumnName = "id", unique = true)
     private Member member;
+
+    @OneToMany(mappedBy = "studio", fetch = FetchType.LAZY)
+    @OrderBy("createDate ASC")
+    private List<Price> priceList;
+
 
     @Column(name = "description")
     private String description;
@@ -43,14 +49,14 @@ public class Studio extends BasicColumn {
     private String profileImageUrl;
 
     @OneToMany(mappedBy = "studio", fetch = FetchType.LAZY)
-    private List<PortfolioCategoryMap> portfolioCategoryMapList;
+    private List<StudioCategoryMap> studioCategoryMapList;
 
     @OneToMany(mappedBy = "studio", fetch = FetchType.LAZY)
     private List<PortfolioLink> portfolioLinkList;
 
     public List<String> getCategoryTypes() {
-        return portfolioCategoryMapList.stream()
-                .map(PortfolioCategoryMap::getCategory)
+        return studioCategoryMapList.stream()
+                .map(StudioCategoryMap::getCategory)
                 .map(Category::getCategoryCode).collect(Collectors.toList());
     }
 
@@ -68,5 +74,11 @@ public class Studio extends BasicColumn {
     public void updateProfileImage(String profileImagePath, String profileImageUrl) {
         this.profileImagePath = profileImagePath;
         this.profileImageUrl = profileImageUrl;
+    }
+
+    public Optional<Price> getLatestPrice() {
+        return (priceList == null || priceList.isEmpty() || !priceList.get(priceList.size() - 1).isLatest())
+                ? Optional.empty()
+                : Optional.of(priceList.get(priceList.size() - 1));
     }
 }

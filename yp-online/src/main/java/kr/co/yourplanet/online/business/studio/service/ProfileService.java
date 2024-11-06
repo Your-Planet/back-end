@@ -10,11 +10,13 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface ProfileService {
-    ProfileInfo getStudioProfile(Long memberId);
+    ProfileInfo getStudioProfileByMemberId(Long memberId);
+
+    ProfileInfo getStudioProfileByStudioId(Long studioId);
 
     void upsertAndDeleteStudio(Long memberId, StudioRegisterForm studio, MultipartFile profileImageFile);
 
-    Page<StudioBasicInfo> searchStudios(List<String> categories, String keywordType, String keyword, Integer minPrice, Integer maxPrice, Integer pageNumber, Integer pageSize);
+    Page<StudioBasicInfo> searchStudios(Long requestMemberId, List<String> categories, String keywordType, String keyword, Integer minPrice, Integer maxPrice, Integer pageNumber, Integer pageSize);
 
     StudioDetailInfo getStudioDetail(Long studioId, Long requestMemberId);
 

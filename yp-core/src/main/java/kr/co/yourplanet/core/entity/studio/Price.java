@@ -1,5 +1,6 @@
 package kr.co.yourplanet.core.entity.studio;
 
+import kr.co.yourplanet.core.entity.BasicColumn;
 import kr.co.yourplanet.core.enums.ProvisionType;
 import kr.co.yourplanet.core.enums.PostDurationMonthType;
 import lombok.AllArgsConstructor;
@@ -14,13 +15,14 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Price {
+public class Price extends BasicColumn {
     @Id
+    @GeneratedValue
     @Column(name = "id")
     private Long id;
-    @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
-    @JoinColumn(name = "id")
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "studio_id", referencedColumnName = "id")
     private Studio studio;
 
     @Column(name = "price")
@@ -59,6 +61,9 @@ public class Price {
     private int refinementPrice;
     @Column(name = "post_duration_extension_price")
     private int postDurationExtensionPrice;
+
+    @Column(name = "is_latest")
+    private boolean isLatest;
 
 
     public void updateDefaultOption(int price, int workingDays, int modificationCount, int cuts, PostDurationMonthType postDurationType) {
@@ -133,5 +138,9 @@ public class Price {
         } else {
             this.postDurationExtensionPrice = price;
         }
+    }
+
+    public void markAsNotLatest() {
+        this.isLatest = false;
     }
 }
