@@ -19,4 +19,5 @@ public class ProfileInfo {
     private String instagramUsername;
     private List<String> categories;
     private List<PortfolioInfo> portfolios;
+
 }

@@ -16,10 +16,10 @@ import java.util.List;
 public class ProjectRequestForm {
 
     /**
-     * 스튜디오 ID
+     * Price ID
      */
     @NotNull(message = "작가 스튜디오 정보는 필수입니다")
-    private Long studioId;
+    private Long priceId;
 
     /**
      * 추가 컷

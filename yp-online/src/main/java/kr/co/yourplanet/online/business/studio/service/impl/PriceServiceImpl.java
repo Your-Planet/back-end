@@ -1,11 +1,11 @@
 package kr.co.yourplanet.online.business.studio.service.impl;
 
 import kr.co.yourplanet.core.entity.studio.Price;
-import kr.co.yourplanet.core.entity.studio.Studio;
+import kr.co.yourplanet.core.entity.studio.Profile;
 import kr.co.yourplanet.core.entity.studio.TempPrice;
 import kr.co.yourplanet.online.business.studio.dto.*;
 import kr.co.yourplanet.online.business.studio.repository.PriceRepository;
-import kr.co.yourplanet.online.business.studio.repository.StudioRepository;
+import kr.co.yourplanet.online.business.studio.repository.ProfileRepository;
 import kr.co.yourplanet.online.business.studio.repository.TempPriceRepository;
 import kr.co.yourplanet.online.business.studio.service.PriceService;
 import kr.co.yourplanet.core.enums.StatusCode;
@@ -21,27 +21,20 @@ import java.util.Optional;
 public class PriceServiceImpl implements PriceService {
     private final PriceRepository priceRepository;
     private final TempPriceRepository tempPriceRepository;
-    private final StudioRepository studioRepository;
+    private final ProfileRepository profileRepository;
 
     public PriceInfo getPriceInfoByMemberId(Long memberId) {
-        Studio studio = studioRepository.findByMemberId(memberId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "스튜디오 정보가 존재하지 않습니다.", false));
+        Profile profile = profileRepository.findByMemberId(memberId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "스튜디오 정보가 존재하지 않습니다.", false));
 
-        Price price = studio.getLatestPrice().orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "가격 정보가 존재하지 않습니다.", false));
-        return convertPriceToPriceForm(price);
-    }
-
-    public PriceInfo getPriceInfoByStudioId(Long studioId) {
-        Studio studio = studioRepository.findById(studioId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "스튜디오 정보가 존재하지 않습니다.", false));
-
-        Price price = studio.getLatestPrice().orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "가격 정보가 존재하지 않습니다.", false));
+        Price price = profile.getLatestPrice().orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "가격 정보가 존재하지 않습니다.", false));
         return convertPriceToPriceForm(price);
     }
 
     // 가격정보 없는 Price (기본제공 옵셥 등만 존재)
-    public PriceInfoWithoutPrice getPriceInfoWithoutPriceByStudioId(Long studioId) {
-        Studio studio = studioRepository.findById(studioId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "스튜디오 정보가 존재하지 않습니다.", false));
+    public PriceInfoWithoutPrice getPriceInfoWithoutPriceByMemberId(Long creatorId) {
+        Profile profile = profileRepository.findByMemberId(creatorId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "스튜디오 정보가 존재하지 않습니다.", false));
 
-        Price price = studio.getLatestPrice().orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "가격 정보가 존재하지 않습니다.", false));
+        Price price = profile.getLatestPrice().orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "가격 정보가 존재하지 않습니다.", false));
 
         return PriceInfoWithoutPrice.from(convertPriceToPriceForm(price), price.getId());
     }
@@ -49,9 +42,10 @@ public class PriceServiceImpl implements PriceService {
     @Transactional
 
     public void savePrice(Long memberId, PriceInfo priceInfo) {
-        Studio studio = studioRepository.findByMemberId(memberId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "스튜디오 정보가 존재하지 않습니다.", false));
+        Profile profile = profileRepository.findByMemberId(memberId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "스튜디오 정보가 존재하지 않습니다.", false));
 
-        Optional<Price> latestPrice = studio.getLatestPrice();
+        // 이전 Price 정보에 최신여부 N 업데이트
+        Optional<Price> latestPrice = profile.getLatestPrice();
         latestPrice.ifPresent(Price::markAsNotLatest);
 
 
@@ -159,9 +153,9 @@ public class PriceServiceImpl implements PriceService {
     }
 
     private Price convertPriceFormToPrice(Long memberId, PriceInfo priceInfo) {
-        Studio studio = studioRepository.findByMemberId(memberId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "가격을 저장할 스튜디오가 존재하지 않습니다.", false));
+        Profile profile = profileRepository.findByMemberId(memberId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "가격을 저장할 스튜디오가 존재하지 않습니다.", false));
         return Price.builder()
-                .studio(studio)
+                .profile(profile)
                 .price(priceInfo.getService().getPrice())
                 .workingDays(priceInfo.getService().getWorkingDays())
                 .cuts(priceInfo.getService().getDefaultCuts())
@@ -233,9 +227,9 @@ public class PriceServiceImpl implements PriceService {
     }
 
     private TempPrice convertPriceFormToTempPrice(Long memberId, PriceInfo priceInfo) {
-        Studio studio = studioRepository.findByMemberId(memberId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "가격을 저장할 스튜디오가 존재하지 않습니다.", false));
+        Profile profile = profileRepository.findByMemberId(memberId).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "가격을 저장할 스튜디오가 존재하지 않습니다.", false));
         return TempPrice.builder()
-                .member(studio.getMember())
+                .member(profile.getMember())
                 .price(priceInfo.getService().getPrice())
                 .workingDays(priceInfo.getService().getWorkingDays())
                 .cuts(priceInfo.getService().getDefaultCuts())

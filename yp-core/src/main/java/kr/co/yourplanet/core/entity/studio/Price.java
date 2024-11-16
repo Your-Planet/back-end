@@ -22,8 +22,8 @@ public class Price extends BasicColumn {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "studio_id", referencedColumnName = "id")
-    private Studio studio;
+    @JoinColumn(name = "profile_id", referencedColumnName = "id")
+    private Profile profile;
 
     @Column(name = "price")
     private int price;

@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @DynamicUpdate
 @Builder
-public class Studio extends BasicColumn {
+public class Profile extends BasicColumn {
 
     @Id
     @GeneratedValue
@@ -31,7 +31,7 @@ public class Studio extends BasicColumn {
     @JoinColumn(name = "member_id", referencedColumnName = "id", unique = true)
     private Member member;
 
-    @OneToMany(mappedBy = "studio", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY)
     @OrderBy("createDate ASC")
     private List<Price> priceList;
 
@@ -48,15 +48,15 @@ public class Studio extends BasicColumn {
     @Column(name = "profile_image_url")
     private String profileImageUrl;
 
-    @OneToMany(mappedBy = "studio", fetch = FetchType.LAZY)
-    private List<StudioCategoryMap> studioCategoryMapList;
+    @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY)
+    private List<ProfileCategoryMap> profileCategoryMapList;
 
-    @OneToMany(mappedBy = "studio", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY)
     private List<PortfolioLink> portfolioLinkList;
 
     public List<String> getCategoryTypes() {
-        return studioCategoryMapList.stream()
-                .map(StudioCategoryMap::getCategory)
+        return profileCategoryMapList.stream()
+                .map(ProfileCategoryMap::getCategory)
                 .map(Category::getCategoryCode).collect(Collectors.toList());
     }
 
@@ -66,7 +66,7 @@ public class Studio extends BasicColumn {
                 .collect(Collectors.toList());
     }
 
-    public void updateStudioNameAndDescription(String name, String description) {
+    public void updateNameAndDescription(String name, String description) {
         this.toonName = name;
         this.description = description;
     }

@@ -15,7 +15,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 @DynamicUpdate
-public class StudioCategoryMap extends BasicColumn {
+public class ProfileCategoryMap extends BasicColumn {
 
     @Id
     @GeneratedValue
@@ -23,8 +23,8 @@ public class StudioCategoryMap extends BasicColumn {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "studio_id", referencedColumnName = "id")
-    private Studio studio;
+    @JoinColumn(name = "profile_id", referencedColumnName = "id")
+    private Profile profile;
 
     @ManyToOne
     @JoinColumn(name = "category_code", referencedColumnName = "category_code")
