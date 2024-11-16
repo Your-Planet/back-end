@@ -15,16 +15,18 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 @DynamicUpdate
-@IdClass(PortfolioCategoryMapKey.class)
-public class PortfolioCategoryMap extends BasicColumn {
+public class ProfileCategoryMap extends BasicColumn {
 
     @Id
-    @ManyToOne
-    @JoinColumn(name = "studio_id", referencedColumnName = "id")
-    private Studio studio;
+    @GeneratedValue
+    @Column(name = "id")
+    private Long id;
 
-    @Id
     @ManyToOne
-    @JoinColumn(name = "category_code")
+    @JoinColumn(name = "profile_id", referencedColumnName = "id")
+    private Profile profile;
+
+    @ManyToOne
+    @JoinColumn(name = "category_code", referencedColumnName = "category_code")
     private Category category;
 }

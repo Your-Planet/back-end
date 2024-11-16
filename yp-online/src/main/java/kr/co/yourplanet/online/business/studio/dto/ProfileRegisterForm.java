@@ -14,7 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class StudioRegisterForm {
+public class ProfileRegisterForm {
     @NotBlank
     private String name;
     private String description;

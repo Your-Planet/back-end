@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class StudioDetailInfo {
+public class CreatorDetailInfo {
 
     private Long id;
 

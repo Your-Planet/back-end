@@ -14,17 +14,19 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @DynamicUpdate
-@IdClass(PortfolioLinkKey.class)
 @Builder
 @Getter
 public class PortfolioLink extends BasicColumn {
 
     @Id
-    @ManyToOne
-    @JoinColumn(name = "studio_id", referencedColumnName = "id")
-    private Studio studio;
+    @GeneratedValue
+    @Column(name = "id")
+    private Long id;
 
-    @Id
+    @ManyToOne
+    @JoinColumn(name = "profile_id", referencedColumnName = "id")
+    private Profile profile;
+
     @OneToOne
     @JoinColumn(name = "media_id", referencedColumnName = "id")
     private InstagramMedia media;

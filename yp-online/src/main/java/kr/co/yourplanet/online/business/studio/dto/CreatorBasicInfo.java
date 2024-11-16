@@ -9,7 +9,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class StudioBasicInfo {
+public class CreatorBasicInfo {
 
     @NotBlank
     private Long id;

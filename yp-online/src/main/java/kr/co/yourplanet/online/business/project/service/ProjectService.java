@@ -56,14 +56,14 @@ public class ProjectService {
     @Transactional
     public void requestProject(ProjectRequestForm projectRequestForm, List<MultipartFile> referenceFiles, Long sponsorId) {
         Member sponsor = memberRepository.findById(sponsorId).orElseThrow(() -> new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 광고주 정보입니다.", false));
-        Price creatorPrice = priceRepository.findById(projectRequestForm.getStudioId()).orElseThrow(() -> new BusinessException(StatusCode.BAD_REQUEST, "작가의 스튜디오 정보가 존재하지 않습니다", false));
+        Price creatorPrice = priceRepository.findById(projectRequestForm.getPriceId()).orElseThrow(() -> new BusinessException(StatusCode.BAD_REQUEST, "작가의 스튜디오 정보가 존재하지 않습니다", false));
 
         // 1. 유효성 체크
         if (!MemberType.SPONSOR.equals(sponsor.getMemberType())) {
             throw new BusinessException(StatusCode.BAD_REQUEST, "광고주만 프로젝트 의뢰할 수 있습니다.", false);
         }
 
-        if (!MemberType.CREATOR.equals(creatorPrice.getStudio().getMember().getMemberType())) {
+        if (!MemberType.CREATOR.equals(creatorPrice.getProfile().getMember().getMemberType())) {
             throw new BusinessException(StatusCode.BAD_REQUEST, "작가에게만 의뢰할 수 있습니다.", false);
         }
 
@@ -75,7 +75,7 @@ public class ProjectService {
 
         // 프로젝트 저장
         Project project = Project.builder()
-                .creator(creatorPrice.getStudio().getMember())
+                .creator(creatorPrice.getProfile().getMember())
                 .sponsor(sponsor)
                 .projectStatus(ProjectStatus.REQUEST)
                 .brandName(projectRequestForm.getBrandName())

@@ -1,5 +1,6 @@
 package kr.co.yourplanet.core.entity.studio;
 
+import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.enums.ProvisionType;
 import kr.co.yourplanet.core.enums.PostDurationMonthType;
 import lombok.AllArgsConstructor;
@@ -15,13 +16,15 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 public class TempPrice {
+
     @Id
+    @GeneratedValue
     @Column(name = "id")
     private Long id;
+
     @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
-    @JoinColumn(name = "id")
-    private Studio studio;
+    @JoinColumn(name = "member_id", referencedColumnName = "id", unique = true)
+    private Member member;
 
     @Column(name = "price")
     private int price;

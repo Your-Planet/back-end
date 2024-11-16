@@ -11,6 +11,7 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Entity
@@ -19,16 +20,21 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @DynamicUpdate
 @Builder
-public class Studio extends BasicColumn {
+public class Profile extends BasicColumn {
 
     @Id
+    @GeneratedValue
     @Column(name = "id")
     private Long id;
 
-    @OneToOne
-    @MapsId
-    @JoinColumn(name = "id", referencedColumnName = "id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", referencedColumnName = "id", unique = true)
     private Member member;
+
+    @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY)
+    @OrderBy("createDate ASC")
+    private List<Price> priceList;
+
 
     @Column(name = "description")
     private String description;
@@ -42,15 +48,15 @@ public class Studio extends BasicColumn {
     @Column(name = "profile_image_url")
     private String profileImageUrl;
 
-    @OneToMany(mappedBy = "studio", fetch = FetchType.LAZY)
-    private List<PortfolioCategoryMap> portfolioCategoryMapList;
+    @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY)
+    private List<ProfileCategoryMap> profileCategoryMapList;
 
-    @OneToMany(mappedBy = "studio", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY)
     private List<PortfolioLink> portfolioLinkList;
 
     public List<String> getCategoryTypes() {
-        return portfolioCategoryMapList.stream()
-                .map(PortfolioCategoryMap::getCategory)
+        return profileCategoryMapList.stream()
+                .map(ProfileCategoryMap::getCategory)
                 .map(Category::getCategoryCode).collect(Collectors.toList());
     }
 
@@ -60,7 +66,7 @@ public class Studio extends BasicColumn {
                 .collect(Collectors.toList());
     }
 
-    public void updateStudioNameAndDescription(String name, String description) {
+    public void updateNameAndDescription(String name, String description) {
         this.toonName = name;
         this.description = description;
     }
@@ -68,5 +74,11 @@ public class Studio extends BasicColumn {
     public void updateProfileImage(String profileImagePath, String profileImageUrl) {
         this.profileImagePath = profileImagePath;
         this.profileImageUrl = profileImageUrl;
+    }
+
+    public Optional<Price> getLatestPrice() {
+        return (priceList == null || priceList.isEmpty() || !priceList.get(priceList.size() - 1).isLatest())
+                ? Optional.empty()
+                : Optional.of(priceList.get(priceList.size() - 1));
     }
 }

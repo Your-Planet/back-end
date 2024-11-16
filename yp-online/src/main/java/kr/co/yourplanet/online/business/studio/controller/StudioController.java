@@ -1,20 +1,20 @@
 package kr.co.yourplanet.online.business.studio.controller;
 
 import kr.co.yourplanet.core.enums.StatusCode;
-import kr.co.yourplanet.online.business.studio.dto.*;
+import kr.co.yourplanet.online.business.studio.dto.PriceInfo;
+import kr.co.yourplanet.online.business.studio.dto.ProfileInfo;
+import kr.co.yourplanet.online.business.studio.dto.ProfileRegisterForm;
 import kr.co.yourplanet.online.business.studio.service.PriceService;
 import kr.co.yourplanet.online.business.studio.service.ProfileService;
 import kr.co.yourplanet.online.common.ResponseForm;
 import kr.co.yourplanet.online.jwt.JwtPrincipal;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,19 +24,19 @@ public class StudioController {
 
     @GetMapping("/studio/profile")
     public ResponseForm<ProfileInfo> getStudioProfile(@AuthenticationPrincipal JwtPrincipal principal) {
-        ProfileInfo profileInfo = profileService.getStudioProfile(principal.getId());
+        ProfileInfo profileInfo = profileService.getStudioProfileByMemberId(principal.getId());
         return new ResponseForm<>(StatusCode.OK, profileInfo);
     }
 
     @PostMapping(value = "/studio/profile", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseForm<Void> createStudioProfile(@RequestPart StudioRegisterForm studioRegisterForm, @RequestPart(required = false) MultipartFile profileImage, @AuthenticationPrincipal JwtPrincipal principal) {
-        profileService.upsertAndDeleteStudio(principal.getId(), studioRegisterForm, profileImage);
+    public ResponseForm<Void> createStudioProfile(@RequestPart ProfileRegisterForm profileRegisterForm, @RequestPart(required = false) MultipartFile profileImage, @AuthenticationPrincipal JwtPrincipal principal) {
+        profileService.upsertAndDeleteProfile(principal.getId(), profileRegisterForm, profileImage);
         return new ResponseForm<>(StatusCode.OK);
     }
 
     @GetMapping("/studio/price")
     public ResponseForm<PriceInfo> getPrice(@AuthenticationPrincipal JwtPrincipal principal) {
-        PriceInfo price = priceService.getPrice(principal.getId());
+        PriceInfo price = priceService.getPriceInfoByMemberId(principal.getId());
         return new ResponseForm<>(StatusCode.OK, price);
     }
 
@@ -58,23 +58,4 @@ public class StudioController {
         return new ResponseForm<>(StatusCode.OK);
     }
 
-    @GetMapping("/studio")
-    public ResponseForm<Page<StudioBasicInfo>> searchStudios(@RequestParam(name = "categories", required = false) List<String> categories,
-                                                             @RequestParam(name = "keywordType", required = false) String keywordType,
-                                                             @RequestParam(name = "keyword", required = false) String keyword,
-                                                             @RequestParam(name = "minPrice", required = false) Integer minPrice,
-                                                             @RequestParam(name = "maxPrice", required = false) Integer maxPrice,
-                                                             @RequestParam(name = "pageNumber", required = false) Integer pageNumber,
-                                                             @RequestParam(name = "pageSize", required = false) Integer pageSize, @AuthenticationPrincipal JwtPrincipal principal) {
-        Page<StudioBasicInfo> searchResults = profileService.searchStudios(categories, keywordType, keyword, minPrice, maxPrice, pageNumber, pageSize);
-        return new ResponseForm<>(StatusCode.OK, searchResults);
-
-    }
-
-    @GetMapping("/studio/{id}")
-    public ResponseForm<StudioDetailInfo> getCreatorStudioInfo(@PathVariable(name = "id") Long studioId, @AuthenticationPrincipal JwtPrincipal principal) {
-
-        StudioDetailInfo studioDetailInfo = profileService.getStudioDetail(studioId, principal.getId());
-        return new ResponseForm<>(StatusCode.OK, studioDetailInfo);
-    }
 }
