@@ -29,7 +29,7 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @PostMapping(value = "/project", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<ResponseForm<String>> requestNewProject(@Valid @RequestPart ProjectRequestForm projectRequestForm, @RequestPart(required = false) List<MultipartFile> referenceFiles, @AuthenticationPrincipal JwtPrincipal principal) {
+    public ResponseEntity<ResponseForm<String>> requestProject(@Valid @RequestPart ProjectRequestForm projectRequestForm, @RequestPart(required = false) List<MultipartFile> referenceFiles, @AuthenticationPrincipal JwtPrincipal principal) {
 
         projectService.requestProject(projectRequestForm, referenceFiles, principal.getId());
 

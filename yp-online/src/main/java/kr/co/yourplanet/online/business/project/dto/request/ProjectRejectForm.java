@@ -11,4 +11,7 @@ public class ProjectRejectForm {
 
     @NotNull
     private Long id;
+
+    private String reason;
+
 }
