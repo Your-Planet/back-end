@@ -77,21 +77,21 @@ public class Project extends BasicColumn {
      * 프로젝트 의뢰, 수락, 반려, 완료 등
      */
     /**
-     * 의뢰 의뢰일
+     * 의뢰 의뢰 일시
      */
     private LocalDateTime requestDateTime;
     /**
-     * 의뢰 수락일
+     * 의뢰 수락 일시
      */
     private LocalDateTime acceptDateTime;
     /**
-     * 의뢰 거절일
+     * 의뢰 거절/취소 일시
      */
     private LocalDateTime rejectDateTime;
     /**
-     * 의뢰 취소
+     * 의뢰 거절/취소 사유
      */
-    private LocalDateTime cancelDateTime;
+    private String rejectReason;
 
     /**
      * 참고 URL
@@ -131,6 +131,11 @@ public class Project extends BasicColumn {
         this.acceptedHistoryId = projectHistory.getId();
         this.projectStatus = ProjectStatus.ACCEPT;
         this.acceptDateTime = LocalDateTime.now();
+    }
+
+    public void rejectProject(ProjectStatus projectStatus, String rejectReason){
+        this.projectStatus = projectStatus;
+        this.rejectReason = rejectReason;
     }
 
     /**

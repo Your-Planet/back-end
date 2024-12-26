@@ -3,6 +3,7 @@ package kr.co.yourplanet.core.entity.project;
 import kr.co.yourplanet.core.entity.BasicColumn;
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.enums.DemandType;
+import kr.co.yourplanet.core.enums.ProjectStatus;
 import kr.co.yourplanet.core.enums.ValidEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,6 +32,10 @@ public class ProjectHistory extends BasicColumn {
     private Project project;
 
     private Integer seq;
+
+    @ValidEnum(enumClass = ProjectStatus.class)
+    @Column(name = "project_status")
+    private ProjectStatus projectStatus;
 
     /**
      * 추가 컷 수
