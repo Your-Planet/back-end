@@ -7,7 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+
+import javax.crypto.spec.SecretKeySpec;
+import java.security.Key;
 import java.util.Date;
 
 /**
@@ -30,22 +33,24 @@ public class JwtTokenProvider {
         claims.put("id", id);
         claims.put("name", name);
         claims.put("memberType", memberType);
+        Key key = new SecretKeySpec(secretKey.getBytes(), SignatureAlgorithm.HS256.getJcaName());
 
         return Jwts.builder()
                 .setClaims(claims)
                 .setExpiration(new Date(System.currentTimeMillis() + accessTokenValidityTime))
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .signWith(key)
                 .compact();
     }
 
     public String createRefreshToken(Long id) {
         Claims claims = Jwts.claims();
         claims.put("id", id);
+        Key key = new SecretKeySpec(secretKey.getBytes(), SignatureAlgorithm.HS256.getJcaName());
 
         return Jwts.builder()
                 .setClaims(claims)
                 .setExpiration(new Date(System.currentTimeMillis() + refreshTokenValidityTime))
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .signWith(key)
                 .compact();
     }
 
@@ -60,14 +65,15 @@ public class JwtTokenProvider {
             if (token == null || !token.startsWith("Bearer ")) {
                 throw new JwtException("유효하지 않은 토큰");
             }
+            Key key = new SecretKeySpec(secretKey.getBytes(), SignatureAlgorithm.HS256.getJcaName());
             String originToken = token.substring(7);
-            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(originToken);
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(originToken);
             return true;
         } catch (IllegalArgumentException e) {
             throw new JwtException("유효하지 않은 토큰");
         } catch (ExpiredJwtException e) {
             throw new JwtException("토큰 기한 만료");
-        } catch (SignatureException e) {
+        } catch (JwtException e) {
             throw new JwtException("토큰 위변조 오류");
         } catch (Exception e) {
             log.error("JWT 인증 확인 중 오류 " + e.getMessage());
@@ -77,7 +83,8 @@ public class JwtTokenProvider {
 
     // JWT 값으로 Authentication
     public Authentication getAuthentication(String token) {
-        Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+        Key key = new SecretKeySpec(secretKey.getBytes(), SignatureAlgorithm.HS256.getJcaName());
+        Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
 
         JwtPrincipal userDetails = JwtPrincipal.builder()
                 .id(claims.get("id", Long.class))
@@ -89,7 +96,8 @@ public class JwtTokenProvider {
     }
 
     public Long getMemberIdFromRefreshToken(String token) throws Exception {
-        Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+        Key key = new SecretKeySpec(secretKey.getBytes(), SignatureAlgorithm.HS256.getJcaName());
+        Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
         return claims.get("id", Long.class);
     }
 

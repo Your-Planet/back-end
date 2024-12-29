@@ -2,7 +2,7 @@ package kr.co.yourplanet.online.business.studio.dto;
 
 import lombok.*;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 
 @Getter

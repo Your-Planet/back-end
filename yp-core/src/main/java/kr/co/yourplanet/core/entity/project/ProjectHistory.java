@@ -10,8 +10,8 @@ import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.*;
-import javax.validation.constraints.Positive;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;

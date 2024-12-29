@@ -42,7 +42,7 @@ public class WebSecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web.ignoring().antMatchers(PERMIT_URL_ARRAY);
+        return web -> web.ignoring().requestMatchers(PERMIT_URL_ARRAY);
     }
 
     // 비밀번호 암호화
@@ -60,19 +60,16 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .httpBasic().disable() // rest api 만을 고려하여 기본설정 해제
-                .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 토큰 기반 인증이므로 세션 사용 안함
-                .and()
-                .authorizeRequests()
-                .antMatchers("/files/**").permitAll()
-                .antMatchers(PERMIT_URL_ARRAY).permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .exceptionHandling()
-                .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-            ;
+                .httpBasic(httpBasic -> httpBasic.disable()) // HTTP Basic 비활성화
+                .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 비활성화
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/files/**").permitAll()
+                        .requestMatchers(PERMIT_URL_ARRAY).permitAll()
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+
         // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 넣음
 
 
