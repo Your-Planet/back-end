@@ -5,7 +5,7 @@ import kr.co.yourplanet.core.entity.member.MemberSalt;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.util.Optional;
 
 @Repository

@@ -5,8 +5,8 @@ import kr.co.yourplanet.core.enums.ProvisionType;
 import kr.co.yourplanet.core.enums.ValidEnum;
 import lombok.*;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor

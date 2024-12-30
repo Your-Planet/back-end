@@ -1,6 +1,6 @@
 package kr.co.yourplanet.online.business.user.dto;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

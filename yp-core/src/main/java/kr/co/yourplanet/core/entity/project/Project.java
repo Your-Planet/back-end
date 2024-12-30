@@ -12,8 +12,8 @@ import lombok.Getter;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.util.CollectionUtils;
 
-import javax.persistence.*;
-import javax.validation.constraints.Size;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
