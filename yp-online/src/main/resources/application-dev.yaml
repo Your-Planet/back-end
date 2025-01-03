@@ -1,30 +1,33 @@
 spring:
+  config:
+    import: classpath:application-secret.properties
+
   datasource:
-    url: ${JDBC_DATABASE_URL}
-    sql-script-encoding: UTF-8
+    url: ${DEV_DB_URL}
+    username: ${DEV_DB_USER_NAME}
+    password: ${DEV_DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      defer-datasource-initialization: false
-      ddl-auto: update
-    properties:
-      hibernate:
-        #        show_sql: true  #여기는 prinln으로 출력이 나오기 때문에 일단 주석
-        format_sql: true
+      ddl-auto: none    # flyway 적용 전까지
+    defer-datasource-initialization: true
 
   sql:
     init:
-      # category 테이블의 초기 데이터를 생성하고자 할 경우 mode 값 always로 변경
-      mode: always
+      mode: never  # PostgreSQL 15 버전 이상 업그레이드 전까지
       encoding: utf-8
 
 encrypt:
-  secret: yourplanet123456
+  secret: ${DEV_ENCRYPT_SECRET}
 
 file:
-  base-url: http://ec2-15-164-160-23.ap-northeast-2.compute.amazonaws.com:8080
+  base-url: ${DEV_BASE_URL}
   profile-path: /app/files/upload/profile/
   profile-url: /files/profile/
   studio-path: /app/files/upload/studio/
   project-reference-file-path: /app/files/upload/project/reference/
   project-reference-file-url: /files/project/reference/
+
+jwt:
+  secret: ${DEV_JWT_SECRET}
