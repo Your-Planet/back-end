@@ -4,9 +4,6 @@ server:
 spring:
   profiles:
     active: local
-  output:
-    ansi:
-      enabled: always
   servlet:
     multipart:
       max-file-size: 20MB
@@ -19,6 +16,5 @@ logging:
 
 jwt:
   header: X-AUTH-TOKEN
-  secret: A6SSQI4+UWC/bruDrTk/EA1cKaT3UvJME/ZMraCF0Fg=
   access-token-validity-time: 1800000 # milliseconds 30 * 60 * 1000
   refresh-token-validity-time: 86400000 # milliseconds 24 * 60 * 60 * 1000
