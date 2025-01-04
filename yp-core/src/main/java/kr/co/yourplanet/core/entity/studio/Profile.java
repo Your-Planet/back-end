@@ -23,7 +23,8 @@ import java.util.stream.Collectors;
 public class Profile extends BasicColumn {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "profile_seq")
+    @SequenceGenerator(name = "profile_seq", sequenceName = "profile_seq", allocationSize = 1)
     @Column(name = "id")
     private Long id;
 

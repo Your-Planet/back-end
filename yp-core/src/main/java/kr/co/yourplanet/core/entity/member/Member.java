@@ -23,7 +23,8 @@ public class Member extends BasicColumn {
 
     // Required
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_seq")
+    @SequenceGenerator(name = "member_seq", sequenceName = "member_seq", allocationSize = 1)
     private Long id;
     @Column(unique = true)
     @NotBlank

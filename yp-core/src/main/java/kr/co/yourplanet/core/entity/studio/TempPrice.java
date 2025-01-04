@@ -1,5 +1,6 @@
 package kr.co.yourplanet.core.entity.studio;
 
+import kr.co.yourplanet.core.entity.BasicColumn;
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.enums.ProvisionType;
 import kr.co.yourplanet.core.enums.PostDurationMonthType;
@@ -15,10 +16,11 @@ import jakarta.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TempPrice {
+public class TempPrice extends BasicColumn {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "temp_price_seq")
+    @SequenceGenerator(name = "temp_price_seq", sequenceName = "temp_price_seq", allocationSize = 1)
     @Column(name = "id")
     private Long id;
 

@@ -17,7 +17,8 @@ import jakarta.validation.constraints.NotBlank;
 public class MemberSalt extends BasicColumn {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_salt_seq")
+    @SequenceGenerator(name = "member_salt_seq", sequenceName = "member_salt_seq", allocationSize = 1)
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
