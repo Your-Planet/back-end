@@ -1,15 +1,24 @@
-INSERT INTO category (category_code, category_name, create_date) VALUES ('DAILY_LIFE', '일상', now()) ON CONFLICT (category_code) DO NOTHING;
-INSERT INTO category (category_code, category_name, create_date) VALUES ('EXERCISE', '운동', now()) ON CONFLICT (category_code) DO NOTHING;
-INSERT INTO category (category_code, category_name, create_date) VALUES ('FASHION', '패션', now()) ON CONFLICT (category_code) DO NOTHING;
-INSERT INTO category (category_code, category_name, create_date) VALUES ('PARENTING', '육아', now()) ON CONFLICT (category_code) DO NOTHING;
-INSERT INTO category (category_code, category_name, create_date) VALUES ('BEAUTY', '미용', now()) ON CONFLICT (category_code) DO NOTHING;
-INSERT INTO category (category_code, category_name, create_date) VALUES ('ECONOMY', '경제', now()) ON CONFLICT (category_code) DO NOTHING;
-INSERT INTO category (category_code, category_name, create_date) VALUES ('SELF_IMPROVEMENT', '자기개발', now()) ON CONFLICT (category_code) DO NOTHING;
-INSERT INTO category (category_code, category_name, create_date) VALUES ('EMPATHY', '공감', now()) ON CONFLICT (category_code) DO NOTHING;
-INSERT INTO category (category_code, category_name, create_date) VALUES ('INVESTMENT', '재테크', now()) ON CONFLICT (category_code) DO NOTHING;
-INSERT INTO category (category_code, category_name, create_date) VALUES ('HUMOR', '유머', now()) ON CONFLICT (category_code) DO NOTHING;
-INSERT INTO category (category_code, category_name, create_date) VALUES ('TRAVEL', '여행', now()) ON CONFLICT (category_code) DO NOTHING;
-INSERT INTO category (category_code, category_name, create_date) VALUES ('TIPS', '꿀팁', now()) ON CONFLICT (category_code) DO NOTHING;
-INSERT INTO category (category_code, category_name, create_date) VALUES ('ROMANCE', '연애', now()) ON CONFLICT (category_code) DO NOTHING;
-INSERT INTO category (category_code, category_name, create_date) VALUES ('MARRIAGE', '결혼', now()) ON CONFLICT (category_code) DO NOTHING;
-INSERT INTO category (category_code, category_name, create_date) VALUES ('HEALING', '힐링', now()) ON CONFLICT (category_code) DO NOTHING;
+MERGE INTO category AS target
+USING (VALUES
+           ('DAILY_LIFE', '일상', now()),
+           ('EXERCISE', '운동', now()),
+           ('FASHION', '패션', now()),
+           ('PARENTING', '육아', now()),
+           ('BEAUTY', '미용', now()),
+           ('ECONOMY', '경제', now()),
+           ('SELF_IMPROVEMENT', '자기개발', now()),
+           ('EMPATHY', '공감', now()),
+           ('INVESTMENT', '재테크', now()),
+           ('HUMOR', '유머', now()),
+           ('TRAVEL', '여행', now()),
+           ('TIPS', '꿀팁', now()),
+           ('ROMANCE', '연애', now()),
+           ('MARRIAGE', '결혼', now()),
+           ('HEALING', '힐링', now())
+) AS source (category_code, category_name, create_date)
+    ON target.category_code = source.category_code
+    WHEN MATCHED THEN
+UPDATE SET category_name = source.category_name, create_date = source.create_date
+    WHEN NOT MATCHED THEN
+INSERT (category_code, category_name, create_date)
+VALUES (source.category_code, source.category_name, source.create_date);
