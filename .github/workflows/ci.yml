@@ -23,11 +23,11 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         
-    - name: Set environment variables
+    - name: Set Environment Variables and Secrets
       run: |
-        cd ./src/java/resources
+        cd ./yp-online/src/java/resources
         echo "${{ secrets.SECRET_DEV }}" > ./application-secret.properties
-        cd ./src/test/resources
+        cd ./yp-online/src/test/resources
         echo "${{ secrets.SECRET_TEST }}" > ./application-secret.properties
         
     - name: Setup Gradle
