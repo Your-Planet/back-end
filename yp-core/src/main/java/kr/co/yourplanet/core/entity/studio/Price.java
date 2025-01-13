@@ -18,7 +18,7 @@ import jakarta.persistence.*;
 public class Price extends BasicColumn {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "price_seq")
-    @SequenceGenerator(name = "price_seq", sequenceName = "price_seq", allocationSize = 1)
+    @SequenceGenerator(name = "price_seq", sequenceName = "price_seq", allocationSize = 50)
     @Column(name = "id")
     private Long id;
 

@@ -20,7 +20,7 @@ public class TempPrice extends BasicColumn {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "temp_price_seq")
-    @SequenceGenerator(name = "temp_price_seq", sequenceName = "temp_price_seq", allocationSize = 1)
+    @SequenceGenerator(name = "temp_price_seq", sequenceName = "temp_price_seq", allocationSize = 10)
     @Column(name = "id")
     private Long id;
 

@@ -19,7 +19,7 @@ public class ProfileCategoryMap extends BasicColumn {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "profile_category_map_seq")
-    @SequenceGenerator(name = "profile_category_map_seq", sequenceName = "profile_category_map_seq", allocationSize = 1)
+    @SequenceGenerator(name = "profile_category_map_seq", sequenceName = "profile_category_map_seq", allocationSize = 50)
     @Column(name = "id")
     private Long id;
 

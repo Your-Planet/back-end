@@ -18,7 +18,7 @@ public class MemberSalt extends BasicColumn {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_salt_seq")
-    @SequenceGenerator(name = "member_salt_seq", sequenceName = "member_salt_seq", allocationSize = 1)
+    @SequenceGenerator(name = "member_salt_seq", sequenceName = "member_salt_seq", allocationSize = 10)
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
