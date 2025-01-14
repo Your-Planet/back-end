@@ -9,7 +9,8 @@ public enum StatusCode {
     NOT_FOUND(404, "리스소를 찾지 못하였습니다."),
     UNAUTHORIZED(401, "로그인이 필요합니다."),
     FORBIDDEN(403, "권한이 없는 요청입니다."),
-    
+    CONFLICT(409, "요청이 서버 상태와 충돌하여 처리되지 않았습니다."),
+
     INTERNAL_SERVER_ERROR(500, "서버에 문제가 발생하였습니다."),
     NOT_IMPLEMENTED(501, "서버에 문제가 발생하였습니다.");
 
