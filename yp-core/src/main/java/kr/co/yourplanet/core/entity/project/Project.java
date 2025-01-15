@@ -27,7 +27,8 @@ import java.util.Optional;
 public class Project extends BasicColumn {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "project_seq")
+    @SequenceGenerator(name = "project_seq", sequenceName = "project_seq", allocationSize = 50)
     @Column(name = "id")
     private Long id;
 
