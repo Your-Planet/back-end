@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import kr.co.yourplanet.core.entity.payment.PaymentHistory;
 
 public interface PaymentHistoryRepository extends JpaRepository<PaymentHistory, Long> {
+
+    boolean existsByOrderId(String orderId);
 }
