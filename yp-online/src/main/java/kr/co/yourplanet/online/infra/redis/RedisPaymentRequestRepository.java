@@ -34,6 +34,24 @@ public class RedisPaymentRequestRepository implements PaymentRequestRepository {
         return redisRepository.hasKey(key);
     }
 
+    @Override
+    public Long getAmount(String orderId) {
+        String key = getOrderKey(orderId);
+        return Long.parseLong(redisRepository.getHashValue(key, AMOUNT).toString());
+    }
+
+    @Override
+    public Long getOrdererId(String orderId) {
+        String key = getOrderKey(orderId);
+        return Long.parseLong(redisRepository.getHashValue(key, MEMBER_ID).toString());
+    }
+
+    @Override
+    public String getIdempotencyKey(String orderId) {
+        String key = getOrderKey(orderId);
+        return redisRepository.getHashValue(key, IDEMPOTENCY_KEY).toString();
+    }
+
     private String getOrderKey(String orderId) {
         return ORDER_KEY_PREFIX + orderId;
     }
