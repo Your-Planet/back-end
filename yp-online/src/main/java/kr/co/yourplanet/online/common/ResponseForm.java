@@ -1,5 +1,7 @@
 package kr.co.yourplanet.online.common;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import kr.co.yourplanet.core.enums.StatusCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +14,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResponseForm<T> {
 
     private int statusCode;
