@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: classpath:test-secret.properties
 
   datasource:
     url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
@@ -10,7 +12,6 @@ spring:
     redis:
       host: localhost
       port: 6379
-
 
   jpa:
     hibernate:
@@ -40,3 +41,8 @@ file:
 
 jwt:
   secret: YjkwYjNhMjQ3NmM4N2NjYzZkNjUyMzkwNjRhYmExZDk3YjZkNzA4Y
+
+payments:
+  toss:
+    uri: https://api.tosspayments.com/v1/payments/confirm
+    secret-key: ${TEST_TOSS_SECRET_KEY}
