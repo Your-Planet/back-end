@@ -1,25 +1,45 @@
 package kr.co.yourplanet.online.config;
 
-import kr.co.yourplanet.online.jwt.JwtPrincipal;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.ExternalDocumentation;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
 
 @Configuration
-@EnableWebMvc
-public class SwaggerConfig implements WebMvcConfigurer {
+public class SwaggerConfig {
+
     @Bean
-    public Docket api() {
-        return new Docket(DocumentationType.OAS_30)
-                .select()
-                .apis(RequestHandlerSelectors.any())
-                .paths(PathSelectors.any())
-                .build()
-                .ignoredParameterTypes(JwtPrincipal.class);
+    public OpenAPI springDocOpenAPI() {
+        return new OpenAPI()
+                .info(apiInfo())
+                .externalDocs(new ExternalDocumentation()
+                        .description("YourPlanet Backend Github")
+                        .url("https://github.com/Your-Planet/back-end"))
+                .addServersItem(new Server().url("/").description("host"))
+                .components(new Components()
+                        .addSecuritySchemes("xAuthToken", bearerAuthScheme()))
+                .addSecurityItem(new SecurityRequirement().addList("xAuthToken"));
+    }
+
+    private Info apiInfo() {
+        return new Info()
+                .title("Your Planet API")
+                .description("Your Planet API 명세서입니다.")
+                .version("v1.0.0");
+    }
+
+    private SecurityScheme bearerAuthScheme() {
+        return new SecurityScheme()
+                .type(SecurityScheme.Type.APIKEY)
+                .in(SecurityScheme.In.HEADER)
+                .name("X-AUTH-TOKEN")
+                .bearerFormat("JWT")
+                .description("`Bearer ` 접두사 필수");
     }
 }
