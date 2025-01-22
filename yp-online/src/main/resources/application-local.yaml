@@ -21,7 +21,7 @@ spring:
       encoding: utf-8
 
 encrypt:
-  secret: ${DEV_ENCRYPT_SECRET}
+  secret: FKKTQWMSMillz3Jr4pdFUQ==
 
 file:
   base-url: localhost:8080
@@ -32,4 +32,4 @@ file:
   project-reference-file-url: /files/project/reference/
 
 jwt:
-  secret: local_yourplanet
+  secret: Qb+NiKnqgiFnZnKc7uziuwFX/cq0yzFrJvrpio0JofQ=
