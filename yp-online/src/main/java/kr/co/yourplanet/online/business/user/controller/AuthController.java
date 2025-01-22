@@ -1,5 +1,6 @@
 package kr.co.yourplanet.online.business.user.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.user.dto.*;
 import kr.co.yourplanet.online.business.user.service.MemberService;
@@ -17,6 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
+@Tag(name = "Auth", description = "인증 API")
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
