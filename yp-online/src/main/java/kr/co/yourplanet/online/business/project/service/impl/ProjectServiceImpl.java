@@ -1,5 +1,19 @@
 package kr.co.yourplanet.online.business.project.service.impl;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import jakarta.annotation.PostConstruct;
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.project.Project;
 import kr.co.yourplanet.core.entity.project.ProjectHistory;
@@ -29,15 +43,6 @@ import kr.co.yourplanet.online.common.util.FileUploadResult;
 import kr.co.yourplanet.online.properties.FileProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.multipart.MultipartFile;
-
-import jakarta.annotation.PostConstruct;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -165,7 +170,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
         checkProjectStatusBeforeAction(member, project, projectStatusAction);
 
-        project.rejectProject(projectStatusAction, projectRejectForm.getReason());
+        project.reject(projectStatusAction, projectRejectForm.getReason());
 
     }
 
@@ -189,7 +194,7 @@ public class ProjectServiceImpl implements ProjectService {
         checkProjectStatusBeforeAction(requestMember, project, projectStatusAction);
 
         // 프로젝트 업데이트
-        project.changeProjectStatus(projectStatusAction);
+        project.negotiate(projectStatusAction);
         project.getReferenceUrls().addAll(projectNegotiateForm.getReferenceUrls());
 
         // 프로젝트 히스토리 적재
@@ -228,7 +233,7 @@ public class ProjectServiceImpl implements ProjectService {
         List<ProjectHistory> projectHistoryList = projectHistoryRepository.findAllByProject(project);
 
         if (!projectHistoryList.isEmpty()) {
-            project.acceptProject(projectHistoryList.get(projectHistoryList.size() - 1));
+            project.accept(projectHistoryList.get(projectHistoryList.size() - 1));
         } else {
             throw new BusinessException(StatusCode.NOT_FOUND, "작업 요청 이력이 존재하지 않습니다", false);
         }
@@ -273,15 +278,20 @@ public class ProjectServiceImpl implements ProjectService {
 
         if (!CollectionUtils.isEmpty(projectList)) {
             projectBasicInfoList = projectList.stream()
-                    .map(project -> ProjectBasicInfo.builder()
-                            .id(project.getId())
-                            .sponsorName(project.getSponsor().getName())
-                            .creatorName(project.getCreator().getName())
-                            .brandName(project.getBrandName())
-                            .campaignDescription(project.getCampaignDescription())
-                            .projectStatus(project.getProjectStatus())
-                            .build())
-                    .collect(Collectors.toList());
+                .map(project -> ProjectBasicInfo.builder()
+                    .id(project.getId())
+                    .sponsorName(project.getSponsor().getName())
+                    .creatorName(project.getCreator().getName())
+                    .brandName(project.getBrandName())
+                    .campaignDescription(project.getCampaignDescription())
+                    .projectStatus(project.getProjectStatus())
+                    .requestDateTime(project.getRequestDateTime())
+                    .negotiateDateTime(project.getNegotiateDateTime())
+                    .acceptDateTime(project.getAcceptDateTime())
+                    .completeDateTime(project.getCompleteDateTime())
+                    .rejectDateTime(project.getRejectDateTime())
+                    .build())
+                .toList();
         }
 
         return projectBasicInfoList;

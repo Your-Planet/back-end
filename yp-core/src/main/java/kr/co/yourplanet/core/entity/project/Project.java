@@ -1,5 +1,26 @@
 package kr.co.yourplanet.core.entity.project;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.util.CollectionUtils;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.validation.constraints.Size;
 import kr.co.yourplanet.core.entity.BasicColumn;
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.studio.Price;
@@ -9,15 +30,6 @@ import kr.co.yourplanet.core.util.StringListConverter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import org.hibernate.annotations.DynamicUpdate;
-import org.springframework.util.CollectionUtils;
-
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @Entity
 @AllArgsConstructor
@@ -82,9 +94,17 @@ public class Project extends BasicColumn {
      */
     private LocalDateTime requestDateTime;
     /**
+     * 의뢰 협상 일시
+     */
+    private LocalDateTime negotiateDateTime;
+    /**
      * 의뢰 수락 일시
      */
     private LocalDateTime acceptDateTime;
+    /**
+     * 의뢰 완료 일시
+     */
+    private LocalDateTime completeDateTime;
     /**
      * 의뢰 거절/취소 일시
      */
@@ -124,19 +144,21 @@ public class Project extends BasicColumn {
         this.referenceFiles = new ArrayList<>();
     }
 
-    public void changeProjectStatus(ProjectStatus projectStatus) {
+    public void negotiate(ProjectStatus projectStatus) {
         this.projectStatus = projectStatus;
+        this.negotiateDateTime = LocalDateTime.now();
     }
 
-    public void acceptProject(ProjectHistory projectHistory) {
+    public void accept(ProjectHistory projectHistory) {
         this.acceptedHistoryId = projectHistory.getId();
         this.projectStatus = ProjectStatus.ACCEPT;
         this.acceptDateTime = LocalDateTime.now();
     }
 
-    public void rejectProject(ProjectStatus projectStatus, String rejectReason){
+    public void reject(ProjectStatus projectStatus, String rejectReason){
         this.projectStatus = projectStatus;
         this.rejectReason = rejectReason;
+        this.rejectDateTime = LocalDateTime.now();
     }
 
     /**
