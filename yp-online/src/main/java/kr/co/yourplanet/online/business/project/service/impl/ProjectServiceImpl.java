@@ -319,15 +319,16 @@ public class ProjectServiceImpl implements ProjectService {
 
         // DTO 생성
         ProjectDetailInfo.Overview overview = ProjectDetailInfo.Overview.builder()
-                .sponsorName(project.getSponsor().getName())
-                .brandName(project.getBrandName())
-                .dueDate(latestProjectHistory.getDueDate())
-                .defaultPanelCount(creatorPrice.getCuts())
-                .additionalPanelCount(latestProjectHistory.getAdditionalPanelCount())
-                .defaultModificationCount(creatorPrice.getModificationCount())
-                .additionalModificationCount(latestProjectHistory.getAdditionalModificationCount())
-                .offerPrice(latestProjectHistory.getOfferPrice())
-                .build();
+            .sponsorName(project.getSponsor().getName())
+            .creatorName(project.getCreator().getName())
+            .brandName(project.getBrandName())
+            .dueDate(latestProjectHistory.getDueDate())
+            .defaultPanelCount(creatorPrice.getCuts())
+            .additionalPanelCount(latestProjectHistory.getAdditionalPanelCount())
+            .defaultModificationCount(creatorPrice.getModificationCount())
+            .additionalModificationCount(latestProjectHistory.getAdditionalModificationCount())
+            .offerPrice(latestProjectHistory.getOfferPrice())
+            .build();
 
         ProjectDetailInfo.Detail detail = ProjectDetailInfo.Detail.builder()
                 .campaignDescription(project.getCampaignDescription())
@@ -336,15 +337,20 @@ public class ProjectServiceImpl implements ProjectService {
                 .latestProjectHistory(new ProjectHistoryForm(latestProjectHistory))
                 .build();
 
-        ProjectDetailInfo projectDetailInfo = ProjectDetailInfo.builder()
+        return ProjectDetailInfo.builder()
                 .overview(overview)
-                .detail(detail)
-                .projectHistories(project.getProjectHistories().stream()
-                        .map(ProjectHistoryForm::new)
-                        .collect(Collectors.toList()))
-                .build();
+            .detail(detail)
+            .projectHistories(project.getProjectHistories().stream()
+                .map(ProjectHistoryForm::new)
+                .collect(Collectors.toList()))
+            .projectStatus(project.getProjectStatus())
+            .requestDateTime(project.getRequestDateTime())
+            .negotiateDateTime(project.getNegotiateDateTime())
+            .acceptDateTime(project.getAcceptDateTime())
+            .completeDateTime(project.getCompleteDateTime())
+            .rejectDateTime(project.getRejectDateTime())
+            .build();
 
-        return projectDetailInfo;
     }
 
     private Member findMemberById(Long memberId) {
