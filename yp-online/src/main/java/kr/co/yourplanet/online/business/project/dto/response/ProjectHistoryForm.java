@@ -1,5 +1,8 @@
 package kr.co.yourplanet.online.business.project.dto.response;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import kr.co.yourplanet.core.entity.project.ProjectHistory;
 import kr.co.yourplanet.core.enums.MemberType;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectCommonAttribute;
@@ -7,9 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
