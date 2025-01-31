@@ -6,7 +6,7 @@ public enum StatusCode {
 
     INVALID_INPUT_VALUE(400, "입력값이 유효하지 않습니다."),
     BAD_REQUEST(400, "잘못된 요청입니다."),
-    NOT_FOUND(404, "리스소를 찾지 못하였습니다."),
+    NOT_FOUND(404, "리소스를 찾지 못하였습니다."),
     UNAUTHORIZED(401, "로그인이 필요합니다."),
     FORBIDDEN(403, "권한이 없는 요청입니다."),
     CONFLICT(409, "요청이 서버 상태와 충돌하여 처리되지 않았습니다."),
