@@ -1,7 +1,4 @@
 spring:
-  config:
-    import: classpath:test-secret.properties
-
   datasource:
     url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
     username: root
@@ -29,7 +26,7 @@ spring:
       encoding: utf-8
 
 encrypt:
-  secret: local_yourplanet
+  secret: FKKTQWMSMillz3Jr4pdFUQ==
 
 file:
   base-url: localhost:8080
@@ -40,9 +37,9 @@ file:
   project-reference-file-url: /files/project/reference/
 
 jwt:
-  secret: YjkwYjNhMjQ3NmM4N2NjYzZkNjUyMzkwNjRhYmExZDk3YjZkNzA4Y
+  secret: Qb+NiKnqgiFnZnKc7uziuwFX/cq0yzFrJvrpio0JofQ=
 
 payments:
   toss:
     uri: https://api.tosspayments.com/v1/payments/confirm
-    secret-key: ${TEST_TOSS_SECRET_KEY}
+    secret-key: dGVzdF9za19PUnpkTWFxTjN3MlJFb1hYV255TTg1QWtZWFFHOg==  # test key

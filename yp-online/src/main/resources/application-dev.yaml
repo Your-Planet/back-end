@@ -36,3 +36,8 @@ file:
 
 jwt:
   secret: ${DEV_JWT_SECRET}
+
+payments:
+  toss:
+    uri: https://api.tosspayments.com/v1/payments/confirm
+    secret-key: ${TOSS_PAYMENT_SECRET}
