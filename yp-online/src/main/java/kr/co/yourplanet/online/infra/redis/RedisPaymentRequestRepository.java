@@ -1,5 +1,7 @@
 package kr.co.yourplanet.online.infra.redis;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Repository;
 
 import kr.co.yourplanet.online.business.payment.domain.IdempotencyKeyGenerator;
@@ -35,21 +37,29 @@ public class RedisPaymentRequestRepository implements PaymentRequestRepository {
     }
 
     @Override
-    public Long getAmount(String orderId) {
+    public Optional<Long> getAmount(String orderId) {
         String key = getOrderKey(orderId);
-        return Long.parseLong(redisRepository.getHashValue(key, AMOUNT).toString());
+
+        return redisRepository.getHashValue(key, AMOUNT)
+                .map(Object::toString)
+                .map(Long::parseLong);
     }
 
     @Override
-    public Long getOrdererId(String orderId) {
+    public Optional<Long> getOrdererId(String orderId) {
         String key = getOrderKey(orderId);
-        return Long.parseLong(redisRepository.getHashValue(key, MEMBER_ID).toString());
+
+        return redisRepository.getHashValue(key, MEMBER_ID)
+                .map(Object::toString)
+                .map(Long::parseLong);
     }
 
     @Override
-    public String getIdempotencyKey(String orderId) {
+    public Optional<String> getIdempotencyKey(String orderId) {
         String key = getOrderKey(orderId);
-        return redisRepository.getHashValue(key, IDEMPOTENCY_KEY).toString();
+
+        return redisRepository.getHashValue(key, IDEMPOTENCY_KEY)
+                .map(Object::toString);
     }
 
     private String getOrderKey(String orderId) {
