@@ -1,6 +1,7 @@
 package kr.co.yourplanet.online.infra.redis;
 
 import java.time.Duration;
+import java.util.Optional;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -19,10 +20,14 @@ public class RedisRepository {
     }
 
     public boolean hasKey(String key) {
-        return redisTemplate.hasKey(key);
+        if (key == null) {
+            return false;
+        }
+
+        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
     }
 
-    public Object getHashValue(String key, String hashKey) {
-        return redisTemplate.opsForHash().get(key, hashKey);
+    public Optional<Object> getHashValue(String key, String hashKey) {
+        return Optional.ofNullable(redisTemplate.opsForHash().get(key, hashKey));
     }
 }
