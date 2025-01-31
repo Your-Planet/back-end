@@ -1,5 +1,6 @@
 package kr.co.yourplanet.online.business.instagram.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.instagram.dto.InstagramMediasForm;
 import kr.co.yourplanet.online.business.instagram.service.InstagramService;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Instagram", description = "인스타그램 API")
 @RestController
 @RequiredArgsConstructor
 public class InstagramController {
