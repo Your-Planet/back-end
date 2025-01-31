@@ -6,12 +6,10 @@ import lombok.Getter;
 
 @Getter
 public class PaymentFailureException extends BusinessException {
-    private final String paymentKey;
-    private final String orderId;
+    private final String reason;
 
-    public PaymentFailureException(String message, String paymentKey, String orderId) {
-        super(StatusCode.UNPROCESSABLE_ENTITY, message, true);
-        this.paymentKey = paymentKey;
-        this.orderId = orderId;
+    public PaymentFailureException(String reason) {
+        super(StatusCode.UNPROCESSABLE_ENTITY, reason, true);
+        this.reason = reason;
     }
 }

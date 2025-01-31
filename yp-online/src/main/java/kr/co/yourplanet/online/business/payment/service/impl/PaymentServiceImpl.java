@@ -2,8 +2,7 @@ package kr.co.yourplanet.online.business.payment.service.impl;
 
 import org.springframework.stereotype.Service;
 
-import kr.co.yourplanet.core.entity.payment.PaymentHistory;
-import kr.co.yourplanet.core.entity.payment.PaymentStatus;
+import kr.co.yourplanet.online.business.payment.domain.exception.PaymentFailureException;
 import kr.co.yourplanet.online.business.payment.repository.PaymentRequestRepository;
 import kr.co.yourplanet.online.business.payment.service.PaymentClient;
 import kr.co.yourplanet.online.business.payment.service.PaymentHistoryService;
@@ -31,11 +30,18 @@ public class PaymentServiceImpl implements PaymentService {
         PaymentRequest request = buildPaymentRequest(paymentKey, orderId, amount);
         PaymentResponse response = paymentClient.process(request, idempotencyKey);
 
-        PaymentHistory paymentHistory = buildPaymentHistory(response);
-        paymentHistoryService.save(paymentHistory);
+        if (response.isSuccess()) {
+            paymentHistoryService.saveSuccessHistory(response);
+        } else {
+            paymentHistoryService.saveFailHistory(response);
+
+            PaymentResponse.FailResponse failResponse = response.getFailResponse();
+            throw new PaymentFailureException(failResponse.getMessage());
+        }
     }
 
     private void validatePaymentRequest(Long memberId, String orderId, Long amount) {
+        paymentHistoryService.checkIfExists(orderId);
         paymentRequestService.checkIfNotExists(orderId);
         paymentRequestService.checkIfOrderMatches(orderId, memberId);
         paymentRequestService.checkIfAmountMatches(orderId, amount);
@@ -46,19 +52,6 @@ public class PaymentServiceImpl implements PaymentService {
                 .paymentKey(paymentKey)
                 .orderId(orderId)
                 .amount(amount)
-                .build();
-    }
-
-    private PaymentHistory buildPaymentHistory(PaymentResponse response) {
-        return PaymentHistory.builder()
-                .paymentKey(response.paymentKey())
-                .orderId(response.orderId())
-                .orderName(response.orderName())
-                .status(PaymentStatus.valueOf(response.status()))
-                .method(response.method())
-                .totalAmount(response.totalAmount())
-                .requestedAt(response.requestedAt())
-                .approvedAt(response.approvedAt())
                 .build();
     }
 }
