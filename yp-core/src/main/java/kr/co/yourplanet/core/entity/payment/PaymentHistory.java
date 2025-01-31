@@ -1,7 +1,5 @@
 package kr.co.yourplanet.core.entity.payment;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -9,6 +7,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import kr.co.yourplanet.core.entity.BasicColumn;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,15 +19,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-public class PaymentHistory {
+public class PaymentHistory extends BasicColumn {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String paymentKey;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String orderId;
 
     private String orderName;
@@ -37,11 +37,19 @@ public class PaymentHistory {
 
     private Long totalAmount;
 
-    @Column(name = "status")
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
 
-    private LocalDateTime requestedAt;
+    private String reason;
 
-    private LocalDateTime approvedAt;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private PaymentProvider provider;
+
+    @Column(name = "provider_status")
+    private String providerStatus;
+
+    @Column(nullable = false)
+    private String providerResponse;
 }
