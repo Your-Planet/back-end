@@ -1,5 +1,23 @@
 package kr.co.yourplanet.online.business.project.controller;
 
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectAcceptForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectNegotiateForm;
@@ -12,16 +30,8 @@ import kr.co.yourplanet.online.business.project.service.ProjectService;
 import kr.co.yourplanet.online.common.ResponseForm;
 import kr.co.yourplanet.online.jwt.JwtPrincipal;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.validation.Valid;
-import java.util.List;
-
+@Tag(name = "Project", description = "프로젝트 API")
 @RestController
 @RequiredArgsConstructor
 public class ProjectController {
@@ -70,7 +80,7 @@ public class ProjectController {
         return new ResponseEntity<>(responseForm, HttpStatus.OK);
     }
 
-    @GetMapping("/project/mine")
+    @GetMapping("/project")
     public ResponseEntity<ResponseForm<List<ProjectBasicInfo>>> getMemberProjectsBasicInfo(@AuthenticationPrincipal JwtPrincipal principal) {
         List<ProjectBasicInfo> memberProjectBasicInfoList = projectService.getMemberProjectsBasicInfo(principal.getId());
 

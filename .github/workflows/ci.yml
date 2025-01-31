@@ -1,0 +1,53 @@
+name: Java CI with Gradle
+
+on:  
+  pull_request:
+    branches: [ "main", "develop" ]
+  push: 
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        
+    - name: Set Environment Variables and Secrets
+      run: |
+        cd ${{ github.workspace }}/yp-online/src/main/resources
+        echo "${{ secrets.SECRET_DEV }}" > ./application-secret.properties
+        cd ${{ github.workspace }}/yp-batch/src/main/resources
+        echo "${{ secrets.SECRET_BATCH_DEV }}" > ./batch-secret.properties
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+
+    - name: Build modules with Gradle Wrapper
+      run: ./gradlew :yp-online:build :yp-batch:build
+
+  dependency-submission:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Generate and submit dependency graph
+      uses: gradle/actions/dependency-submission@v4

@@ -6,12 +6,9 @@ spring:
     name: ypbatch
   profiles:
     active: local
-  output:
-    ansi:
-      enabled: always
   batch:
-    jdbc.initialize-schema: always
-    job.enabled: false
+    job:
+      enabled: false
 
 instagram:
   api-url: https://graph.instagram.com

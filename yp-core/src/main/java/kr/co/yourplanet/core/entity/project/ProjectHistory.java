@@ -24,7 +24,8 @@ import java.util.List;
 public class ProjectHistory extends BasicColumn {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "project_history_seq")
+    @SequenceGenerator(name = "project_history_seq", sequenceName = "project_history_seq", allocationSize = 50)
     private Long id;
     
     @ManyToOne(fetch = FetchType.LAZY)

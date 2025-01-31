@@ -1,5 +1,6 @@
 package kr.co.yourplanet.online.business.studio.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.studio.dto.CreatorBasicInfo;
 import kr.co.yourplanet.online.business.studio.dto.CreatorDetailInfo;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@Tag(name = "Creator", description = "작가 API")
 @RestController
 @RequiredArgsConstructor
 public class CreatorController {
