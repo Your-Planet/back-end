@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
@@ -23,9 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class FileManageUtil {
-
-    private static final List<String> IMAGE_VALID_EXTENSIONS = Arrays.asList("jpg", "jpeg", "png", "gif");
-    private static final List<String> PROJECT_REFERENCE_VALID_EXTENSIONS = Arrays.asList("pdf", "doc", "docx", "txt", "ppt", "pptx", "xls", "xlsx", "csv", "xml");
 
     private static final long MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
@@ -74,33 +69,26 @@ public class FileManageUtil {
             throw new BusinessException(StatusCode.BAD_REQUEST, "파일명이 존재하지 않습니다.", false);
         }
 
+        // 파일 확장자 체크
+        if (!fileType.isAllowedExtension(getFileExtension(fileName))) {
+            throw new BusinessException(StatusCode.BAD_REQUEST, "혀용된 파일 확장자가 아닙니다.", false);
+        }
+
         // FileType별 유효성 체크
         switch (fileType) {
             case PROFILE_IMAGE:
                 validateProfileImage(file, fileName);
                 break;
-
             case PROJECT_REFERENCE_FILE:
-                validateProjectReferenceFile(file, fileName);
                 break;
-
             default:
                 throw new BusinessException(StatusCode.BAD_REQUEST, "정의되지 않은 파일형식입니다.", false);
         }
     }
 
     private void validateProfileImage(MultipartFile file, String fileName) {
-        if (!IMAGE_VALID_EXTENSIONS.contains(getFileExtension(fileName))) {
-            throw new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 파일 확장자입니다.", false);
-        }
         if (MAX_IMAGE_SIZE < file.getSize()) {
             throw new BusinessException(StatusCode.BAD_REQUEST, "이미지는 최대 5MB까지 업로드 가능합니다.", false);
-        }
-    }
-
-    private void validateProjectReferenceFile(MultipartFile file, String fileName) {
-        if (!PROJECT_REFERENCE_VALID_EXTENSIONS.contains(getFileExtension(fileName))) {
-            throw new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 파일 확장자입니다.", false);
         }
     }
 
