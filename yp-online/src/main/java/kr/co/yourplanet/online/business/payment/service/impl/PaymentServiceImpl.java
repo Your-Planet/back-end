@@ -3,6 +3,7 @@ package kr.co.yourplanet.online.business.payment.service.impl;
 import org.springframework.stereotype.Service;
 
 import kr.co.yourplanet.online.business.payment.domain.exception.PaymentFailureException;
+import kr.co.yourplanet.online.business.payment.domain.exception.PaymentRequestNotFoundException;
 import kr.co.yourplanet.online.business.payment.repository.PaymentRequestRepository;
 import kr.co.yourplanet.online.business.payment.service.PaymentClient;
 import kr.co.yourplanet.online.business.payment.service.PaymentHistoryService;
@@ -26,7 +27,8 @@ public class PaymentServiceImpl implements PaymentService {
     public void approve(Long memberId, String paymentKey, String orderId, Long amount) {
         validatePaymentRequest(memberId, orderId, amount);
 
-        String idempotencyKey = paymentRequestRepository.getIdempotencyKey(orderId);
+        String idempotencyKey = paymentRequestRepository.getIdempotencyKey(orderId)
+                .orElseThrow(() -> new PaymentRequestNotFoundException("해당 주문의 동일성 보장 키가 없습니다."));
         PaymentRequest request = buildPaymentRequest(paymentKey, orderId, amount);
         PaymentResponse response = paymentClient.process(request, idempotencyKey);
 
@@ -43,7 +45,7 @@ public class PaymentServiceImpl implements PaymentService {
     private void validatePaymentRequest(Long memberId, String orderId, Long amount) {
         paymentHistoryService.checkIfExists(orderId);
         paymentRequestService.checkIfNotExists(orderId);
-        paymentRequestService.checkIfOrderMatches(orderId, memberId);
+        paymentRequestService.checkIfOrdererMatches(orderId, memberId);
         paymentRequestService.checkIfAmountMatches(orderId, amount);
     }
 

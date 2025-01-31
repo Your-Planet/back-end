@@ -3,6 +3,8 @@ package kr.co.yourplanet.online.business.payment.service.impl;
 import org.springframework.stereotype.Service;
 
 import kr.co.yourplanet.core.enums.StatusCode;
+import kr.co.yourplanet.online.business.payment.domain.exception.PaymentRequestNotFoundException;
+import kr.co.yourplanet.online.business.payment.domain.exception.PaymentRequestNotMatchException;
 import kr.co.yourplanet.online.business.payment.repository.PaymentRequestRepository;
 import kr.co.yourplanet.online.business.payment.service.PaymentHistoryService;
 import kr.co.yourplanet.online.business.payment.service.PaymentRequestService;
@@ -27,7 +29,7 @@ public class PaymentRequestServiceImpl implements PaymentRequestService {
 
     @Override
     public void checkIfExists(String orderId) {
-        if(paymentRequestRepository.isExist(orderId)) {
+        if (paymentRequestRepository.isExist(orderId)) {
             throw new BusinessException(StatusCode.CONFLICT, "이미 존재하는 결제 요청입니다.", true);
         }
     }
@@ -40,18 +42,22 @@ public class PaymentRequestServiceImpl implements PaymentRequestService {
     }
 
     @Override
-    public void checkIfOrderMatches(String orderId, Long memberId) {
-        Long ordererId = paymentRequestRepository.getOrdererId(orderId);
+    public void checkIfOrdererMatches(String orderId, Long memberId) {
+        Long ordererId = paymentRequestRepository.getOrdererId(orderId)
+                .orElseThrow(() -> new PaymentRequestNotFoundException("해당 주문의 주문자 정보가 없습니다."));
+
         if (!ordererId.equals(memberId)) {
-            throw new BusinessException(StatusCode.CONFLICT, "결제 요청자가 일치하지 않습니다.", true);
+            throw new PaymentRequestNotMatchException("결제 요청자가 일치하지 않습니다.");
         }
     }
 
     @Override
     public void checkIfAmountMatches(String orderId, Long amount) {
-        Long currentAmount = paymentRequestRepository.getAmount(orderId);
+        Long currentAmount = paymentRequestRepository.getAmount(orderId)
+                .orElseThrow(() -> new PaymentRequestNotFoundException("해당 주문의 금액 정보가 없습니다."));
+
         if (!amount.equals(currentAmount)) {
-            throw new BusinessException(StatusCode.CONFLICT, "주문 정보가 일치하지 않습니다.", true);
+            throw new PaymentRequestNotMatchException("주문 정보가 일치하지 않습니다.");
         }
     }
 }
