@@ -6,7 +6,9 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
-import kr.co.yourplanet.online.business.payment.domain.exception.PaymentFailureException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import kr.co.yourplanet.core.entity.payment.PaymentProvider;
 import kr.co.yourplanet.online.business.payment.service.PaymentClient;
 import kr.co.yourplanet.online.business.payment.service.dto.PaymentResponse;
 import kr.co.yourplanet.online.business.payment.service.dto.PaymentRequest;
@@ -17,9 +19,10 @@ import lombok.RequiredArgsConstructor;
 public class TossPaymentApiClient implements PaymentClient {
 
     private static final String AUTHORIZATION = "Authorization";
-    private static final String AUTHORIZATION_PREFIX = "Basic ";
+    private static final String AUTHORIZATION_FORMAT = "Basic %s";
 
     private final RestClient restClient;
+    private final ObjectMapper objectMapper;
 
     @Value("${payments.toss.uri}")
     private String uri;
@@ -32,13 +35,36 @@ public class TossPaymentApiClient implements PaymentClient {
         return restClient.post()
                 .uri(uri)
                 .body(request)
-                .header(AUTHORIZATION, AUTHORIZATION_PREFIX + secretKey)
+                .header(AUTHORIZATION, String.format(AUTHORIZATION_FORMAT, secretKey))
                 .header("Idempotency-Key", idempotencyKey)
                 .contentType(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .onStatus(HttpStatusCode::isError, (req, res) -> {
-                    throw new PaymentFailureException("", request.paymentKey(), request.orderId());
-                })
-                .body(PaymentResponse.class);
+                .exchange((req, res) -> {
+                            HttpStatusCode code = res.getStatusCode();
+                            String responseJson = objectMapper.readTree(res.getBody()).toString();
+
+                            if (code.is2xxSuccessful()) {
+                                PaymentResponse.SuccessResponse response = objectMapper.readValue(res.getBody(), PaymentResponse.SuccessResponse.class);
+
+                                return PaymentResponse.success(
+                                        res.getStatusCode(),
+                                        response,
+                                        PaymentProvider.TOSS,
+                                        request.paymentKey(),
+                                        request.orderId(),
+                                        responseJson
+                                );
+                            } else {
+                                PaymentResponse.FailResponse response = objectMapper.readValue(res.getBody(), PaymentResponse.FailResponse.class);
+                                return PaymentResponse.fail(
+                                        res.getStatusCode(),
+                                        response,
+                                        PaymentProvider.TOSS,
+                                        request.paymentKey(),
+                                        request.orderId(),
+                                        responseJson
+                                );
+                            }
+                        }
+                );
     }
 }
