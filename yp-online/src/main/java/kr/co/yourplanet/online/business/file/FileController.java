@@ -1,5 +1,6 @@
 package kr.co.yourplanet.online.business.file;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.common.exception.BusinessException;
 import kr.co.yourplanet.online.properties.FileProperties;
@@ -19,6 +20,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+@Tag(name = "File", description = "파일")
 @Controller
 @Slf4j
 @RequiredArgsConstructor

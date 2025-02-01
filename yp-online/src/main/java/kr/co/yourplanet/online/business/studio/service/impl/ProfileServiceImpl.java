@@ -70,7 +70,7 @@ public class ProfileServiceImpl implements ProfileService {
                 .categories(profile.getCategoryTypes())
                 .portfolios(portfolioInfoList)
                 .profileImageUrl(fileProperties.getBaseUrl() + profile.getProfileImageUrl())
-                .instagramUsername(profile.getMember().getInstagramUsername())
+                .instagramUsername(profile.getMember().getInstagramInfo().getInstagramUsername())
                 .build();
     }
 
@@ -137,6 +137,4 @@ public class ProfileServiceImpl implements ProfileService {
             profile.updateProfileImage(uploadResult.getFilePath(), uploadResult.getFileUrl());
         }
     }
-
-
 }
