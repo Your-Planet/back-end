@@ -8,6 +8,11 @@ spring:
     password: ${DEV_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
+  data:
+    redis:
+      host: ${DEV_REDIS_HOST}
+      port: ${DEV_REDIS_PORT}
+
   jpa:
     hibernate:
       ddl-auto: none    # flyway 적용 전까지
@@ -31,3 +36,8 @@ file:
 
 jwt:
   secret: ${DEV_JWT_SECRET}
+
+payments:
+  toss:
+    uri: https://api.tosspayments.com/v1/payments/confirm
+    secret-key: ${TOSS_PAYMENT_SECRET}
