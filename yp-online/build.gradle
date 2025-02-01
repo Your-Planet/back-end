@@ -38,6 +38,9 @@ dependencies {
     implementation "com.querydsl:querydsl-jpa"
     implementation "com.querydsl:querydsl-core"
     implementation "com.querydsl:querydsl-collections"
+
+    // flyway
+    implementation 'org.flywaydb:flyway-core'
 }
 
 tasks.named('test') {
