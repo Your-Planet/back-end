@@ -151,7 +151,7 @@ public class Project extends BasicColumn {
 
     public void accept(ProjectHistory projectHistory) {
         this.acceptedHistoryId = projectHistory.getId();
-        this.projectStatus = ProjectStatus.ACCEPT;
+        this.projectStatus = ProjectStatus.IN_PROGRESS;
         this.acceptDateTime = LocalDateTime.now();
     }
 
