@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://svc.sel5.cloudtype.app:30131/postgres
+    url: jdbc:postgresql://svc.sel5.cloudtype.app:30847/postgres
     username: root
     password: 3wh3o2blr6j8vo3
     driver-class-name: org.postgresql.Driver
@@ -12,3 +12,7 @@ spring:
       hibernate:
         show_sql: true  #여기는 prinln으로 출력이 나오기 때문에 일단 주석
         format_sql: true
+
+  redis:
+    host: localhost
+    port: 6379

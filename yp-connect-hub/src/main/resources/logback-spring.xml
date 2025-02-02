@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <springProperty name="profile" source="spring.profiles.active" defaultValue="local"/>
+
+    <springProfile name="local">
+        <property name="LOG_PATH" value="./logsvc"/>
+        <!-- log file name -->
+        <property name="LOG_FILE_NAME" value="info-yourplanet"/>
+        <!-- err log file name -->
+        <property name="ERR_LOG_FILE_NAME" value="error-yourplanet"/>
+        <!-- log level filter -->
+        <property name="LOG_LEVEL" value="DEBUG"/>
+    </springProfile>
+    <springProfile name="dev">
+        <property name="LOG_PATH" value="/logsvc/yourplanet"/>
+        <!-- log file name -->
+        <property name="LOG_FILE_NAME" value="info-yourplanet"/>
+        <!-- err log file name -->
+        <property name="ERR_LOG_FILE_NAME" value="error-yourplanet"/>
+        <!-- log level filter -->
+        <property name="LOG_LEVEL" value="INFO"/>
+    </springProfile>
+
+    <!-- log pattern -->
+    <property name="LOG_PATTERN" value="%-5level %d{yy-MM-dd HH:mm:ss} [%thread] [%logger{0}-%M:%line] - %msg%n "/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${LOG_FILE_NAME}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/%d{yyyyMMdd}/${LOG_FILE_NAME}-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>10</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <root level="${LOG_LEVEL}">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+</configuration>

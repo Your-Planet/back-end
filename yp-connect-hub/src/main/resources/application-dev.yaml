@@ -1,0 +1,30 @@
+spring:
+  datasource:
+    url: ${JDBC_DATABASE_URL}
+    sql-script-encoding: UTF-8
+
+  jpa:
+    hibernate:
+      defer-datasource-initialization: false
+      ddl-auto: update
+    properties:
+      hibernate:
+        #        show_sql: true  #여기는 prinln으로 출력이 나오기 때문에 일단 주석
+        format_sql: true
+
+  sql:
+    init:
+      # category 테이블의 초기 데이터를 생성하고자 할 경우 mode 값 always로 변경
+      mode: always
+      encoding: utf-8
+
+encrypt:
+  secret: yourplanet123456
+
+file:
+  base-url: http://ec2-15-164-160-23.ap-northeast-2.compute.amazonaws.com:8081
+  profile-path: /app/files/upload/profile/
+  profile-url: /files/profile/
+  studio-path: /app/files/upload/studio/
+  project-reference-file-path: /app/files/upload/project/reference/
+  project-reference-file-url: /files/project/reference/

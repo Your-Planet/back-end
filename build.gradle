@@ -68,6 +68,18 @@ project(':yp-batch') {
     }
 }
 
+project(':yp-connect-hub') {
+    bootJar {
+        enabled = true
+        destinationDirectory = file("$rootDir/build/lib")
+    }
+    jar { enabled = false }
+
+    dependencies {
+        implementation(project(':yp-core')) // 컴파일 시 yp-core project 로딩
+    }
+}
+
 
 tasks.named('test') {
     useJUnitPlatform()
