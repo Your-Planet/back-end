@@ -40,8 +40,8 @@ file:
   studio-path: /app/files/upload/studio/
   project-reference-file-path: /app/files/upload/project/reference/
   project-reference-file-url: /files/project/reference/
-  secret-file-prefix-url: files/secret
-  member-settlement-file-url: /settlements/members/%s
+  prefix-secret-file-url: files/secret
+  member-settlement-file-url: /settlements/members/%s/
 
 jwt:
   secret: ${DEV_JWT_SECRET}
