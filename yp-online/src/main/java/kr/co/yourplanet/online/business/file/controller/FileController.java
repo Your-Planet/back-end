@@ -88,7 +88,9 @@ public class FileController {
         Map<String, String> metadata = Map.of(FileMetadataKeys.MEMBER_ID, principal.getId().toString());
         PresignedUrlsResponse response = fileUploadService.getPresignedUrls(metadata, request);
 
-        return ResponseEntity.ok(
-                new ResponseForm<>(StatusCode.OK, response));
+        return new ResponseEntity<>(
+                new ResponseForm<>(StatusCode.CREATED, response),
+                HttpStatus.CREATED
+        );
     }
 }

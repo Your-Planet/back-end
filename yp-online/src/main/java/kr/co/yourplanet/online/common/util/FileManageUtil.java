@@ -98,7 +98,7 @@ public class FileManageUtil {
 
     private void validateFileExtension(FileType fileType, String fileName) {
         if (!fileType.isAllowedExtension(getFileExtension(fileName))) {
-            throw new BusinessException(StatusCode.BAD_REQUEST, "혀용된 파일 확장자가 아닙니다.", false);
+            throw new BusinessException(StatusCode.UNSUPPORTED_MEDIA_TYPE, "혀용된 파일 확장자가 아닙니다.", true);
         }
     }
 
@@ -125,7 +125,7 @@ public class FileManageUtil {
         } else if (FileType.PROJECT_REFERENCE_FILE.equals(fileType)) {
             return Paths.get(fileProperties.getProjectReferenceFilePath()).resolve(fileName);
         } else {
-            throw new BusinessException(StatusCode.UNSUPPORTED_MEDIA_TYPE);
+            throw new BusinessException(StatusCode.BAD_REQUEST, "지원하지 않는 FileType 입니다.", true);
         }
     }
 
@@ -136,7 +136,7 @@ public class FileManageUtil {
         } else if (FileType.PROJECT_REFERENCE_FILE.equals(fileType)) {
             propertyUrl += fileProperties.getProjectReferenceFileUrl();
         } else {
-            throw new BusinessException(StatusCode.UNSUPPORTED_MEDIA_TYPE);
+            throw new BusinessException(StatusCode.BAD_REQUEST, "지원하지 않는 FileType 입니다.", true);
         }
 
         return propertyUrl + fileName;
