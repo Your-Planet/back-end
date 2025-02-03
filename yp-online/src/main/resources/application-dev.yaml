@@ -18,6 +18,18 @@ spring:
       mode: never  # PostgreSQL 15 버전 이상 업그레이드 전까지
       encoding: utf-8
 
+  cloud:
+    config:
+      server:
+        aws:
+          s3:
+            region: ${S3_REGION}
+            bucket: ${S3_BUCKET_NAME}
+            endpoint: ${S3_ENDPOINT}
+            credentials:
+              access-key: ${S3_ACCESS_KEY}
+              secret-key: ${S3_SECRET_KEY}
+
 encrypt:
   secret: ${DEV_ENCRYPT_SECRET}
 
@@ -28,6 +40,8 @@ file:
   studio-path: /app/files/upload/studio/
   project-reference-file-path: /app/files/upload/project/reference/
   project-reference-file-url: /files/project/reference/
+  secret-file-prefix-url: files/secret
+  member-settlement-file-url: /settlements/members/%s
 
 jwt:
   secret: ${DEV_JWT_SECRET}

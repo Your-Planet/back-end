@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: classpath:application-secret.properties   # 이후 테스트 값으로 대체 예정
   datasource:
     url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
     username: root
@@ -20,6 +22,20 @@ spring:
       mode: embedded
       encoding: utf-8
 
+  cloud:
+    config:
+      server:
+        aws:
+          s3:
+            region: ${S3_REGION}
+            bucket: ${S3_BUCKET_NAME}
+            endpoint: ${S3_ENDPOINT}
+            credentials:
+              access-key: ${S3_ACCESS_KEY}
+              secret-key: ${S3_SECRET_KEY}
+            presigned-url:
+              expire-time: 3600
+
 encrypt:
   secret: FKKTQWMSMillz3Jr4pdFUQ==
 
@@ -30,6 +46,8 @@ file:
   studio-path: /Users/fong/files/upload/studio/
   project-reference-file-path: /Users/fong/files/upload/project/reference/
   project-reference-file-url: /files/project/reference/
+  prefix-secret-file-url: files/secret/local              # base presigned url이 /로 끝나서 생략
+  member-settlement-file-url: /settlements/members/%s/
 
 jwt:
   secret: Qb+NiKnqgiFnZnKc7uziuwFX/cq0yzFrJvrpio0JofQ=
