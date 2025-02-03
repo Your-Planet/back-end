@@ -8,6 +8,7 @@ on:
 
 jobs:
   build:
+    environment: develop
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -23,7 +24,6 @@ jobs:
         distribution: 'temurin'
         
     - name: Set Environment Variables and Secrets
-      environment: develop
       run: |
         cd ${{ github.workspace }}/yp-online/src/main/resources
         echo "${{ secrets.SECRET_DEV }}" > ./application-secret.properties
