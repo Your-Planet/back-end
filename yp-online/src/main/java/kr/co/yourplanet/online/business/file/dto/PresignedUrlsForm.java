@@ -1,7 +1,5 @@
 package kr.co.yourplanet.online.business.file.dto;
 
-import static com.fasterxml.jackson.databind.type.LogicalType.*;
-
 import java.util.List;
 
 import jakarta.validation.constraints.Size;
