@@ -26,14 +26,16 @@ jobs:
       run: |
         cd ${{ github.workspace }}/yp-online/src/main/resources
         echo "${{ secrets.SECRET_DEV }}" > ./application-secret.properties
+        cat ./application-secret.properties
         cd ${{ github.workspace }}/yp-batch/src/main/resources
         echo "${{ secrets.SECRET_BATCH_DEV }}" > ./batch-secret.properties
+        cat ./batch-secret.properties
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
 
     - name: Build modules with Gradle Wrapper
-      run: ./gradlew :yp-online:build :yp-batch:build --debug
+      run: ./gradlew :yp-online:build :yp-batch:build
 
   dependency-submission:
 
