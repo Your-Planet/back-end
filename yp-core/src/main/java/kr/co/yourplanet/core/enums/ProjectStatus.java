@@ -47,14 +47,16 @@ public enum ProjectStatus {
 	}
 
 	// ProjectStatus 변경 가능 여부 체크
-    public boolean isTransitionAllowed(MemberType requestMemberType, ProjectStatus currentStatus) {
+	public boolean isTransitionAllowed(MemberType requestMemberType, ProjectStatus currentStatus) {
 
-        // permittedMemberType이 NONE이면 requestMemberType 검증을 건너뛴다.
-        boolean isMemberTypeValid = this.permittedMemberType == MemberType.NONE || this.permittedMemberType == requestMemberType;
+		// permittedMemberType이 NONE이면 requestMemberType 검증을 건너뛴다.
+		boolean isMemberTypeValid =
+			this.permittedMemberType == MemberType.NONE || this.permittedMemberType == requestMemberType;
 
-        // allowedPreviousStatuses가 비어 있으면 currentStatus 검증을 건너뛴다.
-        boolean isPreviousStatusValid = this.allowedPreviousStatuses.isEmpty() || this.allowedPreviousStatuses.contains(currentStatus);
+		// allowedPreviousStatuses가 비어 있으면 currentStatus 검증을 건너뛴다.
+		boolean isPreviousStatusValid =
+			this.allowedPreviousStatuses.isEmpty() || this.allowedPreviousStatuses.contains(currentStatus);
 
-        return isMemberTypeValid && isPreviousStatusValid;
-    }
+		return isMemberTypeValid && isPreviousStatusValid;
+	}
 }
