@@ -3,6 +3,8 @@ package kr.co.yourplanet.online.business.project.dto.response;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import kr.co.yourplanet.core.entity.project.ProjectHistory;
 import kr.co.yourplanet.core.enums.MemberType;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectCommonAttribute;
@@ -44,11 +46,13 @@ public class ProjectHistoryForm {
      */
     private ProjectCommonAttribute.ProjectPostDurationExtension postDurationExtension;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private List<LocalDate> postStartDates;
 
     /**
      * 작업 기한
      */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate dueDate;
 
     /**
