@@ -1,22 +1,16 @@
 package kr.co.yourplanet.online.common;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import kr.co.yourplanet.core.enums.StatusCode;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Setter
 @Getter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResponseForm<T> {
-
-    private int statusCode;
-    private String message;
-    private T data;
+    private final int statusCode;
+    private final String message;
+    private final T data;
 
     public ResponseForm(StatusCode statusEnum) {
         this.statusCode = statusEnum.getStatusCode();
@@ -26,13 +20,8 @@ public class ResponseForm<T> {
 
     public ResponseForm(StatusCode statusEnum, String customMessage, boolean isAppend) {
         this.statusCode = statusEnum.getStatusCode();
+        this.message = isAppend ? getCombinedMessage(statusEnum, customMessage) : customMessage;
         this.data = null;
-
-        if(isAppend) {
-            this.message = statusEnum.getMessage() + customMessage;
-        } else {
-            this.message = customMessage;
-        }
     }
 
     public ResponseForm(StatusCode statusEnum, T data) {
@@ -43,12 +32,11 @@ public class ResponseForm<T> {
 
     public ResponseForm(StatusCode statusEnum, String customMessage, T data, boolean isAppend){
         this.statusCode = statusEnum.getStatusCode();
+        this.message = isAppend ? getCombinedMessage(statusEnum, customMessage) : customMessage;
         this.data = data;
+    }
 
-        if(isAppend) {
-            this.message = statusEnum.getMessage() + customMessage;
-        } else {
-            this.message = customMessage;
-        }
+    private String getCombinedMessage(StatusCode statusEnum, String customMessage) {
+        return statusEnum.getMessage() + " " + customMessage;
     }
 }
