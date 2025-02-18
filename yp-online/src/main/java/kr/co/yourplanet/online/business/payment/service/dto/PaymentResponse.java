@@ -31,7 +31,7 @@ public class PaymentResponse {
 
     @Getter
     public static class FailResponse {
-        private int code;
+        private String code;
         private String message;
     }
 
