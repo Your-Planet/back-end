@@ -1,4 +1,6 @@
-package kr.co.yourplanet.online.infra.web;
+package kr.co.yourplanet.online.infra.web.payment;
+
+import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
@@ -13,9 +15,11 @@ import kr.co.yourplanet.online.business.payment.service.PaymentClient;
 import kr.co.yourplanet.online.business.payment.service.dto.PaymentResponse;
 import kr.co.yourplanet.online.business.payment.service.dto.PaymentRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TossPaymentApiClient implements PaymentClient {
 
     private static final String AUTHORIZATION = "Authorization";
@@ -43,7 +47,7 @@ public class TossPaymentApiClient implements PaymentClient {
                             String responseJson = objectMapper.readTree(res.getBody()).toString();
 
                             if (code.is2xxSuccessful()) {
-                                PaymentResponse.SuccessResponse response = objectMapper.readValue(res.getBody(), PaymentResponse.SuccessResponse.class);
+                                PaymentResponse.SuccessResponse response = objectMapper.readValue(responseJson, PaymentResponse.SuccessResponse.class);
 
                                 return PaymentResponse.success(
                                         res.getStatusCode(),
@@ -54,7 +58,12 @@ public class TossPaymentApiClient implements PaymentClient {
                                         responseJson
                                 );
                             } else {
-                                PaymentResponse.FailResponse response = objectMapper.readValue(res.getBody(), PaymentResponse.FailResponse.class);
+                                PaymentResponse.FailResponse response = objectMapper.readValue(responseJson, PaymentResponse.FailResponse.class);
+
+                                if (TossPaymentErrorCode.isValueIn(response.getCode())) {
+                                    log.error("{} [PAYMENT] {} : {}", LocalDateTime.now(), response.getCode(), response.getMessage());
+                                }
+
                                 return PaymentResponse.fail(
                                         res.getStatusCode(),
                                         response,
