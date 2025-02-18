@@ -5,6 +5,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record PaymentApproveForm(
+
+        @NotNull(message = "projectId는 null일 수 없습니다.")
+        Long projectId,
+
         @NotBlank(message = "paymentKey는 빈 문자열일 수 없습니다.")
         String paymentKey,
 

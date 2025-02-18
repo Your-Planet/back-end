@@ -7,9 +7,9 @@ public interface PaymentHistoryService {
 
     void save(PaymentHistory paymentHistory);
 
-    void saveSuccessHistory(PaymentResponse response);
+    void saveSuccessHistory(PaymentResponse response, long projectId);
 
-    void saveFailHistory(PaymentResponse response);
+    void saveFailHistory(PaymentResponse response, long projectId);
 
     void checkIfExists(String orderId);
 }

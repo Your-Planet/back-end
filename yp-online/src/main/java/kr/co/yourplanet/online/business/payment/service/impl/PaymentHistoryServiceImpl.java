@@ -23,10 +23,11 @@ public class PaymentHistoryServiceImpl implements PaymentHistoryService {
     }
 
     @Override
-    public void saveSuccessHistory(PaymentResponse response) {
+    public void saveSuccessHistory(PaymentResponse response, long projectId) {
         PaymentResponse.SuccessResponse successResponse = response.getSuccessResponse();
 
         PaymentHistory history = PaymentHistory.builder()
+                .projectId(projectId)
                 .paymentKey(response.getPaymentKey())
                 .orderId(response.getOrderId())
                 .orderName(successResponse.getOrderName())
@@ -42,10 +43,11 @@ public class PaymentHistoryServiceImpl implements PaymentHistoryService {
     }
 
     @Override
-    public void saveFailHistory(PaymentResponse response) {
+    public void saveFailHistory(PaymentResponse response, long projectId) {
         PaymentResponse.FailResponse failResponse = response.getFailResponse();
 
         PaymentHistory history = PaymentHistory.builder()
+                .projectId(projectId)
                 .paymentKey(response.getPaymentKey())
                 .orderId(response.getOrderId())
                 .status(PaymentStatus.ABORTED)

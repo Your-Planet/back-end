@@ -25,6 +25,9 @@ public class PaymentHistory extends BasicColumn {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "project_id", nullable = false)
+    private Long projectId;
+
     @Column(nullable = false)
     private String paymentKey;
 
