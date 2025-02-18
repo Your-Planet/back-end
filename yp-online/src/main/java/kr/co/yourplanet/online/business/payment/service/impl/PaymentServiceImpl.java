@@ -11,6 +11,7 @@ import kr.co.yourplanet.online.business.payment.service.PaymentRequestService;
 import kr.co.yourplanet.online.business.payment.service.PaymentService;
 import kr.co.yourplanet.online.business.payment.service.dto.PaymentRequest;
 import kr.co.yourplanet.online.business.payment.service.dto.PaymentResponse;
+import kr.co.yourplanet.online.business.project.service.ProjectValidationService;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -19,13 +20,15 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRequestService paymentRequestService;
     private final PaymentHistoryService paymentHistoryService;
+    private final ProjectValidationService projectValidationService;
     private final PaymentClient paymentClient;
 
     private final PaymentRequestRepository paymentRequestRepository;
 
     @Override
-    public void approve(Long memberId, String paymentKey, String orderId, Long amount) {
+    public void approve(Long memberId, Long projectId, String paymentKey, String orderId, Long amount) {
         validatePaymentRequest(memberId, orderId, amount);
+        projectValidationService.checkExist(projectId);
 
         String idempotencyKey = paymentRequestRepository.getIdempotencyKey(orderId)
                 .orElseThrow(() -> new PaymentRequestNotFoundException("해당 주문의 동일성 보장 키가 없습니다."));
@@ -33,9 +36,9 @@ public class PaymentServiceImpl implements PaymentService {
         PaymentResponse response = paymentClient.process(request, idempotencyKey);
 
         if (response.isSuccess()) {
-            paymentHistoryService.saveSuccessHistory(response);
+            paymentHistoryService.saveSuccessHistory(response, projectId);
         } else {
-            paymentHistoryService.saveFailHistory(response);
+            paymentHistoryService.saveFailHistory(response, projectId);
 
             PaymentResponse.FailResponse failResponse = response.getFailResponse();
             throw new PaymentFailureException(failResponse.getMessage());
