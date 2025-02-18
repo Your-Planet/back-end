@@ -50,9 +50,9 @@ public class S3StorageAdapter implements StorageAdapter {
 
             return getS3FileUrl(fileKey);
         } catch (IOException e) {
-            throw new BusinessException("파일 읽기에 실패했습니다.", StatusCode.INTERNAL_SERVER_ERROR, true, e);
+            throw new BusinessException(StatusCode.INTERNAL_SERVER_ERROR, "파일 읽기에 실패했습니다.", true, e);
         } catch (Exception e) {
-            throw new BusinessException("파일 업로드에 실패했습니다.", StatusCode.INTERNAL_SERVER_ERROR, true, e);
+            throw new BusinessException(StatusCode.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.", true, e);
         }
     }
 
@@ -81,7 +81,7 @@ public class S3StorageAdapter implements StorageAdapter {
         try {
             return new URL(url);
         } catch (MalformedURLException e) {
-            throw new BusinessException("잘못된 형식의 URL 변환에 실패했습니다.", StatusCode.INTERNAL_SERVER_ERROR, true, e);
+            throw new BusinessException(StatusCode.INTERNAL_SERVER_ERROR, "잘못된 형식의 URL 변환에 실패했습니다.", true, e);
         }
     }
 }
