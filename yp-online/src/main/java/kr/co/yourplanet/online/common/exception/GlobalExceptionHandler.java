@@ -19,9 +19,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+    private static final String WARN_LOG_TEMPLATE = "[WARN] {}: {}";
 
     @ExceptionHandler(BusinessException.class)
     protected ResponseEntity<ResponseForm<Void>> handleBusinessException(BusinessException e) {
+        log.warn(WARN_LOG_TEMPLATE, e.getClass().getSimpleName(), e.getMessage(), e);
+
         StatusCode statusCode = e.getStatusCode();
         ResponseForm<Void> exceptionResponse = new ResponseForm<>(statusCode, e.getMessage(), false);
         HttpStatus headerStatus;
@@ -64,6 +67,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ResponseForm<Void>> hanleException(Exception e) {
         log.error("정의되지 않은 예외 발생 : ", e);
+
         ResponseForm<Void> exceptionResponse = new ResponseForm<>(StatusCode.NOT_IMPLEMENTED);
         return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_IMPLEMENTED);
     }

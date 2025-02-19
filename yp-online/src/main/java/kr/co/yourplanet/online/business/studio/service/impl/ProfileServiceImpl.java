@@ -1,5 +1,16 @@
 package kr.co.yourplanet.online.business.studio.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+
 import kr.co.yourplanet.core.entity.instagram.InstagramMedia;
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.studio.Category;
@@ -23,16 +34,6 @@ import kr.co.yourplanet.online.common.util.FileManageUtil;
 import kr.co.yourplanet.online.common.util.FileUploadResult;
 import kr.co.yourplanet.online.properties.FileProperties;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -125,7 +126,10 @@ public class ProfileServiceImpl implements ProfileService {
 
         // 프로필 이미지 저장 부분
         if (profileImageFile != null && !profileImageFile.isEmpty()) {
-            fileManageUtil.validateImageFile(profileImageFile);
+
+            // 아래 fileManageUtil.uploadFile() 메소드에서도 validateFile() 수행하지만 deleteFile() 전에 유효성 먼저 체크해야 하므로 추가
+            fileManageUtil.validateFile(profileImageFile, FileType.PROFILE_IMAGE);
+
             // 모든 스튜디오 프로필 저장 로직이 완료된 후 프로필 이미지 저장처리
             // 기존에 존재하는 프로필 이미지 삭제
             if (StringUtils.hasText(profile.getProfileImagePath())) {

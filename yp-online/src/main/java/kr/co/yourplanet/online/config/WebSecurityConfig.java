@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,7 +38,9 @@ public class WebSecurityConfig {
             "/swagger-ui/**",
             /* business */
             "/auth/**",
-            "/files/**"
+            /* files */
+            "/files/profile/**",
+            "/files/project/**"
     };
 
     @Bean
@@ -60,11 +63,10 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .httpBasic(httpBasic -> httpBasic.disable()) // HTTP Basic 비활성화
-                .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화
+                .httpBasic(AbstractHttpConfigurer::disable) // HTTP Basic 비활성화
+                .csrf(AbstractHttpConfigurer::disable) // CSRF 보호 비활성화
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 비활성화
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/files/**").permitAll()
                         .requestMatchers(PERMIT_URL_ARRAY).permitAll()
                         .anyRequest().authenticated()
                 )
@@ -72,8 +74,6 @@ public class WebSecurityConfig {
 
         // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 넣음
 
-
         return http.build();
     }
-
 }
