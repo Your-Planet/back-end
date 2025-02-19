@@ -14,7 +14,11 @@ public class MemberRepository {
     private final EntityManager em;
 
     public void saveMember(Member member) {
-        em.persist(member);
+        if (member.getId() == null) {
+            em.persist(member);
+        } else {
+            em.merge(member);
+        }
     }
 
     public Optional<Member> findById(Long id) {
@@ -22,20 +26,20 @@ public class MemberRepository {
     }
 
     public Optional<Member> findMemberByEmail(String email) {
-        return em.createQuery("select m from Member m where m.email = :email", Member.class)
+        return em.createQuery("select m from Member m where m.accountInfo.email = :email", Member.class)
                 .setParameter("email", email)
                 .getResultStream().findAny();
     }
 
     public Optional<Member> findByNameAndPhone(String name, String tel) {
-        return em.createQuery("select m from Member m where m.name = :name and m.tel = :tel", Member.class)
+        return em.createQuery("select m from Member m where m.memberBasicInfo.name = :name and m.memberBasicInfo.tel = :tel", Member.class)
                 .setParameter("name", name)
                 .setParameter("tel", tel)
                 .getResultStream().findAny();
     }
 
     public Optional<Member> findByInstagramId(String instagramId) {
-        return em.createQuery("select m from Member m where m.instagramId = :instagramId", Member.class)
+        return em.createQuery("select m from Member m where m.instagramInfo.instagramId = :instagramId", Member.class)
                 .setParameter("instagramId", instagramId)
                 .getResultStream().findAny();
     }
