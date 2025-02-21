@@ -19,6 +19,7 @@ public class ProjectBasicInfo {
     private Long id;
     private String sponsorName;
     private String creatorName;
+    private String orderTitle;
     private String brandName;
     private String campaignDescription;
     private ProjectStatus projectStatus;

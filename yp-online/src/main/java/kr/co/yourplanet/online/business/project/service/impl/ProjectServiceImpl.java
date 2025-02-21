@@ -36,6 +36,7 @@ import kr.co.yourplanet.online.business.user.repository.MemberRepository;
 import kr.co.yourplanet.online.common.exception.BusinessException;
 import kr.co.yourplanet.online.common.util.FileManageUtil;
 import kr.co.yourplanet.online.common.util.FileUploadResult;
+import kr.co.yourplanet.online.common.util.SnowflakeIdGenerator;
 import kr.co.yourplanet.online.properties.FileProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +49,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     private final FileManageUtil fileManageUtil;
     private final FileProperties fileProperties;
+    private final SnowflakeIdGenerator snowflakeIdGenerator;
 
     private final ProjectRepository projectRepository;
     private final ProjectHistoryRepository projectHistoryRepository;
@@ -76,17 +78,22 @@ public class ProjectServiceImpl implements ProjectService {
             throw new BusinessException(StatusCode.BAD_REQUEST, "광고 날짜는 최대 10개까지 선택 가능합니다.", false);
         }
 
+        // 주문 코드 생성
+        String orderCode = snowflakeIdGenerator.getId("P");
+
         // 프로젝트 저장
         Project project = Project.builder()
-                .creator(creatorPrice.getProfile().getMember())
-                .sponsor(sponsor)
-                .projectStatus(ProjectStatus.IN_REVIEW)
-                .brandName(projectRequestForm.getBrandName())
-                .referenceUrls(projectRequestForm.getReferenceUrls()) // 캠페인 URL
-                .campaignDescription(projectRequestForm.getCampaignDescription()) // 캠페인 소개
-                .requestDateTime(LocalDateTime.now())
-                .creatorPrice(creatorPrice)
-                .build();
+            .creator(creatorPrice.getProfile().getMember())
+            .sponsor(sponsor)
+            .projectStatus(ProjectStatus.IN_REVIEW)
+            .brandName(projectRequestForm.getBrandName())
+            .orderTitle(projectRequestForm.getOrderTitle())
+            .orderCode(orderCode)
+            .referenceUrls(projectRequestForm.getReferenceUrls()) // 캠페인 URL
+            .campaignDescription(projectRequestForm.getCampaignDescription()) // 캠페인 소개
+            .requestDateTime(LocalDateTime.now())
+            .creatorPrice(creatorPrice)
+            .build();
         projectRepository.save(project);
 
         // 프로젝트 히스토리 저장

@@ -73,6 +73,20 @@ public class Project extends BasicColumn {
     private ProjectStatus projectStatus;
 
     /**
+     * 프로젝트 이름
+     */
+    @Size(max = 100)
+    @Column(name = "order_title")
+    private String orderTitle;
+
+    /**
+     * 프로젝트 코드
+     */
+    @Size(max = 16)
+    @Column(name = "order_code")
+    private String orderCode;
+
+    /**
      * 브랜드명
      */
     @Size(max = 30)
