@@ -43,6 +43,8 @@ public class ProjectDetailInfo {
         private String sponsorName;
         private String creatorName;
         private String brandName;
+        private String orderTitle;
+        private String orderCode;
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
         private LocalDate dueDate;
         private Integer defaultPanelCount;

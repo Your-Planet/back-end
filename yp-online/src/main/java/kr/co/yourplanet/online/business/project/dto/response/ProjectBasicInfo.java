@@ -20,6 +20,7 @@ public class ProjectBasicInfo {
     private String sponsorName;
     private String creatorName;
     private String orderTitle;
+    private String orderCode;
     private String brandName;
     private String campaignDescription;
     private ProjectStatus projectStatus;
