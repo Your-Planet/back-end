@@ -7,27 +7,27 @@ import lombok.Getter;
 @Getter
 public enum ProjectStatus {
 
-	DEFAULT("기본", 0, MemberType.NONE),
-	IN_REVIEW("의뢰", 72, MemberType.SPONSOR),
-	NEGOTIATION_FROM_SPONSOR("광고주협상", 72, MemberType.SPONSOR),
-	NEGOTIATION_FROM_CREATOR("작가협상", 72, MemberType.CREATOR),
-	CANCELED("취소", 72, MemberType.SPONSOR),
-	REJECTED("거절", 72, MemberType.CREATOR),
-	IN_PROGRESS("수락", 72, MemberType.CREATOR),
-	SENT("작업물발송", 72, MemberType.CREATOR),
-	REQUEST_MODIFICATION("수정요청", 72, MemberType.SPONSOR),
-	COMPLETED("완료", 72, MemberType.SPONSOR),
-	CLOSED("마감", 72, MemberType.NONE);
+	DEFAULT("기본", 0, Set.of()),
+	IN_REVIEW("의뢰", 72, Set.of(MemberType.SPONSOR)),
+	NEGOTIATION_FROM_SPONSOR("광고주협상", 72, Set.of(MemberType.SPONSOR)),
+	NEGOTIATION_FROM_CREATOR("작가협상", 72, Set.of(MemberType.CREATOR)),
+	CANCELED("취소", 72, Set.of(MemberType.SPONSOR)),
+	REJECTED("거절", 72, Set.of(MemberType.CREATOR)),
+	IN_PROGRESS("수락", 72, Set.of(MemberType.CREATOR)),
+	SENT("작업물발송", 72, Set.of(MemberType.CREATOR)),
+	REQUEST_MODIFICATION("수정요청", 72, Set.of(MemberType.SPONSOR)),
+	COMPLETED("완료", 72, Set.of(MemberType.SPONSOR)),
+	CLOSED("마감", 72, Set.of());
 
 	private final String statusName;
 	private final int expirationHours;
-	private final MemberType permittedMemberType;
+	private final Set<MemberType> permittedMemberTypes;
 	private Set<ProjectStatus> allowedPreviousStatuses;
 
-	ProjectStatus(String statusName, int expirationHours, MemberType permittedMemberType) {
+	ProjectStatus(String statusName, int expirationHours, Set<MemberType> permittedMemberTypeSet) {
 		this.statusName = statusName;
 		this.expirationHours = expirationHours;
-		this.permittedMemberType = permittedMemberType;
+		this.permittedMemberTypes = permittedMemberTypeSet;
 	}
 
 	// ProjectStatus enum의 필드 중 Set<ProjectStatus> projectStatusSet은 자기 자신 enum을 참조
@@ -49,9 +49,9 @@ public enum ProjectStatus {
 	// ProjectStatus 변경 가능 여부 체크
 	public boolean isTransitionAllowed(MemberType requestMemberType, ProjectStatus currentStatus) {
 
-		// permittedMemberType이 NONE이면 requestMemberType 검증을 건너뛴다.
+		// permittedMemberTypes이 비어 있으면 requestMemberTypes 검증을 건너뛴다.
 		boolean isMemberTypeValid =
-			this.permittedMemberType == MemberType.NONE || this.permittedMemberType == requestMemberType;
+			this.permittedMemberTypes.isEmpty() || this.permittedMemberTypes.contains(requestMemberType);
 
 		// allowedPreviousStatuses가 비어 있으면 currentStatus 검증을 건너뛴다.
 		boolean isPreviousStatusValid =

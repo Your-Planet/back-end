@@ -155,7 +155,8 @@ public class Project extends BasicColumn {
         this.acceptDateTime = LocalDateTime.now();
     }
 
-    public void reject(ProjectStatus projectStatus, String rejectReason){
+    // 취소, 거절, 마감 등
+    public void invalidate(ProjectStatus projectStatus, String rejectReason){
         this.projectStatus = projectStatus;
         this.rejectReason = rejectReason;
         this.rejectDateTime = LocalDateTime.now();
