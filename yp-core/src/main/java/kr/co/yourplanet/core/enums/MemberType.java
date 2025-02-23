@@ -4,7 +4,5 @@ public enum MemberType {
 
     ADMIN,
     CREATOR,
-    SPONSOR,
-    NONE
-
+    SPONSOR
 }

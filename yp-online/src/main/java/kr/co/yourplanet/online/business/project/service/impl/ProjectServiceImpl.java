@@ -59,7 +59,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     @Transactional
-    public void requestProject(ProjectRequestForm projectRequestForm, List<MultipartFile> referenceFiles, Long sponsorId) {
+    public void createProject(ProjectRequestForm projectRequestForm, List<MultipartFile> referenceFiles, Long sponsorId) {
         Member sponsor = findMemberById(sponsorId);
         Price creatorPrice = priceRepository.findById(projectRequestForm.getPriceId()).orElseThrow(() -> new BusinessException(StatusCode.BAD_REQUEST, "작가의 스튜디오 정보가 존재하지 않습니다", false));
 
@@ -151,7 +151,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
         validateProjectStatusTransition(member, project, projectStatusAction);
 
-        project.reject(projectStatusAction, projectRejectForm.getReason());
+        project.invalidate(projectStatusAction, projectRejectForm.getReason());
 
     }
 
