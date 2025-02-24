@@ -1,7 +1,9 @@
 package kr.co.yourplanet.online.business.user.dto;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 
+@Builder
 public record BusinessForm(
 
         @NotNull(message = "상호명은 null일 수 없습니다.")

@@ -219,6 +219,7 @@ gradle-app.setting
 ## secret
 application-secret.properties
 batch-secret.properties
+test-secret.properties
 
 ## bat
 docker-deploy.bat
