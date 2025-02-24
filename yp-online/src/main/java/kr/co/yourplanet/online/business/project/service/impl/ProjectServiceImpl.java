@@ -1,5 +1,15 @@
 package kr.co.yourplanet.online.business.project.service.impl;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
+
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.project.Project;
 import kr.co.yourplanet.core.entity.project.ProjectHistory;
@@ -29,15 +39,6 @@ import kr.co.yourplanet.online.common.util.FileUploadResult;
 import kr.co.yourplanet.online.properties.FileProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.multipart.MultipartFile;
-
-import jakarta.annotation.PostConstruct;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -54,31 +55,9 @@ public class ProjectServiceImpl implements ProjectService {
     private final MemberRepository memberRepository;
     private final PriceRepository priceRepository;
 
-    // key : 사용자 수행 가능 액션
-    // value : 액션 수행 가능한 프로젝트 상태
-    private Map<ProjectStatus, List<ProjectStatus>> creatorActionsMap;
-    private Map<ProjectStatus, List<ProjectStatus>> sponsorActionsMap;
-
-
-    @PostConstruct
-    public void init() {
-        // Creator
-        creatorActionsMap = new EnumMap<>(ProjectStatus.class);
-        creatorActionsMap.put(ProjectStatus.NEGOTIATE_CREATOR, Arrays.asList(ProjectStatus.REQUEST, ProjectStatus.NEGOTIATE_SPONSOR));
-        creatorActionsMap.put(ProjectStatus.ACCEPT, Arrays.asList(ProjectStatus.REQUEST, ProjectStatus.NEGOTIATE_SPONSOR));
-        creatorActionsMap.put(ProjectStatus.REJECT, Arrays.asList(ProjectStatus.REQUEST, ProjectStatus.NEGOTIATE_SPONSOR));
-        creatorActionsMap.put(ProjectStatus.COMPLETE, Arrays.asList(ProjectStatus.ACCEPT));
-
-        // Sponsor
-        sponsorActionsMap = new EnumMap<>(ProjectStatus.class);
-        sponsorActionsMap.put(ProjectStatus.REQUEST, Arrays.asList(ProjectStatus.DEFAULT));
-        sponsorActionsMap.put(ProjectStatus.NEGOTIATE_SPONSOR, Arrays.asList(ProjectStatus.NEGOTIATE_CREATOR));
-        sponsorActionsMap.put(ProjectStatus.CANCEL, Arrays.asList(ProjectStatus.REQUEST, ProjectStatus.NEGOTIATE_SPONSOR, ProjectStatus.NEGOTIATE_CREATOR));
-    }
-
     @Override
     @Transactional
-    public void requestProject(ProjectRequestForm projectRequestForm, List<MultipartFile> referenceFiles, Long sponsorId) {
+    public void createProject(ProjectRequestForm projectRequestForm, List<MultipartFile> referenceFiles, Long sponsorId) {
         Member sponsor = findMemberById(sponsorId);
         Price creatorPrice = priceRepository.findById(projectRequestForm.getPriceId()).orElseThrow(() -> new BusinessException(StatusCode.BAD_REQUEST, "작가의 스튜디오 정보가 존재하지 않습니다", false));
 
@@ -101,7 +80,7 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = Project.builder()
                 .creator(creatorPrice.getProfile().getMember())
                 .sponsor(sponsor)
-                .projectStatus(ProjectStatus.REQUEST)
+                .projectStatus(ProjectStatus.IN_REVIEW)
                 .brandName(projectRequestForm.getBrandName())
                 .referenceUrls(projectRequestForm.getReferenceUrls()) // 캠페인 URL
                 .campaignDescription(projectRequestForm.getCampaignDescription()) // 캠페인 소개
@@ -114,7 +93,7 @@ public class ProjectServiceImpl implements ProjectService {
         ProjectHistory projectHistory = ProjectHistory.builder()
                 .project(project) // 필요한 Project 객체
                 .seq(1) // 시퀀스 번호
-                .projectStatus(ProjectStatus.REQUEST)
+                .projectStatus(ProjectStatus.IN_REVIEW)
                 .additionalPanelCount(projectRequestForm.getAdditionalModification().getCount()) // 추가 컷 수
                 .additionalPanelNegotiable(projectRequestForm.getAdditionalPanel().getIsNegotiable())
                 .additionalModificationCount(projectRequestForm.getAdditionalModification().getCount()) // 추가 수정 횟수
@@ -158,14 +137,14 @@ public class ProjectServiceImpl implements ProjectService {
 
         // 취소or거절 가능 상태인지 확인
         if (MemberType.CREATOR.equals(member.getMemberType())) {
-            projectStatusAction = ProjectStatus.REJECT;
+            projectStatusAction = ProjectStatus.REJECTED;
 
         } else if (MemberType.SPONSOR.equals(member.getMemberType())) {
-            projectStatusAction = ProjectStatus.CANCEL;
+            projectStatusAction = ProjectStatus.CANCELED;
         }
-        checkProjectStatusBeforeAction(member, project, projectStatusAction);
+        validateProjectStatusTransition(member, project, projectStatusAction);
 
-        project.rejectProject(projectStatusAction, projectRejectForm.getReason());
+        project.invalidate(projectStatusAction, projectRejectForm.getReason());
 
     }
 
@@ -180,16 +159,16 @@ public class ProjectServiceImpl implements ProjectService {
         checkProjectValidation(requestMember, project);
 
         if (MemberType.CREATOR.equals(requestMember.getMemberType())) {
-            projectStatusAction = ProjectStatus.NEGOTIATE_CREATOR;
+            projectStatusAction = ProjectStatus.NEGOTIATION_FROM_CREATOR;
         } else if (MemberType.SPONSOR.equals(requestMember.getMemberType())) {
-            projectStatusAction = ProjectStatus.NEGOTIATE_SPONSOR;
+            projectStatusAction = ProjectStatus.NEGOTIATION_FROM_SPONSOR;
         } else {
             throw new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 사용자 유형입니다.", false);
         }
-        checkProjectStatusBeforeAction(requestMember, project, projectStatusAction);
+        validateProjectStatusTransition(requestMember, project, projectStatusAction);
 
         // 프로젝트 업데이트
-        project.changeProjectStatus(projectStatusAction);
+        project.negotiate(projectStatusAction);
         project.getReferenceUrls().addAll(projectNegotiateForm.getReferenceUrls());
 
         // 프로젝트 히스토리 적재
@@ -223,12 +202,12 @@ public class ProjectServiceImpl implements ProjectService {
 
         // Validation
         checkProjectValidation(member, project);
-        checkProjectStatusBeforeAction(member, project, ProjectStatus.ACCEPT);
+        validateProjectStatusTransition(member, project, ProjectStatus.IN_PROGRESS);
 
         List<ProjectHistory> projectHistoryList = projectHistoryRepository.findAllByProject(project);
 
         if (!projectHistoryList.isEmpty()) {
-            project.acceptProject(projectHistoryList.get(projectHistoryList.size() - 1));
+            project.accept(projectHistoryList.get(projectHistoryList.size() - 1));
         } else {
             throw new BusinessException(StatusCode.NOT_FOUND, "작업 요청 이력이 존재하지 않습니다", false);
         }
@@ -273,15 +252,20 @@ public class ProjectServiceImpl implements ProjectService {
 
         if (!CollectionUtils.isEmpty(projectList)) {
             projectBasicInfoList = projectList.stream()
-                    .map(project -> ProjectBasicInfo.builder()
-                            .id(project.getId())
-                            .sponsorName(project.getSponsor().getName())
-                            .creatorName(project.getCreator().getName())
-                            .brandName(project.getBrandName())
-                            .campaignDescription(project.getCampaignDescription())
-                            .projectStatus(project.getProjectStatus())
-                            .build())
-                    .collect(Collectors.toList());
+                .map(project -> ProjectBasicInfo.builder()
+                    .id(project.getId())
+                    .sponsorName(project.getSponsor().getName())
+                    .creatorName(project.getCreator().getName())
+                    .brandName(project.getBrandName())
+                    .campaignDescription(project.getCampaignDescription())
+                    .projectStatus(project.getProjectStatus())
+                    .requestDateTime(project.getRequestDateTime())
+                    .negotiateDateTime(project.getNegotiateDateTime())
+                    .acceptDateTime(project.getAcceptDateTime())
+                    .completeDateTime(project.getCompleteDateTime())
+                    .rejectDateTime(project.getRejectDateTime())
+                    .build())
+                .toList();
         }
 
         return projectBasicInfoList;
@@ -309,15 +293,16 @@ public class ProjectServiceImpl implements ProjectService {
 
         // DTO 생성
         ProjectDetailInfo.Overview overview = ProjectDetailInfo.Overview.builder()
-                .sponsorName(project.getSponsor().getName())
-                .brandName(project.getBrandName())
-                .dueDate(latestProjectHistory.getDueDate())
-                .defaultPanelCount(creatorPrice.getCuts())
-                .additionalPanelCount(latestProjectHistory.getAdditionalPanelCount())
-                .defaultModificationCount(creatorPrice.getModificationCount())
-                .additionalModificationCount(latestProjectHistory.getAdditionalModificationCount())
-                .offerPrice(latestProjectHistory.getOfferPrice())
-                .build();
+            .sponsorName(project.getSponsor().getName())
+            .creatorName(project.getCreator().getName())
+            .brandName(project.getBrandName())
+            .dueDate(latestProjectHistory.getDueDate())
+            .defaultPanelCount(creatorPrice.getCuts())
+            .additionalPanelCount(latestProjectHistory.getAdditionalPanelCount())
+            .defaultModificationCount(creatorPrice.getModificationCount())
+            .additionalModificationCount(latestProjectHistory.getAdditionalModificationCount())
+            .offerPrice(latestProjectHistory.getOfferPrice())
+            .build();
 
         ProjectDetailInfo.Detail detail = ProjectDetailInfo.Detail.builder()
                 .campaignDescription(project.getCampaignDescription())
@@ -326,15 +311,20 @@ public class ProjectServiceImpl implements ProjectService {
                 .latestProjectHistory(new ProjectHistoryForm(latestProjectHistory))
                 .build();
 
-        ProjectDetailInfo projectDetailInfo = ProjectDetailInfo.builder()
+        return ProjectDetailInfo.builder()
                 .overview(overview)
-                .detail(detail)
-                .projectHistories(project.getProjectHistories().stream()
-                        .map(ProjectHistoryForm::new)
-                        .collect(Collectors.toList()))
-                .build();
+            .detail(detail)
+            .projectHistories(project.getProjectHistories().stream()
+                .map(ProjectHistoryForm::new)
+                .collect(Collectors.toList()))
+            .projectStatus(project.getProjectStatus())
+            .requestDateTime(project.getRequestDateTime())
+            .negotiateDateTime(project.getNegotiateDateTime())
+            .acceptDateTime(project.getAcceptDateTime())
+            .completeDateTime(project.getCompleteDateTime())
+            .rejectDateTime(project.getRejectDateTime())
+            .build();
 
-        return projectDetailInfo;
     }
 
     private Member findMemberById(Long memberId) {
@@ -369,22 +359,13 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     // 사용자 유형별 처리 가능한 ProjectStatus 검사
-    private void checkProjectStatusBeforeAction(Member requestMember, Project project, ProjectStatus actionProjectStatus) {
-        MemberType memberType = requestMember.getMemberType();
-        ProjectStatus currentProjectStatus = project.getProjectStatus();
-        List<ProjectStatus> availableProjectStatusList = null;
-
-        if (MemberType.CREATOR.equals(memberType)) {
-            availableProjectStatusList = creatorActionsMap.get(actionProjectStatus);
-        } else if (MemberType.SPONSOR.equals(memberType)) {
-            availableProjectStatusList = sponsorActionsMap.get(actionProjectStatus);
-        } else {
-            throw new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 사용자 유형입니다.", false);
-        }
+    private void validateProjectStatusTransition(Member requestMember, Project project, ProjectStatus targetStatus) {
+        MemberType requestMemberType = requestMember.getMemberType();
+        ProjectStatus currentStatus = project.getProjectStatus();
 
         // 허가되지 않은 action ProjectStatus or 액션 불가능한 프로젝트 상태
-        if (availableProjectStatusList == null || !availableProjectStatusList.contains(currentProjectStatus)) {
-            throw new BusinessException(StatusCode.BAD_REQUEST, "현재 " + actionProjectStatus.getStatusName() + "할 수 없는 프로젝트 상태입니다", false);
+        if (!targetStatus.isTransitionAllowed(requestMemberType, currentStatus)) {
+            throw new BusinessException(StatusCode.BAD_REQUEST, "현재 " + targetStatus.getStatusName() + " 할 수 없는 프로젝트 상태입니다", false);
         }
 
     }
