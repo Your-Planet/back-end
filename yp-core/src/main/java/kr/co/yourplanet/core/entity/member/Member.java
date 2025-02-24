@@ -1,9 +1,9 @@
 package kr.co.yourplanet.core.entity.member;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -11,12 +11,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import kr.co.yourplanet.core.entity.BasicColumn;
+import kr.co.yourplanet.core.enums.BusinessType;
 import kr.co.yourplanet.core.enums.GenderType;
 import kr.co.yourplanet.core.enums.MemberType;
 import kr.co.yourplanet.core.enums.ValidEnum;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,54 +24,87 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 public class Member extends BasicColumn {
 
-    // Required
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_seq")
     @SequenceGenerator(name = "member_seq", sequenceName = "member_seq", allocationSize = 10)
     private Long id;
-    @Column(unique = true)
-    @NotBlank
-    private String email;
-    @NotBlank
-    private String password;
-    @NotBlank
-    private String name;
-    @ValidEnum(enumClass = GenderType.class)
-    private GenderType genderType; // MALE: 남자 / FEMALE: 여자
-    @NotBlank
-    private String tel;
-    @ValidEnum(enumClass = MemberType.class)
-    private MemberType memberType;
-    @NotBlank
-    private String birthDate; // YYYYMMDD
 
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private MemberSalt memberSalt;
 
-    // Author
-    private String instagramId;
-    private String instagramUsername;
-    private String instagramAccessToken;
+    @ValidEnum(enumClass = MemberType.class)
+    private MemberType memberType;
 
-    // Sponsor
-    private String companyName;
-    private String businessNumber;
-    private String representativeName;
-    private String businessAddress;
+    @Embedded
+    private AccountInfo accountInfo;
 
-    // Commons
-    @NotNull
-    private LocalDateTime termsOfServiceAgreedTime;
-    @NotNull
-    private LocalDateTime privacyPolicyAgreedTime;
-    private LocalDateTime shoppingInformationAgreedTime;
+    @Embedded
+    private MemberBasicInfo memberBasicInfo;
+
+    // for Creator
+    @Embedded
+    private InstagramInfo instagramInfo;
+
+    @Embedded
+    private SettlementInfo settlementInfo;
+
+    @Embedded
+    private AgreementInfo agreementInfo;
+
+    // for Business
+    @Embedded
+    private BusinessInfo businessInfo;
+
+
+    public static MemberBasicInfo createBasicInfo(MemberType memberType, BusinessType businessType, String name, String tel,
+            LocalDate birthDate, GenderType genderType) {
+        return MemberBasicInfo.create(memberType, businessType, name, tel, birthDate, genderType);
+    }
+
+    public static AccountInfo createAccountInfo(String email, String password) {
+        return AccountInfo.create(email, password);
+    }
 
     public void updatePassword(String newPassword) {
-        this.password = newPassword;
+        this.accountInfo.updatePassword(newPassword);
+    }
+
+    public boolean isCreator() {
+        return MemberType.CREATOR.equals(this.getMemberType());
+    }
+
+    public boolean isSponsor() {
+        return MemberType.SPONSOR.equals(this.getMemberType());
+    }
+
+
+    // Simplified Getters
+    public String getEmail() {
+        return this.accountInfo.getEmail();
+    }
+
+    public String getPassword() {
+        return this.accountInfo.getPassword();
+    }
+
+    public String getName() {
+        return this.memberBasicInfo.getName();
+    }
+
+    public String getTel() {
+        return this.memberBasicInfo.getTel();
+    }
+
+    public GenderType getGenderType() {
+        return this.memberBasicInfo.getGenderType();
+    }
+
+    public BusinessType getBusinessType() {
+        return this.memberBasicInfo.getBusinessType();
     }
 }

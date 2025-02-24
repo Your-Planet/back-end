@@ -1,7 +1,15 @@
-package kr.co.yourplanet.online.business.file;
+package kr.co.yourplanet.online.business.file.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import kr.co.yourplanet.core.entity.FileMetadataKeys;
 import kr.co.yourplanet.core.enums.StatusCode;
+import kr.co.yourplanet.online.business.file.dto.PresignedUrlsForm;
+import kr.co.yourplanet.online.business.file.dto.PresignedUrlsResponse;
+import kr.co.yourplanet.online.business.file.service.FileUploadService;
+import kr.co.yourplanet.online.common.ResponseForm;
 import kr.co.yourplanet.online.common.exception.BusinessException;
+import kr.co.yourplanet.online.jwt.JwtPrincipal;
 import kr.co.yourplanet.online.properties.FileProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,22 +18,28 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 
-@Controller
+@Tag(name = "File", description = "파일 API")
+@RestController
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/files")
 public class FileController {
 
     private final FileProperties fileProperties;
+    private final FileUploadService fileUploadService;
 
     @GetMapping(value = "/profile/{fileName:.+}", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<Resource> getProfileImage(@PathVariable String fileName) {
@@ -64,6 +78,19 @@ public class FileController {
             log.error("MalformedURLException URI:{}. {} ", file.toUri(), e.getMessage());
             throw new BusinessException(StatusCode.INTERNAL_SERVER_ERROR);
         }
+    }
 
+    @PostMapping("/files/presigned-urls")
+    public ResponseEntity<ResponseForm<PresignedUrlsResponse>> generatePresignedUrls(
+            @AuthenticationPrincipal JwtPrincipal principal,
+            @Valid @RequestBody PresignedUrlsForm request
+    ) {
+        Map<String, String> metadata = Map.of(FileMetadataKeys.MEMBER_ID, principal.getId().toString());
+        PresignedUrlsResponse response = fileUploadService.getPresignedUrls(metadata, request);
+
+        return new ResponseEntity<>(
+                new ResponseForm<>(StatusCode.CREATED, response),
+                HttpStatus.CREATED
+        );
     }
 }

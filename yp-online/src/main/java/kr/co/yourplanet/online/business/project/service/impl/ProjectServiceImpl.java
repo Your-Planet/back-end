@@ -94,6 +94,7 @@ public class ProjectServiceImpl implements ProjectService {
             .requestDateTime(LocalDateTime.now())
             .creatorPrice(creatorPrice)
             .build();
+
         projectRepository.save(project);
 
         // 프로젝트 히스토리 저장

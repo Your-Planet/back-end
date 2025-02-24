@@ -15,4 +15,7 @@ public class FileProperties {
     private final String studioPath;
     private final String projectReferenceFilePath;
     private final String projectReferenceFileUrl;
+    private final String memberSettlementFileUrl;
+
+    private final String prefixSecretFileUrl;
 }
