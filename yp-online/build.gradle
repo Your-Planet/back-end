@@ -50,6 +50,16 @@ dependencies {
 
     // flyway
     implementation 'org.flywaydb:flyway-core'
+
+    // Test
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    // Test Containers
+    testImplementation "org.testcontainers:junit-jupiter"
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers:3.2.12'
+    testImplementation "org.testcontainers:postgresql"
+
+
 }
 
 tasks.named('test') {
