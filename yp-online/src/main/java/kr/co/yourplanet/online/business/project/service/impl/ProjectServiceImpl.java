@@ -79,7 +79,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         // 주문 코드 생성
-        String orderCode = snowflakeIdGenerator.getId("P");
+        String orderCode = snowflakeIdGenerator.generateId("P");
 
         // 프로젝트 저장
         Project project = Project.builder()

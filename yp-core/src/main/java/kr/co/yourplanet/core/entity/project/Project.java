@@ -20,7 +20,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.SequenceGenerator;
-import jakarta.validation.constraints.Size;
 import kr.co.yourplanet.core.entity.BasicColumn;
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.studio.Price;
@@ -75,21 +74,18 @@ public class Project extends BasicColumn {
     /**
      * 프로젝트 이름
      */
-    @Size(max = 100)
     @Column(name = "order_title")
     private String orderTitle;
 
     /**
      * 프로젝트 코드
      */
-    @Size(max = 16)
     @Column(name = "order_code")
     private String orderCode;
 
     /**
      * 브랜드명
      */
-    @Size(max = 30)
     @Column(name = "brand_name")
     private String brandName;
 
@@ -106,26 +102,32 @@ public class Project extends BasicColumn {
     /**
      * 의뢰 의뢰 일시
      */
+    @Column(name = "request_date_time")
     private LocalDateTime requestDateTime;
     /**
      * 의뢰 협상 일시
      */
+    @Column(name = "negotiate_date_time")
     private LocalDateTime negotiateDateTime;
     /**
      * 의뢰 수락 일시
      */
+    @Column(name = "accept_date_time")
     private LocalDateTime acceptDateTime;
     /**
      * 의뢰 완료 일시
      */
+    @Column(name = "complete_date_time")
     private LocalDateTime completeDateTime;
     /**
      * 의뢰 거절/취소 일시
      */
+    @Column(name = "reject_date_time")
     private LocalDateTime rejectDateTime;
     /**
      * 의뢰 거절/취소 사유
      */
+    @Column(name = "reject_reason")
     private String rejectReason;
 
     /**

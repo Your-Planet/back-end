@@ -30,19 +30,19 @@ public class SnowflakeIdGenerator {
 	}
 
 	// 유니크 ID 채번 메소드
-	public String getId(String prefix) {
+	public String generateId(String prefix) {
 		LocalDateTime currentDateTime = LocalDateTime.now();
 		LocalDateTime startOfDay = currentDateTime.toLocalDate().atStartOfDay();
 		long millisOfDay = Duration.between(startOfDay, currentDateTime).toMillis();
 
-		long id = get45BitsId(millisOfDay);
+		long id = generate45BitsId(millisOfDay);
 		String ymd = currentDateTime.format(DateTimeFormatter.ofPattern("yyMMdd"));
 
 		return prefix + ymd + convertLow45BitsToBase32(id);
 	}
 
 	// 45bits 만들기
-	private long get45BitsId(long millisOfDay) {
+	private long generate45BitsId(long millisOfDay) {
 		int timeId = (int)(millisOfDay & MILLIS_OF_DAY_MASK); // 27비트 추출
 		int randomId = RANDOM.nextInt(1 << 18); // 18비트 랜덤 값
 		return ((long)timeId << WORKER_ID_BITS + RANDOM_BITS)
