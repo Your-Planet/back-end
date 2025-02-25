@@ -2,8 +2,9 @@ package kr.co.yourplanet.core.entity.project;
 
 import org.hibernate.annotations.Comment;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import kr.co.yourplanet.core.enums.PostDurationMonthType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -28,5 +29,6 @@ public class AdditionalDetail {
     private int modificationCount;
 
     @Comment("업로드 기간")
+    @Enumerated(EnumType.STRING)
     private PostDurationMonthType postDurationMonthType;
 }

@@ -15,14 +15,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
+import kr.co.yourplanet.core.entity.studio.Price;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 @Getter
 public class ProjectContract {
 
@@ -34,6 +37,10 @@ public class ProjectContract {
     @OneToOne
     @JoinColumn(name = "project_id")
     private Project project;
+
+    @OneToOne
+    @JoinColumn(name = "price_id")
+    private Price price;
 
     @Comment("프로젝트명")
     private String projectName;
@@ -77,12 +84,30 @@ public class ProjectContract {
     private Contractor provider;
 
     @Comment("작가 작성일")
-    private LocalDateTime creatorWrittenDateTime;
+    private LocalDateTime providerWrittenDateTime;
 
     @Comment("광고주 작성일")
-    private LocalDateTime sponsorWrittenDateTime;
+    private LocalDateTime clientWrittenDateTime;
+
+    public void writeClientInfo(Contractor client) {
+        this.client = client;
+        this.clientWrittenDateTime = LocalDateTime.now();
+    }
+
+    public void writeProviderInfo(Contractor provider) {
+        this.provider = provider;
+        this.clientWrittenDateTime = LocalDateTime.now();
+    }
 
     public boolean isCompleted() {
-        return creatorWrittenDateTime != null && sponsorWrittenDateTime != null;
+        return isClientWritten() && isProviderWritten();
+    }
+
+    public boolean isClientWritten() {
+        return clientWrittenDateTime != null;
+    }
+
+    public boolean isProviderWritten() {
+        return providerWrittenDateTime != null;
     }
 }
