@@ -16,9 +16,11 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kr.co.yourplanet.core.enums.StatusCode;
+import kr.co.yourplanet.online.business.project.dto.request.ContractDraftForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectAcceptForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectNegotiateForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectRejectForm;
@@ -27,7 +29,7 @@ import kr.co.yourplanet.online.business.project.dto.response.ProjectBasicInfo;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectDetailInfo;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectHistoryForm;
 import kr.co.yourplanet.online.business.project.dto.response.TempContractInfo;
-import kr.co.yourplanet.online.business.project.service.ProjectContractService;
+import kr.co.yourplanet.online.business.project.service.ContractDraftService;
 import kr.co.yourplanet.online.business.project.service.ProjectService;
 import kr.co.yourplanet.online.common.ResponseForm;
 import kr.co.yourplanet.online.jwt.JwtPrincipal;
@@ -39,7 +41,7 @@ import lombok.RequiredArgsConstructor;
 public class ProjectController {
 
     private final ProjectService projectService;
-    private final ProjectContractService projectContractService;
+    private final ContractDraftService contractDraftService;
 
     @PostMapping(value = "/project", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<ResponseForm<String>> createProject(@Valid @RequestPart ProjectRequestForm projectRequestForm,
@@ -112,13 +114,26 @@ public class ProjectController {
         return new ResponseEntity<>(responseForm, HttpStatus.OK);
     }
 
+    @Operation(summary = "임시 계약서 조회")
     @GetMapping("/project/{id}/contract/temp")
     public ResponseEntity<ResponseForm<TempContractInfo>> getTempContract(
             @AuthenticationPrincipal JwtPrincipal principal,
             @PathVariable(name = "id") Long projectId
     ) {
-        TempContractInfo response = projectContractService.getTempContract(projectId, principal.getId());
+        TempContractInfo response = contractDraftService.getTempContract(projectId, principal.getId());
 
         return new ResponseEntity<>(new ResponseForm<>(StatusCode.OK, response), HttpStatus.OK);
+    }
+
+    @Operation(summary = "계약서 작성")
+    @PostMapping("/project/{id}/contract")
+    public ResponseEntity<ResponseForm<Void>> draftContract(
+            @AuthenticationPrincipal JwtPrincipal principal,
+            @PathVariable(name = "id") Long projectId,
+            @RequestBody @Valid ContractDraftForm request
+    ) {
+        contractDraftService.draftContract(projectId, principal.getId(), request);
+
+        return new ResponseEntity<>(new ResponseForm<>(StatusCode.CREATED), HttpStatus.CREATED);
     }
 }

@@ -15,14 +15,14 @@ public record TempContractInfo(
         Long contractAmount,
 
         // 추가 계약 사항
-        AdditionalDetail additionalDetail,
+        AdditionalDetailInfo additionalDetailInfo,
 
         // 계약 내용
         ContractorInfo client,
         ContractorInfo provider
 ) {
     @Builder
-    public record AdditionalDetail(
+    public record AdditionalDetailInfo(
             int workingDays,
             int cuts,
             int modificationCount,
