@@ -26,6 +26,8 @@ import kr.co.yourplanet.online.business.project.dto.request.ProjectRequestForm;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectBasicInfo;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectDetailInfo;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectHistoryForm;
+import kr.co.yourplanet.online.business.project.dto.response.TempContractInfo;
+import kr.co.yourplanet.online.business.project.service.ProjectContractService;
 import kr.co.yourplanet.online.business.project.service.ProjectService;
 import kr.co.yourplanet.online.common.ResponseForm;
 import kr.co.yourplanet.online.jwt.JwtPrincipal;
@@ -37,9 +39,12 @@ import lombok.RequiredArgsConstructor;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final ProjectContractService projectContractService;
 
     @PostMapping(value = "/project", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<ResponseForm<String>> createProject(@Valid @RequestPart ProjectRequestForm projectRequestForm, @RequestPart(required = false) List<MultipartFile> referenceFiles, @AuthenticationPrincipal JwtPrincipal principal) {
+    public ResponseEntity<ResponseForm<String>> createProject(@Valid @RequestPart ProjectRequestForm projectRequestForm,
+            @RequestPart(required = false) List<MultipartFile> referenceFiles,
+            @AuthenticationPrincipal JwtPrincipal principal) {
 
         projectService.createProject(projectRequestForm, referenceFiles, principal.getId());
 
@@ -47,7 +52,9 @@ public class ProjectController {
     }
 
     @PutMapping("/project")
-    public ResponseEntity<ResponseForm<String>> negotiateProject(@Valid @RequestBody ProjectNegotiateForm projectNegotiateForm, @AuthenticationPrincipal JwtPrincipal principal) {
+    public ResponseEntity<ResponseForm<String>> negotiateProject(
+            @Valid @RequestBody ProjectNegotiateForm projectNegotiateForm,
+            @AuthenticationPrincipal JwtPrincipal principal) {
 
         projectService.negotiateProject(projectNegotiateForm, principal.getId());
 
@@ -55,7 +62,8 @@ public class ProjectController {
     }
 
     @PostMapping("/project/reject")
-    public ResponseEntity<ResponseForm<String>> rejectProject(@Valid @RequestBody ProjectRejectForm projectRejectForm, @AuthenticationPrincipal JwtPrincipal principal) {
+    public ResponseEntity<ResponseForm<String>> rejectProject(@Valid @RequestBody ProjectRejectForm projectRejectForm,
+            @AuthenticationPrincipal JwtPrincipal principal) {
 
         projectService.rejectProject(projectRejectForm, principal.getId());
 
@@ -63,7 +71,8 @@ public class ProjectController {
     }
 
     @PostMapping("/project/accept")
-    public ResponseEntity<ResponseForm<String>> acceptProject(@Valid @RequestBody ProjectAcceptForm projectAcceptForm, @AuthenticationPrincipal JwtPrincipal principal) {
+    public ResponseEntity<ResponseForm<String>> acceptProject(@Valid @RequestBody ProjectAcceptForm projectAcceptForm,
+            @AuthenticationPrincipal JwtPrincipal principal) {
 
         projectService.acceptProject(projectAcceptForm, principal.getId());
 
@@ -71,9 +80,11 @@ public class ProjectController {
     }
 
     @GetMapping("/project/history")
-    public ResponseEntity<ResponseForm<List<ProjectHistoryForm>>> getProjectHistoryList(@RequestParam("id") Long projectId, @AuthenticationPrincipal JwtPrincipal principal) {
+    public ResponseEntity<ResponseForm<List<ProjectHistoryForm>>> getProjectHistoryList(
+            @RequestParam("id") Long projectId, @AuthenticationPrincipal JwtPrincipal principal) {
 
-        List<ProjectHistoryForm> projectHistoryFormList = projectService.getProjectHistoryList(projectId, principal.getId());
+        List<ProjectHistoryForm> projectHistoryFormList = projectService.getProjectHistoryList(projectId,
+                principal.getId());
 
         ResponseForm<List<ProjectHistoryForm>> responseForm = new ResponseForm<>(StatusCode.OK, projectHistoryFormList);
 
@@ -81,22 +92,33 @@ public class ProjectController {
     }
 
     @GetMapping("/project")
-    public ResponseEntity<ResponseForm<List<ProjectBasicInfo>>> getMemberProjectsBasicInfo(@AuthenticationPrincipal JwtPrincipal principal) {
-        List<ProjectBasicInfo> memberProjectBasicInfoList = projectService.getMemberProjectsBasicInfo(principal.getId());
+    public ResponseEntity<ResponseForm<List<ProjectBasicInfo>>> getMemberProjectsBasicInfo(
+            @AuthenticationPrincipal JwtPrincipal principal) {
+        List<ProjectBasicInfo> memberProjectBasicInfoList = projectService.getMemberProjectsBasicInfo(
+                principal.getId());
 
-        ResponseForm<List<ProjectBasicInfo>> responseForm = new ResponseForm<>(StatusCode.OK, memberProjectBasicInfoList);
+        ResponseForm<List<ProjectBasicInfo>> responseForm = new ResponseForm<>(StatusCode.OK,
+                memberProjectBasicInfoList);
 
         return new ResponseEntity<>(responseForm, HttpStatus.OK);
     }
 
     @GetMapping("/project/{id}")
-    public ResponseEntity<ResponseForm<ProjectDetailInfo>> getProjectDetailInfo(@PathVariable(name = "id") Long projectId, @AuthenticationPrincipal JwtPrincipal principal) {
+    public ResponseEntity<ResponseForm<ProjectDetailInfo>> getProjectDetailInfo(
+            @PathVariable(name = "id") Long projectId, @AuthenticationPrincipal JwtPrincipal principal) {
         ProjectDetailInfo projectDetailInfo = projectService.getProjectDetailInfo(projectId, principal.getId());
-
         ResponseForm<ProjectDetailInfo> responseForm = new ResponseForm<>(StatusCode.OK, projectDetailInfo);
 
         return new ResponseEntity<>(responseForm, HttpStatus.OK);
     }
 
+    @GetMapping("/project/{id}/contract/temp")
+    public ResponseEntity<ResponseForm<TempContractInfo>> getTempContract(
+            @AuthenticationPrincipal JwtPrincipal principal,
+            @PathVariable(name = "id") Long projectId
+    ) {
+        TempContractInfo response = projectContractService.getTempContract(projectId, principal.getId());
 
+        return new ResponseEntity<>(new ResponseForm<>(StatusCode.OK, response), HttpStatus.OK);
+    }
 }
