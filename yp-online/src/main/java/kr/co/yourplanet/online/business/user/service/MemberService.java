@@ -1,10 +1,19 @@
 package kr.co.yourplanet.online.business.user.service;
 
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
+import jakarta.servlet.http.HttpServletRequest;
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.member.MemberSalt;
 import kr.co.yourplanet.core.entity.member.RefreshToken;
 import kr.co.yourplanet.core.enums.StatusCode;
-import kr.co.yourplanet.online.business.user.dto.*;
+import kr.co.yourplanet.online.business.user.dto.LoginForm;
+import kr.co.yourplanet.online.business.user.dto.RefreshTokenForm;
+import kr.co.yourplanet.online.business.user.dto.ResetPasswordForm;
 import kr.co.yourplanet.online.business.user.repository.MemberRepository;
 import kr.co.yourplanet.online.business.user.repository.MemberSaltRepository;
 import kr.co.yourplanet.online.business.user.repository.RefreshTokenRepository;
@@ -13,11 +22,6 @@ import kr.co.yourplanet.online.common.exception.BusinessException;
 import kr.co.yourplanet.online.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
-import java.util.Optional;
 
 @Transactional
 @Service
@@ -136,5 +140,21 @@ public class MemberService {
         } catch (Exception e) {
             throw new BusinessException(StatusCode.UNAUTHORIZED, "재로그인이 필요합니다.", false);
         }
+    }
+
+    public void logout(String refreshToken) {
+        Long memberId;
+        try {
+            memberId = jwtTokenProvider.getMemberIdFromRefreshToken(refreshToken);
+            RefreshToken refreshTokenEntity = refreshTokenRepository.findById(memberId)
+                .orElseThrow(() -> new BusinessException(StatusCode.UNAUTHORIZED, "재로그인이 필요합니다.", false));
+
+            refreshTokenRepository.delete(refreshTokenEntity);
+        } catch (Exception e) {
+            throw new BusinessException(StatusCode.UNAUTHORIZED, "재로그인이 필요합니다.", false);
+        }
+
+        // 기존 Access Token을 블랙리스트 처리할 것인지
+
     }
 }

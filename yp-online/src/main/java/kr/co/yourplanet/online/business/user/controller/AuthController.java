@@ -1,14 +1,6 @@
 package kr.co.yourplanet.online.business.user.controller;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
-import kr.co.yourplanet.core.enums.StatusCode;
-import kr.co.yourplanet.online.business.user.dto.*;
-import kr.co.yourplanet.online.business.user.service.MemberJoinService;
-import kr.co.yourplanet.online.business.user.service.MemberQueryService;
-import kr.co.yourplanet.online.business.user.service.MemberService;
-import kr.co.yourplanet.online.business.user.service.MemberValidationService;
-import kr.co.yourplanet.online.common.ResponseForm;
-import lombok.RequiredArgsConstructor;
+import java.util.Arrays;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +9,24 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import kr.co.yourplanet.core.enums.StatusCode;
+import kr.co.yourplanet.online.business.user.dto.FindIdForm;
+import kr.co.yourplanet.online.business.user.dto.LoginForm;
+import kr.co.yourplanet.online.business.user.dto.MemberJoinForm;
+import kr.co.yourplanet.online.business.user.dto.MemberValidateForm;
+import kr.co.yourplanet.online.business.user.dto.RefreshTokenForm;
+import kr.co.yourplanet.online.business.user.dto.ResetPasswordForm;
+import kr.co.yourplanet.online.business.user.service.MemberJoinService;
+import kr.co.yourplanet.online.business.user.service.MemberQueryService;
+import kr.co.yourplanet.online.business.user.service.MemberService;
+import kr.co.yourplanet.online.business.user.service.MemberValidationService;
+import kr.co.yourplanet.online.common.ResponseForm;
+import lombok.RequiredArgsConstructor;
 
 @Tag(name = "Auth", description = "인증 API")
 @RestController
@@ -31,6 +37,8 @@ public class AuthController {
     private final MemberQueryService memberQueryService;
     private final MemberValidationService memberValidationService;
     private final MemberJoinService memberJoinService;
+
+    private static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
     @PostMapping("/auth/join")
     public ResponseForm<Void> join(
@@ -46,7 +54,7 @@ public class AuthController {
             HttpServletResponse response
     ) {
         RefreshTokenForm refreshTokenForm = memberService.login(loginForm);
-        response.addCookie(getRefreshTokenCookie(refreshTokenForm.getRefreshToken()));  // Refresh Token 쿠키 설정
+        response.addCookie(generateRefreshTokenCookie(refreshTokenForm.getRefreshToken()));  // Refresh Token 쿠키 설정
 
         return new ResponseForm<>(StatusCode.OK, refreshTokenForm.getAccessToken());
     }
@@ -79,49 +87,94 @@ public class AuthController {
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-        // 기존 Refresh Token 가져오기
-        Cookie[] cookies = request.getCookies();
-        String refreshToken = null;
 
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("refreshToken".equals(cookie.getName())) {
-                    refreshToken = cookie.getValue();
-                    break;
-                }
-            }
-        }
+        String refreshToken = extractRefreshTokenFromCookies(request);
 
-        if (!StringUtils.hasText(refreshToken)) {
-            return new ResponseEntity<>(
-                    new ResponseForm<>(StatusCode.UNAUTHORIZED, "재로그인이 필요합니다.", false),
-                    HttpStatus.UNAUTHORIZED);
+        if (isTokenInvalid(refreshToken)) {
+            return unauthorizedResponse("재로그인이 필요합니다.");
         }
 
         // 신규 Refresh, Access Token 발급
         RefreshTokenForm refreshTokenForm = memberService.refreshAccessToken(refreshToken);
 
-        if (!StringUtils.hasText(refreshTokenForm.getRefreshToken())) {
-            return new ResponseEntity<>(
-                    new ResponseForm<>(StatusCode.UNAUTHORIZED, "재로그인이 필요합니다.", false),
-                    HttpStatus.UNAUTHORIZED);
+        if (isTokenInvalid(refreshTokenForm.getRefreshToken())) {
+            return unauthorizedResponse("재로그인이 필요합니다.");
         }
 
-        response.addCookie(getRefreshTokenCookie(refreshTokenForm.getRefreshToken()));
+        response.addCookie(generateRefreshTokenCookie(refreshTokenForm.getRefreshToken()));
 
-        return new ResponseEntity<>(
-                new ResponseForm<>(StatusCode.OK, "토큰 발급에 성공하였습니다.", refreshTokenForm.getAccessToken(), false),
-                HttpStatus.OK);
+        return ResponseEntity.ok(
+            new ResponseForm<>(StatusCode.OK, "토큰 발급에 성공하였습니다.", refreshTokenForm.getAccessToken(), false)
+        );
     }
 
-    private Cookie getRefreshTokenCookie(String refreshToken) {
+    @PostMapping("/auth/logout")
+    public ResponseEntity<ResponseForm<Void>> logout(HttpServletRequest request,
+        HttpServletResponse response) {
+
+        String refreshToken = extractRefreshTokenFromCookies(request);
+
+        memberService.logout(refreshToken);
+
+        // Refresh Token 쿠키 삭제
+        deleteRefreshTokenCookie(response);
+
+        return ResponseEntity.ok(
+            new ResponseForm<>(StatusCode.OK, "로그아웃 되었습니다.", false)
+        );
+    }
+
+    /**
+     * 쿠키에서 Refresh Token 추출
+     */
+    private String extractRefreshTokenFromCookies(HttpServletRequest request) {
+        if (request.getCookies() == null) return "";
+
+        return Arrays.stream(request.getCookies())
+            .filter(cookie -> REFRESH_TOKEN_COOKIE_NAME.equals(cookie.getName()))
+            .map(Cookie::getValue)
+            .findFirst()
+            .orElse("");
+    }
+
+    /**
+     * 토큰 유효성 검사
+     */
+    private boolean isTokenInvalid(String token) {
+        return !StringUtils.hasText(token);
+    }
+
+    /**
+     * UNAUTHORIZED 공통 응답 반환
+     */
+    private ResponseEntity<ResponseForm<String>> unauthorizedResponse(String message) {
+        return ResponseEntity
+            .status(HttpStatus.UNAUTHORIZED)
+            .body(new ResponseForm<>(StatusCode.UNAUTHORIZED, message, false));
+    }
+
+    /**
+     * Refresh Token 쿠키 생성
+     */
+    private Cookie generateRefreshTokenCookie(String refreshToken) {
         // Refresh Token 쿠키 설정
-        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+        Cookie refreshTokenCookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken);
         refreshTokenCookie.setHttpOnly(true); // 자바스크립트에서 접근 불가
         //refreshTokenCookie.setSecure(false);   // HTTPS에서만 전송. ssl 설정 완료 후 주석해제 필요
         refreshTokenCookie.setPath("/");      // 전체 도메인에서 접근 가능
         refreshTokenCookie.setMaxAge(60 * 60 * 24); // 쿠키 만료 시간 (1일)
 
         return refreshTokenCookie;
+    }
+
+    /**
+     * Refresh Token 쿠키 삭제
+     */
+    private void deleteRefreshTokenCookie(HttpServletResponse response) {
+        Cookie cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, null);
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(0); // 즉시 만료
+        cookie.setPath("/");
+        response.addCookie(cookie);
     }
 }
