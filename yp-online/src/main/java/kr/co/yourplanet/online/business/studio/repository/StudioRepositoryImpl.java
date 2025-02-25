@@ -1,7 +1,8 @@
 package kr.co.yourplanet.online.business.studio.repository;
 
-import kr.co.yourplanet.core.entity.studio.Category;
-import kr.co.yourplanet.online.business.studio.dao.StudioBasicDao;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
@@ -10,8 +11,8 @@ import org.springframework.util.StringUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-import java.util.ArrayList;
-import java.util.List;
+import kr.co.yourplanet.core.entity.studio.Category;
+import kr.co.yourplanet.online.business.studio.dao.StudioBasicDao;
 
 @Repository
 public class StudioRepositoryImpl implements StudioRepositoryCustom {
@@ -36,7 +37,7 @@ public class StudioRepositoryImpl implements StudioRepositoryCustom {
             conditions.add("s.description like concat('%', :description, '%')");
         }
         if (StringUtils.hasText(instagramUsername)) {
-            conditions.add("m.instagramUsername like concat('%', :instagramUsername, '%')");
+            conditions.add("m.instagramInfo.instagramUsername like concat('%', :instagramUsername, '%')");
         }
         if (!CollectionUtils.isEmpty(categories)) {
             conditions.add("exists (select 1 from ProfileCategoryMap scm2 where scm.profile = scm2.profile and scm2.category in :categories)");
@@ -80,7 +81,7 @@ public class StudioRepositoryImpl implements StudioRepositoryCustom {
         List<Long> profileIds = studioQuery.getResultList();
 
         // 2.1 스튜디오 기본 정보 조회
-        String studioBasicQuery = "select new kr.co.yourplanet.online.business.studio.dao.StudioBasicDao(m.id, s.toonName, s.description, s.profileImageUrl, m.instagramUsername, scm.category.categoryCode) " +
+        String studioBasicQuery = "select new kr.co.yourplanet.online.business.studio.dao.StudioBasicDao(m.id, s.toonName, s.description, s.profileImageUrl, m.instagramInfo.instagramUsername, scm.category.categoryCode) " +
                 "from Profile s " +
                 "join ProfileCategoryMap scm on s.id = scm.profile.id " +
                 "join Member m on s.member.id = m.id " +
