@@ -1,0 +1,1 @@
+TRUNCATE TABLE member_salt, member CASCADE;

@@ -10,9 +10,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import kr.co.yourplanet.core.enums.BusinessType;
 import kr.co.yourplanet.core.enums.ValidEnum;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
 public class SettlementForm {
 
     @Schema(defaultValue = "BUSINESS")

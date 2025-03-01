@@ -5,6 +5,7 @@ import kr.co.yourplanet.online.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -22,9 +23,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = jwtTokenProvider.resolveAccessToken(request);
+        SecurityContext context = SecurityContextHolder.getContext();
 
         try {
-            if (jwtTokenProvider.validateAccessToken(token)) {
+            if (context.getAuthentication() == null && jwtTokenProvider.validateAccessToken(token)) {
                 Authentication authentication = jwtTokenProvider.getAuthentication(token.substring(7));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
