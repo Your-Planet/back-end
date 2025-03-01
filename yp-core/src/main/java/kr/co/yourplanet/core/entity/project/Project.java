@@ -182,7 +182,7 @@ public class Project extends BasicColumn {
      * 의뢰 수락된 프로젝트 히스토리를 반환하는 메소드입니다.
      *
      * @return 의뢰 수락된 ProjectHistory 객체를 반환합니다.
-     * 만약 히스토리가 없을 경우 null을 반환합니다.
+     * 만약 히스토리가 없을 경우 Optional.empty()을 반환합니다.
      */
     public Optional<ProjectHistory> getAcceptedHistory() {
         if (projectHistories == null) {
