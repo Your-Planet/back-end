@@ -66,7 +66,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ResponseForm<Void>> hanleException(Exception e) {
-        log.error("정의되지 않은 예외 발생 : ", e);
+        log.error("정의되지 않은 예외 발생: {} {}", e.getClass().getSimpleName(), e.getMessage());
 
         ResponseForm<Void> exceptionResponse = new ResponseForm<>(StatusCode.NOT_IMPLEMENTED);
         return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_IMPLEMENTED);
