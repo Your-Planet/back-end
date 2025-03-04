@@ -2,6 +2,7 @@ package kr.co.yourplanet.online.business.user.service;
 
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.member.MemberSalt;
+import kr.co.yourplanet.core.entity.member.Password;
 import kr.co.yourplanet.core.entity.member.RefreshToken;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.user.dto.*;
@@ -92,7 +93,8 @@ public class MemberService {
         String salt = encryptManager.generateSalt();
         String encodedHashPassword = encryptManager.encryptPassword(resetPasswordForm.getNewPassword(), salt);
 
-        member.updatePassword(encodedHashPassword);
+        Password password = Password.create(resetPasswordForm.getNewPassword(), encodedHashPassword);
+        member.updatePassword(password);
 
         memberRepository.saveMember(member);
 

@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.member.MemberSalt;
 import kr.co.yourplanet.core.entity.member.MemberBasicInfo;
+import kr.co.yourplanet.core.entity.member.Password;
 import kr.co.yourplanet.core.enums.BusinessType;
 import kr.co.yourplanet.core.enums.MemberType;
 import kr.co.yourplanet.online.business.user.dto.BaseJoinForm;
@@ -31,16 +32,14 @@ public class MemberJoinService {
     private final EncryptManager encryptManager;
 
     public void join(MemberJoinForm joinForm) {
-        BaseJoinForm baseForm = joinForm.getBaseJoinForm();
         validateJoin(joinForm);
 
         String salt = encryptManager.generateSalt();
-        String encodedHashPassword = encryptManager.encryptPassword(baseForm.getPassword(), salt);
-
-        Member member = createJoinMember(joinForm, encodedHashPassword);
+        Member member = createJoinMember(joinForm, salt);
         memberRepository.saveMember(member);
 
-        createMemberSalt(member, salt);
+        MemberSalt memberSalt = createMemberSalt(member, salt);
+        memberSaltRepository.saveMemberSalt(memberSalt);
     }
 
     private void validateJoin(MemberJoinForm joinForm) {
@@ -56,16 +55,20 @@ public class MemberJoinService {
         }
     }
 
-    private Member createJoinMember(MemberJoinForm joinForm, String encodedHashPassword) {
+    private Member createJoinMember(MemberJoinForm joinForm, String salt) {
         BaseJoinForm baseForm = joinForm.getBaseJoinForm();
         CreatorJoinForm creatorJoinForm = joinForm.getCreatorJoinForm();
 
         MemberType memberType = baseForm.getMemberType();
         BusinessType businessType = baseForm.getBusinessType();
 
+        Password password = Password.create(
+                baseForm.getPassword(),
+                encryptManager.encryptPassword(baseForm.getPassword(), salt));
+
         Member.MemberBuilder builder = Member.builder()
                 .memberType(memberType)
-                .accountInfo(Member.createAccountInfo(baseForm.getEmail(), encodedHashPassword))
+                .accountInfo(Member.createAccountInfo(baseForm.getEmail(), password))
                 .memberBasicInfo(createMemberBasicInfo(joinForm))
                 .agreementInfo(memberCreateService.createAgreementInfo(baseForm.getTermsForm()));
 
@@ -80,13 +83,11 @@ public class MemberJoinService {
         return builder.build();
     }
 
-    private void createMemberSalt(Member member, String salt) {
-        MemberSalt memberSalt = MemberSalt.builder()
+    private MemberSalt createMemberSalt(Member member, String salt) {
+        return  MemberSalt.builder()
                 .member(member)
                 .salt(encryptManager.encryptSalt(salt))
                 .build();
-
-        memberSaltRepository.saveMemberSalt(memberSalt);
     }
 
     private MemberBasicInfo createMemberBasicInfo(MemberJoinForm joinForm) {
