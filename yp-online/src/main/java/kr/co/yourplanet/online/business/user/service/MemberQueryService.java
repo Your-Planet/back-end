@@ -78,7 +78,7 @@ public class MemberQueryService {
                 .id(member.getId())
                 .instagramUsername(member.getInstagramInfo().getInstagramUsername())
                 .email(member.getEmail())
-                .maskedPassword(MaskingUtil.maskPassword(member.getPasswordLength()))
+                .maskedPassword(MaskingUtil.getMaskedPassword())
                 .businessType(member.getBusinessType())
                 .name(member.getName())
                 .tel(member.getTel())

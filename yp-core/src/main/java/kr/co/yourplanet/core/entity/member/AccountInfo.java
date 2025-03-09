@@ -1,9 +1,7 @@
 package kr.co.yourplanet.core.entity.member;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Embeddable;
-import kr.co.yourplanet.core.util.PasswordConverter;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,18 +18,17 @@ public class AccountInfo {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Convert(converter = PasswordConverter.class)
     @Column(nullable = false)
-    private Password password;
+    private String password;
 
-    protected static AccountInfo create(String email, Password password) {
+    protected static AccountInfo create(String email, String password) {
         return AccountInfo.builder()
                 .email(email)
                 .password(password)
                 .build();
     }
 
-    protected void updatePassword(Password newPassword) {
+    protected void updatePassword(String newPassword) {
         this.password = newPassword;
     }
 }

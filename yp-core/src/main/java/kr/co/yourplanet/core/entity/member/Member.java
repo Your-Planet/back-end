@@ -66,11 +66,11 @@ public class Member extends BasicColumn {
         return MemberBasicInfo.create(memberType, businessType, name, tel, birthDate, genderType);
     }
 
-    public static AccountInfo createAccountInfo(String email, Password password) {
+    public static AccountInfo createAccountInfo(String email, String password) {
         return AccountInfo.create(email, password);
     }
 
-    public void updatePassword(Password newPassword) {
+    public void updatePassword(String newPassword) {
         this.accountInfo.updatePassword(newPassword);
     }
 
@@ -89,11 +89,7 @@ public class Member extends BasicColumn {
     }
 
     public String getPassword() {
-        return this.accountInfo.getPassword().getEncryptedPassword();
-    }
-
-    public int getPasswordLength() {
-        return this.accountInfo.getPassword().getLength();
+        return this.accountInfo.getPassword();
     }
 
     public String getName() {

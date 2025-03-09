@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.member.MemberSalt;
 import kr.co.yourplanet.core.entity.member.MemberBasicInfo;
-import kr.co.yourplanet.core.entity.member.Password;
 import kr.co.yourplanet.core.enums.BusinessType;
 import kr.co.yourplanet.core.enums.MemberType;
 import kr.co.yourplanet.online.business.user.dto.BaseJoinForm;
@@ -62,13 +61,11 @@ public class MemberJoinService {
         MemberType memberType = baseForm.getMemberType();
         BusinessType businessType = baseForm.getBusinessType();
 
-        Password password = Password.create(
-                baseForm.getPassword(),
-                encryptManager.encryptPassword(baseForm.getPassword(), salt));
+        String encryptPassword = encryptManager.encryptPassword(baseForm.getPassword(), salt);
 
         Member.MemberBuilder builder = Member.builder()
                 .memberType(memberType)
-                .accountInfo(Member.createAccountInfo(baseForm.getEmail(), password))
+                .accountInfo(Member.createAccountInfo(baseForm.getEmail(), encryptPassword))
                 .memberBasicInfo(createMemberBasicInfo(joinForm))
                 .agreementInfo(memberCreateService.createAgreementInfo(baseForm.getTermsForm()));
 
