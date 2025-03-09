@@ -2,22 +2,16 @@ package kr.co.yourplanet.online.common.util;
 
 public class MaskingUtil {
 
+    private static final String MASKED_PASSWORD = "******";
+
     public static String maskRRN(String rrn) {
-        if (rrn == null || rrn.length() != 14 || rrn.charAt(6) != '-') {
+        if (rrn == null || !rrn.matches("\\d{6}-\\d{7}")) {
             return null;
         }
-
-        String prefix = rrn.substring(0, 8);
-        String maskedSuffix = "******";
-
-        return prefix + maskedSuffix;
+        return rrn.substring(0, 8) + MASKED_PASSWORD;
     }
 
-    public static String maskPassword(int passwordLength) {
-        if (passwordLength <= 0) {
-            return "";
-        }
-
-        return "*".repeat(passwordLength);
+    public static String getMaskedPassword() {
+        return MASKED_PASSWORD;
     }
 }
