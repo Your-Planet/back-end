@@ -1,4 +1,4 @@
-package kr.co.yourplanet.core.util;
+package kr.co.yourplanet.core.alimtalk.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

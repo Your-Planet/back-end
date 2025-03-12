@@ -4,12 +4,14 @@ server:
 spring:
   profiles:
     active: local
-  output:
-    ansi:
-      enabled: always
   servlet:
     multipart:
       max-file-size: 20MB
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    defer-datasource-initialization: false
 
 logging:
   level:

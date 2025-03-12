@@ -1,18 +1,23 @@
-package kr.co.yourplanet.core.service;
+package kr.co.yourplanet.core.alimtalk;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.co.yourplanet.core.entity.alimtalk.AlimTalkRequestHistory;
-import kr.co.yourplanet.core.repository.AlimTalkRequestRepository;
-import kr.co.yourplanet.core.util.AlimTalkAuth;
-import lombok.RequiredArgsConstructor;
-import okhttp3.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import kr.co.yourplanet.core.alimtalk.dto.AlimTalkAuth;
+import kr.co.yourplanet.core.repository.AlimTalkRequestRepository;
+import lombok.RequiredArgsConstructor;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 @Configuration
 @RequiredArgsConstructor
@@ -46,6 +51,8 @@ public class AlimTalkService {
             assert response.body() != null;
             AlimTalkAuth alimTalkAuth = objectMapper.readValue(response.body().string(), AlimTalkAuth.class);
 
+            // ToDo : API 응답결과(AlimTalkAuth.code) 확인하는 로직 추가
+
             redisTemplate.opsForValue().set("schema", alimTalkAuth.getData().getSchema());
             redisTemplate.opsForValue().set("token", alimTalkAuth.getData().getToken());
             redisTemplate.opsForValue().set("expired", alimTalkAuth.getData().getExpired());
@@ -56,6 +63,7 @@ public class AlimTalkService {
     }
 
     // ToDo : 상세 전송 내역에 대한 논의 필요
+    // ToDo : String content -> String 타입이 아닌 DTO 객체로 처리하자
     // 메세지유형을 저장하고 유형에 맞는 텍스트를 생성해 전송하도록 수정 필요
     public boolean sendAlimTalk(String content, Long memberId) {
         // redis에서 token 생성에 필요한 정보를 읽어 온다.

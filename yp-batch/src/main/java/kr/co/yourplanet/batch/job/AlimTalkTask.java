@@ -1,11 +1,11 @@
 package kr.co.yourplanet.batch.job;
 
-import kr.co.yourplanet.core.service.AlimTalkService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
+import kr.co.yourplanet.core.alimtalk.AlimTalkService;
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor

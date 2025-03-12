@@ -1,0 +1,11 @@
+spring:
+  config:
+    import: classpath:alimtalk-secret.properties
+
+omni:
+  id: ${OMNI-ALIMTALK-ID}
+  password: ${OMNI-ALIMTALK-PASSWORD}
+  host: https://stg-omni.ibapi.kr
+  url:
+    auth: /v1/auth/token
+    alimtalk: /v1/send/alimtalk

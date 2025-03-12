@@ -1,12 +1,13 @@
 package kr.co.yourplanet.connecthub;
 
+import java.util.TimeZone;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
-import javax.annotation.PostConstruct;
-import java.util.TimeZone;
+import jakarta.annotation.PostConstruct;
 
 @SpringBootApplication
 @ConfigurationPropertiesScan
