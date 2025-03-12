@@ -1,12 +1,12 @@
 package kr.co.yourplanet.online.business.project.dto.response;
 
+import java.util.List;
+
+import kr.co.yourplanet.core.enums.ProjectStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Getter
 @AllArgsConstructor
@@ -14,34 +14,11 @@ import java.util.List;
 @Builder
 public class ProjectDetailInfo {
 
-    private Overview overview;
-    private Detail detail;
+    private ProjectOverview overview;
+    private ProjectDetail detail;
     private List<ProjectHistoryForm> projectHistories;
 
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Builder
-    public static class Overview {
-        private String sponsorName;
-        private String brandName;
-        private LocalDate dueDate;
-        private Integer defaultPanelCount;
-        private Integer additionalPanelCount;
-        private Integer defaultModificationCount;
-        private Integer additionalModificationCount;
-        private Integer offerPrice;
-    }
-
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Builder
-    public static class Detail {
-        private String campaignDescription;
-        private List<String> referenceUrls;
-        private List<ReferenceFileInfo> referenceFiles;
-        private ProjectHistoryForm latestProjectHistory;
-    }
+    private ProjectStatus projectStatus;
+    private ProjectTimes projectTimes;
 
 }

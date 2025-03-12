@@ -1,5 +1,6 @@
 package kr.co.yourplanet.core.entity.studio;
 
+import kr.co.yourplanet.core.entity.BasicColumn;
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.enums.ProvisionType;
 import kr.co.yourplanet.core.enums.PostDurationMonthType;
@@ -8,17 +9,18 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TempPrice {
+public class TempPrice extends BasicColumn {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "temp_price_seq")
+    @SequenceGenerator(name = "temp_price_seq", sequenceName = "temp_price_seq", allocationSize = 10)
     @Column(name = "id")
     private Long id;
 
@@ -35,16 +37,22 @@ public class TempPrice {
     @Column(name = "cuts")
     private int cuts;
     @Column(name = "post_duration_type")
+    @Enumerated(EnumType.STRING)
     private PostDurationMonthType postDurationType;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "additional_cut_option_type")
     private ProvisionType additionalCutOptionType;
+    @Enumerated(EnumType.STRING)
     @Column(name = "additional_modification_option_type")
     private ProvisionType additionalModificationOptionType;
+    @Enumerated(EnumType.STRING)
     @Column(name = "additional_origin_file_option_type")
     private ProvisionType additionalOriginFileOptionType;
+    @Enumerated(EnumType.STRING)
     @Column(name = "additional_refinement_option_type")
     private ProvisionType additionalRefinementOptionType;
+    @Enumerated(EnumType.STRING)
     @Column(name = "additional_post_duration_extension_type")
     private ProvisionType additionalPostDurationExtensionType;
 

@@ -8,7 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Getter
@@ -17,7 +17,8 @@ import javax.persistence.*;
 @Builder
 public class Price extends BasicColumn {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "price_seq")
+    @SequenceGenerator(name = "price_seq", sequenceName = "price_seq", allocationSize = 50)
     @Column(name = "id")
     private Long id;
 
@@ -33,17 +34,23 @@ public class Price extends BasicColumn {
     private int modificationCount;
     @Column(name = "cuts")
     private int cuts;
+    @Enumerated(EnumType.STRING)
     @Column(name = "post_duration_type")
     private PostDurationMonthType postDurationType;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "additional_cut_option_type")
     private ProvisionType additionalCutOptionType;
+    @Enumerated(EnumType.STRING)
     @Column(name = "additional_modification_option_type")
     private ProvisionType additionalModificationOptionType;
+    @Enumerated(EnumType.STRING)
     @Column(name = "additional_origin_file_option_type")
     private ProvisionType additionalOriginFileOptionType;
+    @Enumerated(EnumType.STRING)
     @Column(name = "additional_refinement_option_type")
     private ProvisionType additionalRefinementOptionType;
+    @Enumerated(EnumType.STRING)
     @Column(name = "additional_post_duration_extension_type")
     private ProvisionType additionalPostDurationExtensionType;
 

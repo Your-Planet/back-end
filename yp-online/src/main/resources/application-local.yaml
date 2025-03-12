@@ -1,36 +1,42 @@
-#spring:
-#  datasource:
-#    url: jdbc:h2:tcp://localhost/~/yourplanet
-#    username: sa
-#    password: sa
-#    driver-class-name: org.h2.Driver
-#    sql-script-encoding: UTF-8
-
 spring:
+  config:
+    import: classpath:application-secret.properties   # 이후 테스트 값으로 대체 예정
   datasource:
-    url: jdbc:postgresql://svc.sel5.cloudtype.app:30847/postgres
+    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
     username: root
-    password: 3wh3o2blr6j8vo3
-    driver-class-name: org.postgresql.Driver
+    password:
+    driver-class-name: org.h2.Driver
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
   jpa:
-    defer-datasource-initialization: false
     hibernate:
-#      ddl-auto: update
+      ddl-auto: validate
     properties:
       hibernate:
-        hbm2ddl.auto: update
-#        show_sql: true  #여기는 prinln으로 출력이 나오기 때문에 일단 주석
+        show_sql: true
         format_sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
 
-  sql:
-    init:
-      # category 테이블의 초기 데이터를 생성하고자 할 경우 mode 값 always로 변경
-      mode: embedded
-      encoding: utf-8
+  cloud:
+    config:
+      server:
+        aws:
+          s3:
+            region: ${S3_REGION}
+            bucket: ${S3_BUCKET_NAME}
+            endpoint: ${S3_ENDPOINT}
+            credentials:
+              access-key: ${S3_ACCESS_KEY}
+              secret-key: ${S3_SECRET_KEY}
+            presigned-url:
+              expire-time: 3600
 
 encrypt:
-  secret: yourplanet123456
+  secret: FKKTQWMSMillz3Jr4pdFUQ==
 
 file:
   base-url: localhost:8080
@@ -39,3 +45,13 @@ file:
   studio-path: /Users/fong/files/upload/studio/
   project-reference-file-path: /Users/fong/files/upload/project/reference/
   project-reference-file-url: /files/project/reference/
+  prefix-secret-file-url: files/secret/local              # base presigned url이 /로 끝나서 생략
+  member-settlement-file-url: /settlements/members/%s/
+
+jwt:
+  secret: Qb+NiKnqgiFnZnKc7uziuwFX/cq0yzFrJvrpio0JofQ=
+
+payments:
+  toss:
+    uri: https://api.tosspayments.com/v1/payments/confirm
+    secret-key: dGVzdF9za19PUnpkTWFxTjN3MlJFb1hYV255TTg1QWtZWFFHOg==  # test key

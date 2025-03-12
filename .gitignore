@@ -215,3 +215,10 @@ gradle-app.setting
 /.idea/misc.xml
 /.idea/modules.xml
 /.idea/vcs.xml
+
+## secret
+application-secret.properties
+batch-secret.properties
+
+## bat
+docker-deploy.bat

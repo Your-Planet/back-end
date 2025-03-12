@@ -6,8 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Getter
@@ -17,7 +17,8 @@ import javax.validation.constraints.NotBlank;
 public class MemberSalt extends BasicColumn {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_salt_seq")
+    @SequenceGenerator(name = "member_salt_seq", sequenceName = "member_salt_seq", allocationSize = 10)
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)

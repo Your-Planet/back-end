@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Getter
@@ -18,7 +18,8 @@ import javax.persistence.*;
 public class ProfileCategoryMap extends BasicColumn {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "profile_category_map_seq")
+    @SequenceGenerator(name = "profile_category_map_seq", sequenceName = "profile_category_map_seq", allocationSize = 50)
     @Column(name = "id")
     private Long id;
 

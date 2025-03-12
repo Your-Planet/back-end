@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @AllArgsConstructor
@@ -19,7 +19,8 @@ import javax.persistence.*;
 public class PortfolioLink extends BasicColumn {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "portfolio_link_seq")
+    @SequenceGenerator(name = "portfolio_link_seq", sequenceName = "portfolio_link_seq", allocationSize = 50)
     @Column(name = "id")
     private Long id;
 

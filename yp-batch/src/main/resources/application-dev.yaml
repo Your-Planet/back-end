@@ -1,11 +1,12 @@
 spring:
+  config:
+    import: classpath:batch-secret.properties
   datasource:
-    url: ${JDBC_DATABASE_URL}
+    url: ${DEV_BATCH_DB_URL}
+    username: ${DEV_BATCH_DB_USER_NAME}
+    password: ${DEV_BATCH_DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        #        show_sql: true  #여기는 prinln으로 출력이 나오기 때문에 일단 주석
-        format_sql: true
+      ddl-auto: update    # flyway 도입 전까지

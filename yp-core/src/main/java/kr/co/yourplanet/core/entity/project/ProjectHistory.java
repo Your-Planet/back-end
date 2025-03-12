@@ -3,14 +3,14 @@ package kr.co.yourplanet.core.entity.project;
 import kr.co.yourplanet.core.entity.BasicColumn;
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.enums.DemandType;
-import kr.co.yourplanet.core.enums.ValidEnum;
+import kr.co.yourplanet.core.enums.ProjectStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.*;
-import javax.validation.constraints.Positive;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,8 @@ import java.util.List;
 public class ProjectHistory extends BasicColumn {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "project_history_seq")
+    @SequenceGenerator(name = "project_history_seq", sequenceName = "project_history_seq", allocationSize = 50)
     private Long id;
     
     @ManyToOne(fetch = FetchType.LAZY)
@@ -31,6 +32,10 @@ public class ProjectHistory extends BasicColumn {
     private Project project;
 
     private Integer seq;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "project_status")
+    private ProjectStatus projectStatus;
 
     /**
      * 추가 컷 수
@@ -53,14 +58,14 @@ public class ProjectHistory extends BasicColumn {
     /**
      * 원본 파일 요청 여부
      */
-    @ValidEnum(enumClass = DemandType.class)
+    @Enumerated(EnumType.STRING)
     @Column(name = "origin_file_demand_type")
     private DemandType originFileDemandType;
 
     /**
      * 2차 활용 요청 여부
      */
-    @ValidEnum(enumClass = DemandType.class)
+    @Enumerated(EnumType.STRING)
     @Column(name = "refinement_demand_type")
     private DemandType refinementDemandType;
 

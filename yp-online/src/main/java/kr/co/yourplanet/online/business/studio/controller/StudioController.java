@@ -1,5 +1,6 @@
 package kr.co.yourplanet.online.business.studio.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.studio.dto.PriceInfo;
 import kr.co.yourplanet.online.business.studio.dto.ProfileInfo;
@@ -14,8 +15,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
+@Tag(name = "Studio", description = "스튜디오 API")
 @RestController
 @RequiredArgsConstructor
 public class StudioController {

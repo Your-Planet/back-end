@@ -7,6 +7,7 @@ import kr.co.yourplanet.batch.util.InstagramMediaConverter;
 import kr.co.yourplanet.core.entity.instagram.InstagramMedia;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -25,7 +26,7 @@ public class InstagramBatchWriter implements ItemWriter<InstagramBatchWriterItem
     private final InstagramApiManager instagramApiManager;
 
     @Override
-    public void write(List<? extends InstagramBatchWriterItem> items) throws Exception {
+    public void write(Chunk<? extends InstagramBatchWriterItem> items) throws Exception {
         // ItemWriter에서는 WebClient의 응답을 처리
         for (InstagramBatchWriterItem item : items) {
             // WebClient의 응답을 기다렸다가 처리

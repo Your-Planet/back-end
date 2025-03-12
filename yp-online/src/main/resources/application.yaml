@@ -4,12 +4,14 @@ server:
 spring:
   profiles:
     active: local
-  output:
-    ansi:
-      enabled: always
   servlet:
     multipart:
       max-file-size: 20MB
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    defer-datasource-initialization: false
 
 logging:
   level:
@@ -19,6 +21,11 @@ logging:
 
 jwt:
   header: X-AUTH-TOKEN
-  secret: yourplanet
   access-token-validity-time: 1800000 # milliseconds 30 * 60 * 1000
   refresh-token-validity-time: 86400000 # milliseconds 24 * 60 * 60 * 1000
+
+springdoc:
+  swagger-ui:
+    display-request-duration: true
+    operationsSorter: method
+    tags-sorter: alpha

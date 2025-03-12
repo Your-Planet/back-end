@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @AllArgsConstructor
@@ -18,7 +18,8 @@ import javax.persistence.*;
 public class ProjectReferenceFile extends BasicColumn {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "project_reference_file_seq")
+    @SequenceGenerator(name = "project_reference_file_seq", sequenceName = "project_reference_file_seq", allocationSize = 50)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
