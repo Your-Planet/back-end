@@ -11,6 +11,8 @@ import org.springframework.util.CollectionUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,7 +26,6 @@ import kr.co.yourplanet.core.entity.BasicColumn;
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.studio.Price;
 import kr.co.yourplanet.core.enums.ProjectStatus;
-import kr.co.yourplanet.core.enums.ValidEnum;
 import kr.co.yourplanet.core.util.StringListConverter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -67,7 +68,7 @@ public class Project extends BasicColumn {
     /**
      * 프로젝트 상태
      */
-    @ValidEnum(enumClass = ProjectStatus.class)
+    @Enumerated(EnumType.STRING)
     @Column(name = "project_status")
     private ProjectStatus projectStatus;
 

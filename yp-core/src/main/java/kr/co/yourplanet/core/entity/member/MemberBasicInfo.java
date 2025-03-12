@@ -12,7 +12,6 @@ import jakarta.persistence.Enumerated;
 import kr.co.yourplanet.core.enums.BusinessType;
 import kr.co.yourplanet.core.enums.GenderType;
 import kr.co.yourplanet.core.enums.MemberType;
-import kr.co.yourplanet.core.enums.ValidEnum;
 import kr.co.yourplanet.core.util.LocalDateStringConverter;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -42,7 +41,7 @@ public class MemberBasicInfo {
     @Convert(converter = LocalDateStringConverter.class)
     private LocalDate birthDate; // YYYYMMDD / 광고주 사업자 제외 전부 포함
 
-    @ValidEnum(enumClass = GenderType.class)
+    @Enumerated(EnumType.STRING)
     private GenderType genderType; // MALE: 남자 / FEMALE: 여자
 
     protected static MemberBasicInfo create(MemberType memberType, BusinessType businessType, String name, String tel,
