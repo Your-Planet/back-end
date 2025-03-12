@@ -5,6 +5,7 @@ spring:
 omni:
   id: ${OMNI-ALIMTALK-ID}
   password: ${OMNI-ALIMTALK-PASSWORD}
+  senderkey: ${OMNI-ALIMTALK-SENDERKEY}
   host: https://omni.ibapi.kr
   url:
     auth: /v1/auth/token
