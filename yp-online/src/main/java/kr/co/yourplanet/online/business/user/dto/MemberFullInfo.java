@@ -15,8 +15,6 @@ public record MemberFullInfo(
         String instagramUsername,
 
         String email,
-        @Schema(description = "마스킹된 비밀번호", example = "********")
-        String maskedPassword,
         BusinessType businessType,
         String name,
         String tel,
