@@ -7,6 +7,7 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
+import kr.co.yourplanet.online.common.HeaderConstant;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,7 +39,7 @@ public class SwaggerConfig {
         return new SecurityScheme()
                 .type(SecurityScheme.Type.APIKEY)
                 .in(SecurityScheme.In.HEADER)
-                .name("X-AUTH-TOKEN")
+                .name(HeaderConstant.ACCESS_TOKEN)
                 .bearerFormat("JWT")
                 .description("`Bearer ` 접두사 필수");
     }

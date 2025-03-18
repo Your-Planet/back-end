@@ -34,17 +34,23 @@ public class Price extends BasicColumn {
     private int modificationCount;
     @Column(name = "cuts")
     private int cuts;
+    @Enumerated(EnumType.STRING)
     @Column(name = "post_duration_type")
     private PostDurationMonthType postDurationType;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "additional_cut_option_type")
     private ProvisionType additionalCutOptionType;
+    @Enumerated(EnumType.STRING)
     @Column(name = "additional_modification_option_type")
     private ProvisionType additionalModificationOptionType;
+    @Enumerated(EnumType.STRING)
     @Column(name = "additional_origin_file_option_type")
     private ProvisionType additionalOriginFileOptionType;
+    @Enumerated(EnumType.STRING)
     @Column(name = "additional_refinement_option_type")
     private ProvisionType additionalRefinementOptionType;
+    @Enumerated(EnumType.STRING)
     @Column(name = "additional_post_duration_extension_type")
     private ProvisionType additionalPostDurationExtensionType;
 
