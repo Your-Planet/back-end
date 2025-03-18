@@ -3,7 +3,7 @@ spring:
     import: classpath:application-secret.properties   # 이후 테스트 값으로 대체 예정
   datasource:
     url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
-    username: root
+    username: sa
     password:
     driver-class-name: org.h2.Driver
 
@@ -34,6 +34,9 @@ spring:
               secret-key: ${S3_SECRET_KEY}
             presigned-url:
               expire-time: 3600
+  h2:
+    console:
+      enabled: true
 
 encrypt:
   secret: FKKTQWMSMillz3Jr4pdFUQ==
