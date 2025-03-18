@@ -4,9 +4,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
-import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,21 +20,25 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
 @Component
 @RequiredArgsConstructor
 public class S3StorageAdapter implements StorageAdapter {
 
-    private final S3Client s3Client;
+    private static final String ORIGINAL_FILENAME = "original-filename";
 
+    private final S3Client s3Client;
     private final S3Presigner s3Presigner;
 
     @Value("${spring.cloud.config.server.aws.s3.bucket}")
     private String bucket;
+
     @Value("${spring.cloud.config.server.aws.s3.endpoint}")
     private String endpoint;
+
     @Value("${spring.cloud.config.server.aws.s3.presigned-url.expire-time}")
-    private int expireTime;
+    private long expireTime;
 
     @Override
     public URL upload(MultipartFile file, String fileKey) {
@@ -57,24 +62,25 @@ public class S3StorageAdapter implements StorageAdapter {
     }
 
     @Override
-    public URL generatePresignedUrl(String fileKey) {
-        PresignedPutObjectRequest request = s3Presigner.presignPutObject(
-                p -> p.signatureDuration(Duration.ofSeconds(expireTime))
-                        .putObjectRequest(pr -> pr.bucket(bucket).key(fileKey))
-        );
+    public URL generatePresignedUrl(String fileName, String fileKey, MediaType mediaType) {
+        PutObjectRequest objectRequest = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(fileKey)
+                .contentType(mediaType.toString())
+                .metadata(Map.of(ORIGINAL_FILENAME, fileName))
+                .build();
 
+        PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofSeconds(expireTime))
+                .putObjectRequest(objectRequest)
+                .build();
+
+        PresignedPutObjectRequest request = s3Presigner.presignPutObject(presignRequest);
         return getURL(request.url().toString());
     }
 
-    @Override
-    public List<URL> generatePresignedUrls(List<String> fileKeys) {
-        return fileKeys.stream()
-                .map(this::generatePresignedUrl)
-                .toList();
-    }
-
-    private URL getS3FileUrl(String key) {
-        return getURL(String.format("%s/%s", endpoint, key));
+    private URL getS3FileUrl(String fileKey) {
+        return getURL(endpoint + fileKey);
     }
 
     private URL getURL(String url) {

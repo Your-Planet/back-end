@@ -2,10 +2,11 @@ package kr.co.yourplanet.online.business.file.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import kr.co.yourplanet.core.entity.FileMetadataKeys;
+import kr.co.yourplanet.core.enums.FilePathKey;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.file.dto.PresignedUrlsForm;
 import kr.co.yourplanet.online.business.file.dto.PresignedUrlsResponse;
+import kr.co.yourplanet.online.business.file.service.FileQueryService;
 import kr.co.yourplanet.online.business.file.service.FileUploadService;
 import kr.co.yourplanet.online.common.ResponseForm;
 import kr.co.yourplanet.online.common.exception.BusinessException;
@@ -80,13 +81,13 @@ public class FileController {
         }
     }
 
-    @PostMapping("/files/presigned-urls")
+    @PostMapping("/presigned-urls")
     public ResponseEntity<ResponseForm<PresignedUrlsResponse>> generatePresignedUrls(
             @AuthenticationPrincipal JwtPrincipal principal,
             @Valid @RequestBody PresignedUrlsForm request
     ) {
-        Map<String, String> metadata = Map.of(FileMetadataKeys.MEMBER_ID, principal.getId().toString());
-        PresignedUrlsResponse response = fileUploadService.getPresignedUrls(metadata, request);
+        Map<FilePathKey, String> metadata = Map.of(FilePathKey.MEMBER_ID, principal.getId().toString());
+        PresignedUrlsResponse response = fileUploadService.generatePresignedUrls(metadata, request);
 
         return new ResponseEntity<>(
                 new ResponseForm<>(StatusCode.CREATED, response),
