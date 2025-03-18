@@ -3,16 +3,16 @@ package kr.co.yourplanet.online.business.project.service;
 import org.springframework.stereotype.Service;
 
 import kr.co.yourplanet.core.entity.member.Member;
-import kr.co.yourplanet.core.entity.project.AdditionalDetail;
 import kr.co.yourplanet.core.entity.project.Contractor;
 import kr.co.yourplanet.core.entity.project.Project;
 import kr.co.yourplanet.core.entity.project.ProjectContract;
+import kr.co.yourplanet.core.entity.project.ProjectHistory;
 import kr.co.yourplanet.core.entity.studio.Price;
+import kr.co.yourplanet.core.enums.DemandType;
 import kr.co.yourplanet.core.enums.MemberType;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.project.dto.request.ContractDraftForm;
-import kr.co.yourplanet.online.business.project.dto.response.TempContractInfo;
-import kr.co.yourplanet.online.business.project.repository.ProjectContractRepository;
+import kr.co.yourplanet.online.business.project.dto.response.ContractInfo;
 import kr.co.yourplanet.online.business.user.service.MemberQueryService;
 import kr.co.yourplanet.online.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
@@ -26,15 +26,12 @@ public class ContractDraftService {
     private final ContractValidationService contractValidationService;
     private final MemberQueryService memberQueryService;
 
-    private final ProjectContractRepository projectContractRepository;
-
     /**
      * 임시 계약서 조회 및 DB에 기본 계약서 저장
      */
-    public TempContractInfo getTempContract(Long projectId, Long memberId) {
+    public ContractInfo getContract(Long projectId, Long memberId) {
         Project project = projectQueryService.getById(projectId);
         contractValidationService.validateContractParty(memberId, project);
-
         ProjectContract contract = getOrCreateProjectContract(project);
 
         return createTempContractInfo(project, contract);
@@ -71,52 +68,57 @@ public class ContractDraftService {
 
     private ProjectContract getOrCreateProjectContract(Project project) {
         Price price = project.getCreatorPrice();
+        ProjectHistory history = project.getAcceptedHistory()
+                .orElseThrow(() -> new BusinessException(StatusCode.CONFLICT, "수락된 프로젝트가 아닙니다.", false));
 
         return contractService.getByProjectId(project.getId())
                 .orElseGet(() -> {
                     ProjectContract newContract = ProjectContract.builder()
                             .project(project)
+                            .projectHistory(history)
                             .price(price)
-                            .projectName("프로젝트 이름 구현 예정")
-                            // .projectName(project.getName())
                             .acceptDateTime(project.getAcceptDateTime())
                             .completeDateTime(project.getCompleteDateTime())
-                            .contractAmount((long) price.getPrice())
-                            .additionalDetail(createAdditionalDetail(price))
+                            .contractAmount(history.getOfferPrice().longValue())
                             .build();
-
-                    return contractService.save(newContract);
+                    contractService.save(newContract);
+                    return newContract;
                 });
     }
 
-    private TempContractInfo createTempContractInfo(Project project, ProjectContract contract) {
-        return TempContractInfo.builder()
+    private ContractInfo createTempContractInfo(Project project, ProjectContract contract) {
+        return ContractInfo.builder()
                 .projectId(project.getId())
-                .projectName(contract.getProjectName())
+                .projectName(project.getOrderTitle())
                 .acceptDateTime(contract.getAcceptDateTime())
                 .completeDateTime(contract.getCompleteDateTime())
                 .contractAmount(contract.getContractAmount())
-                .additionalDetailInfo(createAdditionalDetailInfo(contract.getAdditionalDetail()))
+                .additionalDetailInfo(createAdditionalDetailInfo(contract.getPrice(), contract.getProjectHistory()))
                 .client(createContractorInfo(contract.getClient()))
                 .provider(createContractorInfo(contract.getProvider()))
                 .build();
     }
 
-    private TempContractInfo.AdditionalDetailInfo createAdditionalDetailInfo(AdditionalDetail additional) {
-        return TempContractInfo.AdditionalDetailInfo.builder()
-                .workingDays(additional.getWorkingDays())
-                .cuts(additional.getCuts())
-                .modificationCount(additional.getModificationCount())
-                .postDurationMonthType(additional.getPostDurationMonthType())
+    private ContractInfo.AdditionalDetailInfo createAdditionalDetailInfo(Price price, ProjectHistory history) {
+        return ContractInfo.AdditionalDetailInfo.builder()
+                .workingDays(price.getWorkingDays())
+                .cuts(price.getCuts())
+                .additionalPanelCount(history.getAdditionalPanelCount())
+                .modificationCount(price.getModificationCount())
+                .additionalModificationCount(history.getAdditionalModificationCount())
+                .originalFileOption(DemandType.DEMANDED.equals(history.getOriginFileDemandType()))
+                .refinementOption(DemandType.DEMANDED.equals(history.getRefinementDemandType()))
+                .postDurationMonth(price.getPostDurationType().getValue())
+                .postDurationExtensionMonths(history.getPostDurationExtensionMonths())
                 .build();
     }
 
-    private TempContractInfo.ContractorInfo createContractorInfo(Contractor contractor) {
+    private ContractInfo.ContractorInfo createContractorInfo(Contractor contractor) {
         if (contractor == null) {
             return null;
         }
 
-        return TempContractInfo.ContractorInfo.builder()
+        return ContractInfo.ContractorInfo.builder()
                 .companyName(contractor.getCompanyName())
                 .registrationNumber(contractor.getRegistrationNumber())
                 .address(contractor.getAddress())
@@ -130,15 +132,6 @@ public class ContractDraftService {
                 .registrationNumber(form.registrationNumber())
                 .address(form.address())
                 .representativeName(form.representativeName())
-                .build();
-    }
-
-    private AdditionalDetail createAdditionalDetail(Price price) {
-        return AdditionalDetail.builder()
-                .workingDays(price.getWorkingDays())
-                .cuts(price.getCuts())
-                .modificationCount(price.getModificationCount())
-                .postDurationMonthType(price.getPostDurationType())
                 .build();
     }
 }

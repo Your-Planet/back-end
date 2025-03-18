@@ -28,7 +28,7 @@ import kr.co.yourplanet.online.business.project.dto.request.ProjectRequestForm;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectBasicInfo;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectDetailInfo;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectHistoryForm;
-import kr.co.yourplanet.online.business.project.dto.response.TempContractInfo;
+import kr.co.yourplanet.online.business.project.dto.response.ContractInfo;
 import kr.co.yourplanet.online.business.project.service.ContractDraftService;
 import kr.co.yourplanet.online.business.project.service.ProjectService;
 import kr.co.yourplanet.online.common.ResponseForm;
@@ -114,13 +114,13 @@ public class ProjectController {
         return new ResponseEntity<>(responseForm, HttpStatus.OK);
     }
 
-    @Operation(summary = "임시 계약서 조회")
-    @GetMapping("/project/{id}/contract/temp")
-    public ResponseEntity<ResponseForm<TempContractInfo>> getTempContract(
+    @Operation(summary = "계약서 조회")
+    @GetMapping("/project/{id}/contract")
+    public ResponseEntity<ResponseForm<ContractInfo>> getContract(
             @AuthenticationPrincipal JwtPrincipal principal,
             @PathVariable(name = "id") Long projectId
     ) {
-        TempContractInfo response = contractDraftService.getTempContract(projectId, principal.getId());
+        ContractInfo response = contractDraftService.getContract(projectId, principal.getId());
 
         return new ResponseEntity<>(new ResponseForm<>(StatusCode.OK, response), HttpStatus.OK);
     }
