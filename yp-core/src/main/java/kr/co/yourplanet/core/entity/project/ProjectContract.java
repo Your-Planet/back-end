@@ -39,11 +39,12 @@ public class ProjectContract {
     private Project project;
 
     @OneToOne
+    @JoinColumn(name = "project_history_id")
+    private ProjectHistory projectHistory;
+
+    @OneToOne
     @JoinColumn(name = "price_id")
     private Price price;
-
-    @Comment("프로젝트명")
-    private String projectName;
 
     @Comment("의뢰 수락일 (오늘)")
     private LocalDateTime acceptDateTime;
@@ -53,12 +54,6 @@ public class ProjectContract {
 
     @Comment("거래 금액")
     private Long contractAmount;
-
-    /*
-     * 추가 계약 사항
-     */
-    @Embedded
-    private AdditionalDetail additionalDetail;
 
     /*
      * 계약 내용
@@ -96,7 +91,7 @@ public class ProjectContract {
 
     public void writeProviderInfo(Contractor provider) {
         this.provider = provider;
-        this.clientWrittenDateTime = LocalDateTime.now();
+        this.providerWrittenDateTime = LocalDateTime.now();
     }
 
     public boolean isCompleted() {
