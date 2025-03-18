@@ -1,5 +1,6 @@
 package kr.co.yourplanet.online.business.file.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kr.co.yourplanet.core.enums.FilePathKey;
@@ -81,6 +82,7 @@ public class FileController {
         }
     }
 
+    @Operation(summary = "presigned url 생성", description = "요청당 최대 5개")
     @PostMapping("/presigned-urls")
     public ResponseEntity<ResponseForm<PresignedUrlsResponse>> generatePresignedUrls(
             @AuthenticationPrincipal JwtPrincipal principal,
