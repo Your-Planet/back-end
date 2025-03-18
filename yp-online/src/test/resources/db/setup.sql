@@ -9,7 +9,7 @@ INSERT INTO member (id, email, password, name, gender_type, member_type, tel, bi
                     create_date, update_date, business_type)
 VALUES (1,
         'creator_business@gmail.com',
-        '/a2RCCQIlTzMT9qZKD1hTntCJSbcneh/VrdafagTGO0=',
+        '8e84SeL976XMoToxI0/xp9/Tnn4HtqWKJq3dERNKFJM=',
         '작가 - 사업자',
         0,
         1,
@@ -101,7 +101,7 @@ VALUES (4,
 -- MEMBER_SALT --
 INSERT INTO member_salt (id, member_id, create_date, update_date, salt)
 VALUES (1, 1, '2025-02-24 13:07:45.755085', '2025-02-24 13:07:45.755085',
-        'eoAsvCzfjmsHdDKrCddj4sorP/KBqYtgm6G73nn3Cdk=');
+        'u7I8uvg758WSTUpZ1RMgh+52hEUIIptO9JvFr/m8bBQ=');
 
 INSERT INTO member_salt (id, member_id, create_date, update_date, salt)
 VALUES (2, 2, '2025-02-24 13:07:45.755085', '2025-02-24 13:07:45.755085',
