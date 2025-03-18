@@ -12,11 +12,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import kr.co.yourplanet.core.enums.StatusCode;
+import kr.co.yourplanet.core.model.FileMetadata;
 import kr.co.yourplanet.online.business.file.adapter.StorageAdapter;
 import kr.co.yourplanet.online.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
+import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
@@ -79,6 +83,26 @@ public class S3StorageAdapter implements StorageAdapter {
         return getURL(request.url().toString());
     }
 
+    @Override
+    public FileMetadata getMetadata(String fileUrl) {
+        String fileKey = parseFileKey(fileUrl);
+        HeadObjectRequest headRequest = HeadObjectRequest.builder()
+                .bucket(bucket)
+                .key(fileKey)
+                .build();
+
+        try {
+            HeadObjectResponse headResponse = s3Client.headObject(headRequest);
+
+            return FileMetadata.builder()
+                    .fileName(headResponse.metadata().get(ORIGINAL_FILENAME))
+                    .bytes(headResponse.contentLength())
+                    .build();
+        } catch (NoSuchKeyException e) {
+            throw new BusinessException(StatusCode.NOT_FOUND, "파일이 존재하지 않습니다.", false);
+        }
+    }
+
     private URL getS3FileUrl(String fileKey) {
         return getURL(endpoint + fileKey);
     }
@@ -89,5 +113,9 @@ public class S3StorageAdapter implements StorageAdapter {
         } catch (MalformedURLException e) {
             throw new BusinessException(StatusCode.INTERNAL_SERVER_ERROR, "잘못된 형식의 URL 변환에 실패했습니다.", true, e);
         }
+    }
+
+    private String parseFileKey(String fileUrl) {
+        return fileUrl.replace(endpoint, "");
     }
 }
