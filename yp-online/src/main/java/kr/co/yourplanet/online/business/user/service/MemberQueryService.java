@@ -10,6 +10,7 @@ import kr.co.yourplanet.core.entity.member.BusinessInfo;
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.member.SettlementInfo;
 import kr.co.yourplanet.core.enums.StatusCode;
+import kr.co.yourplanet.online.business.file.service.FileQueryService;
 import kr.co.yourplanet.online.business.user.dto.FindIdForm;
 import kr.co.yourplanet.online.business.user.dto.MemberDetail;
 import kr.co.yourplanet.online.business.user.dto.MemberFullInfo;
@@ -24,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MemberQueryService {
 
+    private final FileQueryService fileQueryService;
     private final MemberRepository memberRepository;
 
     public Member getById(Long memberId) {
@@ -73,6 +75,8 @@ public class MemberQueryService {
 
         SettlementInfo settlementInfo = member.getSettlementInfo();
         BusinessInfo businessInfo = member.getBusinessInfo();
+        boolean isSettlementExist = settlementInfo != null;
+        boolean isBusinessExist = member.getBusinessType() != null;
 
         return MemberFullInfo.builder()
                 .id(member.getId())
@@ -83,15 +87,17 @@ public class MemberQueryService {
                 .tel(member.getTel())
                 .birthDate(member.getMemberBasicInfo().getBirthDate())
                 .genderType(member.getGenderType())
-                .companyName(businessInfo != null ? businessInfo.getCompanyName() : null)
-                .businessNumber(businessInfo != null ? businessInfo.getBusinessNumber() : null)
-                .representativeName(businessInfo != null ? businessInfo.getRepresentativeName() : null)
-                .businessAddress(businessInfo != null ? businessInfo.getBusinessAddress() : null)
-                .businessAddressDetail(businessInfo != null ? businessInfo.getBusinessAddressDetail() : null)
-                .bankName(settlementInfo != null ? settlementInfo.getBankName() : null)
-                .accountHolder(settlementInfo != null ? settlementInfo.getAccountHolder() : null)
-                .accountNumber(settlementInfo != null ? settlementInfo.getAccountNumber() : null)
-                .maskedRrn(settlementInfo != null ? MaskingUtil.maskRRN(settlementInfo.getRrn()) : null)
+                .companyName(isBusinessExist ? businessInfo.getCompanyName() : null)
+                .businessNumber(isBusinessExist ? businessInfo.getBusinessNumber() : null)
+                .representativeName(isBusinessExist ? businessInfo.getRepresentativeName() : null)
+                .businessAddress(isBusinessExist ? businessInfo.getBusinessAddress() : null)
+                .businessAddressDetail(isBusinessExist ? businessInfo.getBusinessAddressDetail() : null)
+                .bankName(isSettlementExist ? settlementInfo.getBankName() : null)
+                .accountHolder(isSettlementExist ? settlementInfo.getAccountHolder() : null)
+                .accountNumber(isSettlementExist ? settlementInfo.getAccountNumber() : null)
+                .maskedRrn(isSettlementExist && !isBusinessExist ? MaskingUtil.maskRRN(settlementInfo.getRrn()) : null)
+                .bankAccountCopyFileMetadata(isSettlementExist && isBusinessExist ? fileQueryService.getFileMetaData(settlementInfo.getBankAccountCopyUrl()) : null)
+                .businessLicenseFileMetadata(isSettlementExist && isBusinessExist ? fileQueryService.getFileMetaData(settlementInfo.getBusinessLicenseUrl()) : null)
                 .build();
     }
 }
