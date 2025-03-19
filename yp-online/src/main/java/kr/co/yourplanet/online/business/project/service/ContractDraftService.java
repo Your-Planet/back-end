@@ -27,14 +27,17 @@ public class ContractDraftService {
     private final MemberQueryService memberQueryService;
 
     /**
-     * 임시 계약서 조회 및 DB에 기본 계약서 저장
+     * 계약서 조회 및 DB에 기본 계약서 저장
      */
     public ContractInfo getContract(Long projectId, Long memberId) {
         Project project = projectQueryService.getById(projectId);
-        contractValidationService.validateContractParty(memberId, project);
-        ProjectContract contract = getOrCreateProjectContract(project);
+        ProjectHistory history = project.getAcceptedHistory()
+                .orElseThrow(() -> new BusinessException(StatusCode.CONFLICT, "수락된 프로젝트가 아닙니다.", false));
 
-        return createTempContractInfo(project, contract);
+        contractValidationService.validateContractParty(memberId, project);
+        ProjectContract contract = getOrCreateProjectContract(project, history);
+
+        return createContractInfo(project, history, contract);
     }
 
     /**
@@ -66,17 +69,11 @@ public class ContractDraftService {
         contractService.save(contract);
     }
 
-    private ProjectContract getOrCreateProjectContract(Project project) {
-        Price price = project.getCreatorPrice();
-        ProjectHistory history = project.getAcceptedHistory()
-                .orElseThrow(() -> new BusinessException(StatusCode.CONFLICT, "수락된 프로젝트가 아닙니다.", false));
-
+    private ProjectContract getOrCreateProjectContract(Project project, ProjectHistory history) {
         return contractService.getByProjectId(project.getId())
                 .orElseGet(() -> {
                     ProjectContract newContract = ProjectContract.builder()
                             .project(project)
-                            .projectHistory(history)
-                            .price(price)
                             .acceptDateTime(project.getAcceptDateTime())
                             .completeDateTime(project.getCompleteDateTime())
                             .contractAmount(history.getOfferPrice().longValue())
@@ -86,16 +83,29 @@ public class ContractDraftService {
                 });
     }
 
-    private ContractInfo createTempContractInfo(Project project, ProjectContract contract) {
+    private Contractor createContractor(ContractDraftForm form) {
+        return Contractor.builder()
+                .companyName(form.companyName())
+                .registrationNumber(form.identificationNumber())
+                .address(form.address())
+                .representativeName(form.representativeName())
+                .build();
+    }
+
+    private ContractInfo createContractInfo(Project project, ProjectHistory history, ProjectContract contract) {
+        Price price = project.getCreatorPrice();
+
         return ContractInfo.builder()
                 .projectId(project.getId())
                 .projectName(project.getOrderTitle())
                 .acceptDateTime(contract.getAcceptDateTime())
                 .completeDateTime(contract.getCompleteDateTime())
                 .contractAmount(contract.getContractAmount())
-                .additionalDetailInfo(createAdditionalDetailInfo(contract.getPrice(), contract.getProjectHistory()))
+                .additionalDetailInfo(createAdditionalDetailInfo(price, history))
                 .client(createContractorInfo(contract.getClient()))
                 .provider(createContractorInfo(contract.getProvider()))
+                .clientWrittenDateTime(contract.getClientWrittenDateTime())
+                .providerWrittenDateTime(contract.getProviderWrittenDateTime())
                 .build();
     }
 
@@ -123,15 +133,6 @@ public class ContractDraftService {
                 .registrationNumber(contractor.getRegistrationNumber())
                 .address(contractor.getAddress())
                 .representativeName(contractor.getRepresentativeName())
-                .build();
-    }
-
-    private Contractor createContractor(ContractDraftForm form) {
-        return Contractor.builder()
-                .companyName(form.companyName())
-                .registrationNumber(form.registrationNumber())
-                .address(form.address())
-                .representativeName(form.representativeName())
                 .build();
     }
 }

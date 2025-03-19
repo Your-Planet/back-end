@@ -38,14 +38,6 @@ public class ProjectContract {
     @JoinColumn(name = "project_id")
     private Project project;
 
-    @OneToOne
-    @JoinColumn(name = "project_history_id")
-    private ProjectHistory projectHistory;
-
-    @OneToOne
-    @JoinColumn(name = "price_id")
-    private Price price;
-
     @Comment("의뢰 수락일 (오늘)")
     private LocalDateTime acceptDateTime;
 
