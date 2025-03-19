@@ -2,7 +2,7 @@ package kr.co.yourplanet.online.business.studio.dto;
 
 import kr.co.yourplanet.core.enums.PostDurationMonthType;
 import kr.co.yourplanet.core.enums.ProvisionType;
-import kr.co.yourplanet.core.enums.ValidEnum;
+import kr.co.yourplanet.core.validation.annotation.ValidEnum;
 import lombok.*;
 
 import jakarta.validation.Valid;

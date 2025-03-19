@@ -3,7 +3,7 @@ package kr.co.yourplanet.online.business.user.dto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import kr.co.yourplanet.core.enums.GenderType;
-import kr.co.yourplanet.core.enums.ValidEnum;
+import kr.co.yourplanet.core.validation.annotation.ValidEnum;
 import lombok.Getter;
 
 @Getter
