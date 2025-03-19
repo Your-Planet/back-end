@@ -1,6 +1,7 @@
 package kr.co.yourplanet.online.business.project.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.project.Contractor;
@@ -17,6 +18,7 @@ import kr.co.yourplanet.online.business.user.service.MemberQueryService;
 import kr.co.yourplanet.online.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class ContractDraftService {

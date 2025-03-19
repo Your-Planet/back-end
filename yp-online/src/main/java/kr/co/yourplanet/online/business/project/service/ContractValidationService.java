@@ -1,6 +1,7 @@
 package kr.co.yourplanet.online.business.project.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import kr.co.yourplanet.core.entity.project.Project;
 import kr.co.yourplanet.core.entity.project.ProjectContract;
@@ -9,6 +10,7 @@ import kr.co.yourplanet.core.enums.ProjectStatus;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.common.exception.BusinessException;
 
+@Transactional(readOnly = true)
 @Service
 public class ContractValidationService {
 

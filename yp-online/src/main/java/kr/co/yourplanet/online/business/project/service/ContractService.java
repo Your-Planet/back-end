@@ -3,11 +3,13 @@ package kr.co.yourplanet.online.business.project.service;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import kr.co.yourplanet.core.entity.project.ProjectContract;
 import kr.co.yourplanet.online.business.project.repository.ProjectContractRepository;
 import lombok.RequiredArgsConstructor;
 
+@Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 public class ContractService {
