@@ -1,9 +1,8 @@
-package kr.co.yourplanet.core.enums;
-
-import kr.co.yourplanet.core.enums.ValidEnum;
+package kr.co.yourplanet.core.validation.validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import kr.co.yourplanet.core.validation.annotation.ValidEnum;
 
 public class EnumValidator  implements ConstraintValidator<ValidEnum, Enum> {
     private ValidEnum annotation;

@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.payment.controller.dto.request.PaymentApproveForm;
@@ -18,6 +20,7 @@ import kr.co.yourplanet.online.common.ResponseForm;
 import kr.co.yourplanet.online.jwt.JwtPrincipal;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "Payment", description = "결제 API")
 @RestController
 @RequestMapping("/payments")
 @RequiredArgsConstructor
@@ -26,6 +29,7 @@ public class PaymentController {
     private final PaymentRequestService paymentRequestService;
     private final PaymentService paymentService;
 
+    @Operation(summary = "결제 요청")
     @PostMapping("/request")
     public ResponseEntity<ResponseForm<Void>> savePaymentRequest(
             @AuthenticationPrincipal JwtPrincipal principal,
@@ -36,6 +40,7 @@ public class PaymentController {
         return new ResponseEntity<>(new ResponseForm<>(StatusCode.OK), HttpStatus.OK);
     }
 
+    @Operation(summary = "결제 승인")
     @PostMapping("/approve")
     public ResponseEntity<ResponseForm<Void>> approvePayment(
             @AuthenticationPrincipal JwtPrincipal principal,
