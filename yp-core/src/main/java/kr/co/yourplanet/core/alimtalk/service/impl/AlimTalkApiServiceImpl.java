@@ -1,16 +1,19 @@
-package kr.co.yourplanet.core.alimtalk;
+package kr.co.yourplanet.core.alimtalk.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import kr.co.yourplanet.core.alimtalk.dto.AlimTalkAuth;
+import kr.co.yourplanet.core.alimtalk.dto.AlimTalkSendForm;
+import kr.co.yourplanet.core.alimtalk.service.AlimTalkApiService;
 import kr.co.yourplanet.core.repository.AlimTalkRequestRepository;
 import lombok.RequiredArgsConstructor;
 import okhttp3.MediaType;
@@ -19,9 +22,9 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-@Configuration
+@Service
 @RequiredArgsConstructor
-public class AlimTalkService {
+public class AlimTalkApiServiceImpl implements AlimTalkApiService {
     @Value("${omni.id}")
     private String id;
     @Value("${omni.password}")
@@ -33,9 +36,12 @@ public class AlimTalkService {
     @Value("${omni.url.alimtalk}")
     private String sendUrl;
 
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
     private final RedisTemplate<String, String> redisTemplate;
     private final AlimTalkRequestRepository alimTalkRequestRepository;
 
+    @Override
     public boolean getNewAuth() {
         OkHttpClient client = new OkHttpClient().newBuilder().build();
         Request request = new Request.Builder()
@@ -47,7 +53,6 @@ public class AlimTalkService {
                 .build();
         try {
             Response response = client.newCall(request).execute();
-            ObjectMapper objectMapper = new ObjectMapper();
             assert response.body() != null;
             AlimTalkAuth alimTalkAuth = objectMapper.readValue(response.body().string(), AlimTalkAuth.class);
 
@@ -64,10 +69,43 @@ public class AlimTalkService {
 
     // ToDo : 상세 전송 내역에 대한 논의 필요
     // ToDo : String content -> String 타입이 아닌 DTO 객체로 처리하자
-    // 메세지유형을 저장하고 유형에 맞는 텍스트를 생성해 전송하도록 수정 필요
-    public boolean sendAlimTalk(String content, Long memberId) {
-        // redis에서 token 생성에 필요한 정보를 읽어 온다.
-        String authToken = "";
+    @Override
+    public boolean sendAlimTalk(AlimTalkSendForm alimTalkSendForm, Long memberId) throws JsonProcessingException {
+
+        String authToken = getAuthToken();
+        String json = objectMapper.writeValueAsString(alimTalkSendForm);
+
+        // 알림톡 전송
+        OkHttpClient client = new OkHttpClient().newBuilder().build();
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(json, mediaType);
+        Request request = new Request.Builder()
+                .url(this.host + this.sendUrl)
+                .method("POST", body)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Accept", "application/json")
+                .addHeader("Authorization", authToken)
+                .build();
+
+        // ToDo : 알림톡 발송내역 DB저장을 여기서 수행할 것인지 or 해당 메소드를 호출한 호출자에서 처리할 것인지
+        try (Response response = client.newCall(request).execute()) {
+            // ToDo : 알림톡 요청 히스토리 저장
+
+            if (response.code() != 200) {
+                // ToDo : 알림톡 요청 히스토리 업데이트
+            } else {
+                // ToDo : 알림톡 요청 히스토리 업데이트
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        return  true;
+    }
+
+    /*
+     * redis에서 token 생성에 필요한 정보를 읽어 온다.
+     */
+    private String getAuthToken() {
         String expired = redisTemplate.opsForValue().get("expired");
 
         try {
@@ -93,33 +131,7 @@ public class AlimTalkService {
             this.getNewAuth();
         }
 
-        authToken = authToken + redisTemplate.opsForValue().get("schema") + " ";
-        authToken = authToken + redisTemplate.opsForValue().get("token");
-
-        // 알림톡 전송
-        OkHttpClient client = new OkHttpClient().newBuilder().build();
-        MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(content, mediaType);
-        Request request = new Request.Builder()
-                .url(this.host + this.sendUrl)
-                .method("POST", body)
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Accept", "application/json")
-                .addHeader("Authorization", authToken)
-                .build();
-
-        try {
-            // ToDo : 알림톡 요청 히스토리 저장
-            Response response = client.newCall(request).execute();
-            if (response.code() != 200) {
-                // ToDo : 알림톡 요청 히스토리 업데이트
-            } else {
-                // ToDo : 알림톡 요청 히스토리 업데이트
-            }
-        } catch (Exception e) {
-            return false;
-        }
-        return  true;
+        return redisTemplate.opsForValue().get("schema") + " " + redisTemplate.opsForValue().get("token");
     }
 
 }

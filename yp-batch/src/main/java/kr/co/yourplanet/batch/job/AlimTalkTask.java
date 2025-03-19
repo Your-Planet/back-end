@@ -4,13 +4,13 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;
-import kr.co.yourplanet.core.alimtalk.AlimTalkService;
+import kr.co.yourplanet.core.alimtalk.service.AlimTalkApiService;
 import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
 public class AlimTalkTask {
-    private final AlimTalkService alimTalk;
+    private final AlimTalkApiService alimTalk;
 
     @PostConstruct
     public void onStartup() throws Exception {
