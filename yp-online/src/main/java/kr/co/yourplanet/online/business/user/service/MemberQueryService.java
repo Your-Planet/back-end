@@ -9,6 +9,8 @@ import kr.co.yourplanet.core.entity.member.AgreementInfo;
 import kr.co.yourplanet.core.entity.member.BusinessInfo;
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.member.SettlementInfo;
+import kr.co.yourplanet.core.enums.BusinessType;
+import kr.co.yourplanet.core.enums.MemberType;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.file.service.FileQueryService;
 import kr.co.yourplanet.online.business.user.dto.FindIdForm;
@@ -75,29 +77,31 @@ public class MemberQueryService {
 
         SettlementInfo settlementInfo = member.getSettlementInfo();
         BusinessInfo businessInfo = member.getBusinessInfo();
+
+        boolean isCreator = MemberType.CREATOR.equals(member.getMemberType());
         boolean isSettlementExist = settlementInfo != null;
-        boolean isBusinessExist = member.getBusinessType() != null;
+        boolean isBusiness = BusinessType.BUSINESS.equals(member.getBusinessType());
 
         return MemberFullInfo.builder()
                 .id(member.getId())
-                .instagramUsername(member.getInstagramInfo().getInstagramUsername())
+                .instagramUsername(isCreator ? member.getInstagramInfo().getInstagramUsername() : null)
                 .email(member.getEmail())
                 .businessType(member.getBusinessType())
                 .name(member.getName())
                 .tel(member.getTel())
                 .birthDate(member.getMemberBasicInfo().getBirthDate())
                 .genderType(member.getGenderType())
-                .companyName(isBusinessExist ? businessInfo.getCompanyName() : null)
-                .businessNumber(isBusinessExist ? businessInfo.getBusinessNumber() : null)
-                .representativeName(isBusinessExist ? businessInfo.getRepresentativeName() : null)
-                .businessAddress(isBusinessExist ? businessInfo.getBusinessAddress() : null)
-                .businessAddressDetail(isBusinessExist ? businessInfo.getBusinessAddressDetail() : null)
+                .companyName(isBusiness ? businessInfo.getCompanyName() : null)
+                .businessNumber(isBusiness ? businessInfo.getBusinessNumber() : null)
+                .representativeName(isBusiness ? businessInfo.getRepresentativeName() : null)
+                .businessAddress(isBusiness ? businessInfo.getBusinessAddress() : null)
+                .businessAddressDetail(isBusiness ? businessInfo.getBusinessAddressDetail() : null)
                 .bankName(isSettlementExist ? settlementInfo.getBankName() : null)
                 .accountHolder(isSettlementExist ? settlementInfo.getAccountHolder() : null)
                 .accountNumber(isSettlementExist ? settlementInfo.getAccountNumber() : null)
-                .maskedRrn(isSettlementExist && !isBusinessExist ? MaskingUtil.maskRRN(settlementInfo.getRrn()) : null)
-                .bankAccountCopyFileMetadata(isSettlementExist && isBusinessExist ? fileQueryService.getFileMetaData(settlementInfo.getBankAccountCopyUrl()) : null)
-                .businessLicenseFileMetadata(isSettlementExist && isBusinessExist ? fileQueryService.getFileMetaData(settlementInfo.getBusinessLicenseUrl()) : null)
+                .maskedRrn(isSettlementExist && !isBusiness ? MaskingUtil.maskRRN(settlementInfo.getRrn()) : null)
+                .bankAccountCopyFileMetadata(isSettlementExist && isBusiness ? fileQueryService.getFileMetaData(settlementInfo.getBankAccountCopyUrl()) : null)
+                .businessLicenseFileMetadata(isSettlementExist && isBusiness ? fileQueryService.getFileMetaData(settlementInfo.getBusinessLicenseUrl()) : null)
                 .build();
     }
 }
