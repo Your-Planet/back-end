@@ -1,5 +1,8 @@
 package kr.co.yourplanet.core.entity.alimtalk;
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.SequenceGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,6 +19,9 @@ import jakarta.persistence.Id;
 @Builder
 public class AlimTalkRequestHistory {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "alim_talk_request_history_seq")
+    @SequenceGenerator(name = "alim_talk_request_history_seq", sequenceName = "alim_talk_request_history_seq", allocationSize = 50)
+    @Column(name = "id")
     private Long id;
     @Column(name = "member_id")
     private Long memberId;
