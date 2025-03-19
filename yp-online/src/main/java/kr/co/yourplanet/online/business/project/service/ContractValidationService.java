@@ -40,7 +40,7 @@ public class ContractValidationService {
 
     public void validateContractCompleted(ProjectContract contract) {
         if (contract != null && contract.isCompleted()) {
-            throw new BusinessException(StatusCode.CONFLICT, "이미 작성된 계약서가 존재합니다.", false);
+            throw new BusinessException(StatusCode.CONFLICT, "이미 완료된 계약입니다.", false);
         }
     }
 }
