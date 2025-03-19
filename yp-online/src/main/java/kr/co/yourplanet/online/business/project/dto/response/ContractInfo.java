@@ -19,7 +19,13 @@ public record ContractInfo(
 
         // 계약 내용
         ContractorInfo client,
-        ContractorInfo provider
+        ContractorInfo provider,
+
+        // 계약 일시
+        @Schema(description = "공급자 작성 일시")
+        LocalDateTime providerWrittenDateTime,
+        @Schema(description = "수요자 작성 일시")
+        LocalDateTime clientWrittenDateTime
 ) {
     @Builder
     public record AdditionalDetailInfo(
@@ -54,6 +60,7 @@ public record ContractInfo(
 
     @Builder
     public record ContractorInfo(
+            @Schema(description = "상호 및 명칭", nullable = true)
             String companyName,
             String registrationNumber,
             String address,
