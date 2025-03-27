@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
+import kr.co.yourplanet.core.enums.BusinessType;
 import kr.co.yourplanet.core.enums.MemberType;
 import kr.co.yourplanet.helper.WithMockJwtPrincipal;
 import kr.co.yourplanet.online.common.HeaderConstant;
@@ -33,6 +34,8 @@ class MemberControllerTest extends IntegrationTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andDo(print())
                     .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data.memberType").value(MemberType.CREATOR.name()))
+                    .andExpect(jsonPath("$.data.businessType").value(BusinessType.BUSINESS.name()))
                     .andExpect(jsonPath("$.data.birthDate").isNotEmpty())
                     .andExpect(jsonPath("$.data.genderType").isNotEmpty())
                     .andExpect(jsonPath("$.data.companyName").isNotEmpty())
@@ -50,6 +53,8 @@ class MemberControllerTest extends IntegrationTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andDo(print())
                     .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data.memberType").value(MemberType.CREATOR.name()))
+                    .andExpect(jsonPath("$.data.businessType").value(BusinessType.INDIVIDUAL.name()))
                     .andExpect(jsonPath("$.data.birthDate").isNotEmpty())
                     .andExpect(jsonPath("$.data.genderType").isNotEmpty());
         }
@@ -63,6 +68,8 @@ class MemberControllerTest extends IntegrationTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andDo(print())
                     .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data.memberType").value(MemberType.SPONSOR.name()))
+                    .andExpect(jsonPath("$.data.businessType").value(BusinessType.BUSINESS.name()))
                     .andExpect(jsonPath("$.data.name").isNotEmpty())
                     .andExpect(jsonPath("$.data.tel").isNotEmpty())
                     .andExpect(jsonPath("$.data.companyName").isNotEmpty())
@@ -80,6 +87,8 @@ class MemberControllerTest extends IntegrationTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andDo(print())
                     .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data.memberType").value(MemberType.SPONSOR.name()))
+                    .andExpect(jsonPath("$.data.businessType").value(BusinessType.INDIVIDUAL.name()))
                     .andExpect(jsonPath("$.data.name").isNotEmpty())
                     .andExpect(jsonPath("$.data.tel").isNotEmpty())
                     .andExpect(jsonPath("$.data.birthDate").isNotEmpty());
