@@ -84,6 +84,7 @@ public class MemberQueryService {
 
         return MemberFullInfo.builder()
                 .id(member.getId())
+                .memberType(member.getMemberType())
                 .instagramUsername(isCreator ? member.getInstagramInfo().getInstagramUsername() : null)
                 .email(member.getEmail())
                 .businessType(member.getBusinessType())
