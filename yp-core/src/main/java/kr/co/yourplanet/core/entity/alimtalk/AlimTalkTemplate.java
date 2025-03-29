@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
+import kr.co.yourplanet.core.entity.BasicColumn;
 import kr.co.yourplanet.core.enums.AlimTalkCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +24,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AlimTalkTemplate {
+public class AlimTalkTemplate extends BasicColumn {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "alim_talk_template_seq")
@@ -31,18 +32,18 @@ public class AlimTalkTemplate {
     @Column(name = "id")
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "category")
-    private AlimTalkCategory category;
-
     @Column(name = "template_code", unique = true, nullable = false)
     private String templateCode;
 
-    @Column(name = "title")
+    @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "text")
+    @Column(name = "text", nullable = false)
     private String text;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category")
+    private AlimTalkCategory category;
 
     @OneToMany(mappedBy = "alimTalkTemplate", fetch = FetchType.LAZY)
     private List<AlimTalkTemplateButton> button;

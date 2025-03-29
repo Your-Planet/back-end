@@ -1,6 +1,7 @@
 package kr.co.yourplanet.core.entity.alimtalk;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
@@ -10,9 +11,19 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
+import kr.co.yourplanet.core.entity.BasicColumn;
 import kr.co.yourplanet.core.enums.AlimTalkButtonType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-public class AlimTalkTemplateButton {
+@Entity
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class AlimTalkTemplateButton extends BasicColumn {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "alim_talk_button_seq")
@@ -20,16 +31,16 @@ public class AlimTalkTemplateButton {
     @Column(name = "id")
     private String id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "alim_talk_template_id")
-    private AlimTalkTemplate alimTalkTemplate;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private AlimTalkButtonType type; // 카카오 버튼 종류 (필수)
 
-    @Column(name = "template_code", nullable = false)
+    @Column(name = "name", nullable = false)
     private String name; // 버튼 명 (필수)
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "alim_talk_template_id")
+    private AlimTalkTemplate alimTalkTemplate;
 
     @Column(name = "description")
     private String description; // 버튼 설명

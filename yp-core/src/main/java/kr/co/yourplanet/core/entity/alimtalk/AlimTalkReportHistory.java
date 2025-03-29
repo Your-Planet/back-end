@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
+import kr.co.yourplanet.core.entity.BasicColumn;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,13 +19,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AlimTalkReportHistory {
+public class AlimTalkReportHistory extends BasicColumn {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "alim_talk_report_history_seq")
     @SequenceGenerator(name = "alim_talk_report_history_seq", sequenceName = "alim_talk_report_history_seq", allocationSize = 50)
     @Column(name = "id")
     private Long id;
-    @Column(name = "msg_key")
+    @Column(name = "msg_key", nullable = false)
     private String msgKey;
     @Column(name = "report_code")
     private String reportCode;
