@@ -4,9 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import kr.co.yourplanet.core.alimtalk.dto.AlimTalkSendForm;
 
-public interface AlimTalkApiService {
+public interface AlimTalkSendService {
 
-    boolean getNewAuth();
-
-    boolean sendAlimTalk(AlimTalkSendForm alimTalkSendForm, Long memberId) throws JsonProcessingException;
+    void sendAlimTalk(AlimTalkSendForm alimTalkSendForm, Long memberId) throws JsonProcessingException;
 }

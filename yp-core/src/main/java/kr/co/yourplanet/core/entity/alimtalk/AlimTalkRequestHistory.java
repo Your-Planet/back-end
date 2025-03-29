@@ -25,15 +25,17 @@ public class AlimTalkRequestHistory {
     private Long id;
     @Column(name = "member_id")
     private Long memberId;
-    @Column(name = "msg_type")
-    private String msgType;
+    @Column(name = "to_phone_number")
+    private String toPhoneNumber;
     @Column(name = "template_code")
     private String templateCode;
     @Column(name = "send_text")
     private String sendText;
     @Column(name = "msg_key")
     private String msgKey;
-    @Column(name = "request_success")
-    private boolean requestSuccess;
+    @Column(name = "send_request_result_code")
+    private String sendRequestResultCode;
+    @Column(name = "send_request_result_message")
+    private String sendRequestResultMessage;
 }
 

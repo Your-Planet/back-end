@@ -12,7 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import kr.co.yourplanet.core.enums.AlimTalkButtonType;
 
-public class AlimTalkButton {
+public class AlimTalkTemplateButton {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "alim_talk_button_seq")
@@ -25,10 +25,14 @@ public class AlimTalkButton {
     private AlimTalkTemplate alimTalkTemplate;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "type", nullable = false)
     private AlimTalkButtonType type; // 카카오 버튼 종류 (필수)
 
-    @Column(name = "template_code")
+    @Column(name = "template_code", nullable = false)
     private String name; // 버튼 명 (필수)
+
+    @Column(name = "description")
+    private String description; // 버튼 설명
 
     @Column(name = "url_pc")
     private String urlPc; // PC 환경에서 버튼 클릭 시 이동할 URL
