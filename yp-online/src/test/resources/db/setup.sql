@@ -112,3 +112,154 @@ VALUES (4,
 INSERT INTO member_salt (id, member_id, create_date, update_date, salt)
 VALUES (4, 4, '2025-02-24 13:07:45.755085', '2025-02-24 13:07:45.755085',
         'xA3hcx8ZqcFSZT0F5VzD2BLJFdDDxW+1aUxyUK0wFoQ=');
+
+
+-- PROFILE --
+
+-- 작가 ID 1의 프로필
+INSERT INTO profile (id, member_id, description, profile_image_path, profile_image_url, toon_name, create_date,
+                     update_date)
+VALUES (1, 1, '작가 ID 1 프로필', '/app/files/upload/profile/sample-profile.jpg',
+        '/files/profile/sample-profile.jpg', '인스타툰', '2024-11-29 19:44:14', '2024-11-29 19:44:14');
+
+
+-- PRICE --
+
+-- 작가 ID 1의 가격
+INSERT INTO price (id, profile_id, additional_cut_option_type, additional_modification_option_type,
+                   additional_origin_file_option_type, additional_post_duration_extension_type,
+                   additional_refinement_option_type, cut_option_price, cut_option_working_days, cuts, is_latest,
+                   modification_count, modification_option_price, modification_option_working_days,
+                   origin_file_option_price, post_duration_extension_price, post_duration_type, price, refinement_price,
+                   working_days, create_date, update_date)
+VALUES (1, 1, 'PROVIDED', 'PROVIDED', 'UNPROVIDED',
+        'PROVIDED', 'UNPROVIDED', 0, 0, 5, true,
+        1, 10000, 2, 5000, 20000,
+        'MORE_THAN_ONE_YEAR', 300000, 15000, 14,
+        '2024-11-29 19:44:37', '2024-11-29 19:44:42');
+
+
+-- PROJECT --
+
+-- ID 1
+-- [IN_PROGRESS]
+-- 작가 ID 1, 광고주 ID 3
+-- 계약서 존재 x
+INSERT INTO project (id, sponsor_id, creator_id, creator_price_id, project_status,
+                     request_date_time, accept_date_time, reject_date_time, accepted_history_id,
+                     brand_name, campaign_description, reference_urls, reject_reason,
+                     create_date, update_date, negotiate_date_time,
+                     complete_date_time, send_date_time, settlement_date_time,
+                     order_title, order_code)
+VALUES (1, 3, 1, 1, 'IN_PROGRESS',
+        '2025-03-18 10:00:00', '2025-03-18 12:00:00', NULL, 1,
+        '브랜드A', '신제품 홍보 캠페인', 'https://example.com/reference', NULL,
+        '2025-03-18 09:00:00', '2025-03-18 12:10:00', '2025-03-19 15:00:00',
+        '2025-03-30 09:00:00', NULL, NULL,
+        'SNS 마케팅 프로젝트', 'ORD20250318001');
+
+-- ID 2
+-- [IN_REVIEW]
+-- 작가 ID 1, 광고주 ID 3
+INSERT INTO project (id, sponsor_id, creator_id, creator_price_id, project_status,
+                     request_date_time, accept_date_time, reject_date_time, accepted_history_id,
+                     brand_name, campaign_description, reference_urls, reject_reason,
+                     create_date, update_date, negotiate_date_time,
+                     complete_date_time, send_date_time, settlement_date_time,
+                     order_title, order_code)
+VALUES (2, 3, 1, 1, 'IN_REVIEW',
+        '2025-03-18 10:00:00', NULL, NULL, NULL,
+        '브랜드A', '신제품 홍보 캠페인', 'https://example.com/reference', NULL,
+        '2025-03-18 09:00:00', '2025-03-18 12:10:00', '2025-03-19 15:00:00',
+        '2025-03-30 09:00:00', NULL, NULL,
+        '유튜브 광고 캠페인', 'ORD20250318025');
+
+-- ID 3
+-- [IN_PROGRESS]
+-- 작가 ID 1, 광고주 ID 3
+-- 공급자만 계약서 작성 완료
+INSERT INTO project (id, sponsor_id, creator_id, creator_price_id, project_status,
+                     request_date_time, accept_date_time, reject_date_time, accepted_history_id,
+                     brand_name, campaign_description, reference_urls, reject_reason,
+                     create_date, update_date, negotiate_date_time,
+                     complete_date_time, send_date_time, settlement_date_time,
+                     order_title, order_code)
+VALUES (3, 3, 1, 1, 'IN_PROGRESS',
+        '2025-03-18 10:00:00', '2025-03-18 12:00:00', NULL, 1,
+        '스타트업B', '프리미엄 제품 런칭 캠페인', 'https://example.com/product-launch', NULL,
+        '2025-03-18 09:00:00', '2025-03-18 12:10:00', '2025-03-19 15:00:00',
+        '2025-03-30 09:00:00', NULL, NULL,
+        '디지털 광고 프로젝트', 'ORD20250318075');
+
+-- ID 4
+-- [IN_PROGRESS]
+-- 작가 ID 1, 광고주 ID 3
+-- 계약서 작성 완료
+INSERT INTO project (id, sponsor_id, creator_id, creator_price_id, project_status,
+                     request_date_time, accept_date_time, reject_date_time, accepted_history_id,
+                     brand_name, campaign_description, reference_urls, reject_reason,
+                     create_date, update_date, negotiate_date_time,
+                     complete_date_time, send_date_time, settlement_date_time,
+                     order_title, order_code)
+VALUES (4, 3, 1, 1, 'IN_PROGRESS',
+        '2025-03-18 10:00:00', '2025-03-18 12:00:00', NULL, 1,
+        '스타트업B', '프리미엄 제품 런칭 캠페인', 'https://example.com/product-launch', NULL,
+        '2025-03-18 09:00:00', '2025-03-18 12:10:00', '2025-03-19 15:00:00',
+        '2025-03-30 09:00:00', NULL, NULL,
+        '디지털 광고 프로젝트', 'ORD20250318982');
+
+
+-- PROJECT HISTORY --
+
+-- 프로젝트 ID 1의 히스토리 (계약서 x)
+INSERT INTO project_history (id, project_id, seq, project_status, request_member_id, additional_modification_count,
+                             additional_panel_count, additional_panel_negotiable, due_date, offer_price,
+                             origin_file_demand_type, post_duration_extension_months, refinement_demand_type,
+                             message, post_start_dates, create_date, update_date)
+VALUES (1, 1, 1, 'IN_PROGRESS', 3, 1, 2,
+        true, '2025-04-05', 450000, 'DEMANDED', 2,
+        'NOT_DEMANDED', '일정 확정 중',
+        '2025-03-26,2025-03-27', '2025-03-18 14:00:00', '2025-03-18 14:30:00');
+
+-- 프로젝트 ID 3의 히스토리 (계약서 o)
+INSERT INTO project_history (id, project_id, seq, project_status, request_member_id, additional_modification_count,
+                             additional_panel_count, additional_panel_negotiable, due_date, offer_price,
+                             origin_file_demand_type, post_duration_extension_months, refinement_demand_type,
+                             message, post_start_dates, create_date, update_date)
+VALUES (2, 3, 1, 'IN_PROGRESS', 3, 1, 2,
+        true, '2025-04-05', 450000, 'DEMANDED', 2,
+        'NOT_DEMANDED', '일정 확정 중',
+        '2025-03-26,2025-03-27', '2025-03-18 14:00:00', '2025-03-18 14:30:00');
+
+-- 프로젝트 ID 4의 히스토리 (계약서 o)
+INSERT INTO project_history (id, project_id, seq, project_status, request_member_id, additional_modification_count,
+                             additional_panel_count, additional_panel_negotiable, due_date, offer_price,
+                             origin_file_demand_type, post_duration_extension_months, refinement_demand_type,
+                             message, post_start_dates, create_date, update_date)
+VALUES (3, 4, 1, 'IN_PROGRESS', 3, 1, 2,
+        true, '2025-04-05', 450000, 'DEMANDED', 2,
+        'NOT_DEMANDED', '일정 확정 중',
+        '2025-03-26,2025-03-27', '2025-03-18 14:00:00', '2025-03-18 14:30:00');
+
+
+-- CONTRACT --
+
+-- 프로젝트 ID 3의 미완성 계약서
+INSERT INTO project_contract (id, project_id, accept_date_time, complete_date_time, contract_amount,
+                              provider_company_name, provider_registration_number, provider_address,
+                              provider_representative_name, provider_written_date_time)
+VALUES (1, 3, '2025-03-18 12:00:00', '2025-03-20 18:00:00', 500000,
+        '디자인 주식회사', '987-65-43210', '부산광역시 해운대구 센텀로 45',
+        '이영희', '2025-03-18 10:00:00');
+
+-- 프로젝트 ID 4의 완성 계약서
+INSERT INTO project_contract (id, project_id, accept_date_time, complete_date_time, contract_amount,
+                              client_company_name, client_registration_number, client_address,
+                              client_representative_name,
+                              provider_company_name, provider_registration_number, provider_address,
+                              provider_representative_name,
+                              provider_written_date_time, client_written_date_time)
+VALUES (2, 4, '2025-03-18 12:00:00', '2025-03-20 18:00:00', 750000,
+        'ABC 기업', '123-45-67890', '서울특별시 강남구 테헤란로 123', '김철수',
+        '디자인 주식회사', '987-65-43210', '부산광역시 해운대구 센텀로 45', '이영희',
+        '2025-03-17 15:00:00', '2025-03-18 10:00:00');

@@ -7,12 +7,14 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import kr.co.yourplanet.core.enums.BusinessType;
 import kr.co.yourplanet.core.enums.GenderType;
+import kr.co.yourplanet.core.enums.MemberType;
 import kr.co.yourplanet.core.model.FileMetadata;
 import lombok.Builder;
 
 @Builder
 public record MemberFullInfo(
         Long id,
+        MemberType memberType,
         String instagramUsername,
 
         String email,

@@ -2,7 +2,7 @@ spring:
   config:
     import: classpath:test-secret.properties
   datasource:
-    url: jdbc:tc:postgresql:15:///test
+    url: jdbc:tc:postgresql:16:///test
 
   jpa:
     hibernate:
@@ -37,8 +37,6 @@ file:
   studio-path: /Users/fong/files/upload/studio/
   project-reference-file-path: /Users/fong/files/upload/project/reference/
   project-reference-file-url: /files/project/reference/
-  prefix-secret-file-url: files/secret/local              # base presigned url이 /로 끝나서 생략
-  member-settlement-file-url: /settlements/members/%s/
 
 jwt:
   secret: Qb+NiKnqgiFnZnKc7uziuwFX/cq0yzFrJvrpio0JofQ=

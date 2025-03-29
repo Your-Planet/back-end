@@ -3,7 +3,9 @@ package kr.co.yourplanet.online.business.project.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import kr.co.yourplanet.core.validation.annotation.ValidIdentificationNumber;
+import lombok.Builder;
 
+@Builder
 public record ContractDraftForm(
 
         @Schema(description = "상호 또는 명칭", nullable = true)
