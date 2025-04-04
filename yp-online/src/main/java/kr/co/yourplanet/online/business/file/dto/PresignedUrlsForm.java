@@ -5,7 +5,7 @@ import java.util.List;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Size;
 import kr.co.yourplanet.core.enums.FileType;
-import kr.co.yourplanet.core.enums.ValidEnum;
+import kr.co.yourplanet.core.validation.annotation.ValidEnum;
 
 public record PresignedUrlsForm(
 

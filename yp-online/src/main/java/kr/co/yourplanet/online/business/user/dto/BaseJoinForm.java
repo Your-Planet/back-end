@@ -14,7 +14,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import kr.co.yourplanet.core.enums.BusinessType;
 import kr.co.yourplanet.core.enums.MemberType;
-import kr.co.yourplanet.core.enums.ValidEnum;
+import kr.co.yourplanet.core.validation.annotation.ValidEnum;
 import lombok.Getter;
 
 @Getter

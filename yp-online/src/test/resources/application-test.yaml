@@ -1,0 +1,47 @@
+spring:
+  config:
+    import: classpath:test-secret.properties
+  datasource:
+    url: jdbc:tc:postgresql:16:///test
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  cloud:
+    config:
+      server:
+        aws:
+          s3:
+            region: ${S3_REGION}
+            bucket: ${S3_BUCKET_NAME}
+            endpoint: ${S3_ENDPOINT}
+            credentials:
+              access-key: ${S3_ACCESS_KEY}
+              secret-key: ${S3_SECRET_KEY}
+            presigned-url:
+              expire-time: 3600
+
+encrypt:
+  secret: FKKTQWMSMillz3Jr4pdFUQ==
+
+file:
+  base-url: localhost:8080
+  profile-path: /Users/fong/files/upload/profile/
+  profile-url: /files/profile/
+  studio-path: /Users/fong/files/upload/studio/
+  project-reference-file-path: /Users/fong/files/upload/project/reference/
+  project-reference-file-url: /files/project/reference/
+
+jwt:
+  secret: Qb+NiKnqgiFnZnKc7uziuwFX/cq0yzFrJvrpio0JofQ=
+
+payments:
+  toss:
+    uri: https://api.tosspayments.com/v1/payments/confirm
+    secret-key: ${TEST_PAYMENTS_TOSS_SECRET_KEY}

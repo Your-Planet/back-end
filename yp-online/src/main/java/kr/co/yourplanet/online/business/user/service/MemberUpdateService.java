@@ -51,6 +51,7 @@ public class MemberUpdateService {
 
         if (MemberType.CREATOR.equals(memberType)) {
             builder.settlementInfo(memberCreateService.createSettlementInfo(creatorUpdateForm.getSettlementForm()));
+            // TODO: 정산 정보 이미지가 변경되었을 경우 기존 이미지 삭제
         }
 
         if (BusinessType.BUSINESS.equals(businessType)) {

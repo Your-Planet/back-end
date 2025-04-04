@@ -40,7 +40,9 @@ public class WebSecurityConfig {
             "/auth/**",
             /* files */
             "/files/profile/**",
-            "/files/project/**"
+            "/files/project/**",
+            /* h2 console */
+            "/h2-console/**"
     };
 
     @Bean

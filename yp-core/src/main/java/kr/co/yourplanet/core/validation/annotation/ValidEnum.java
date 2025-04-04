@@ -1,7 +1,9 @@
-package kr.co.yourplanet.core.enums;
+package kr.co.yourplanet.core.validation.annotation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
+import kr.co.yourplanet.core.validation.validator.EnumValidator;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

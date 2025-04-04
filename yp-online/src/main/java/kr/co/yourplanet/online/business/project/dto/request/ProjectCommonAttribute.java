@@ -1,7 +1,7 @@
 package kr.co.yourplanet.online.business.project.dto.request;
 
 import kr.co.yourplanet.core.enums.DemandType;
-import kr.co.yourplanet.core.enums.ValidEnum;
+import kr.co.yourplanet.core.validation.annotation.ValidEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

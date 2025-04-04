@@ -3,7 +3,7 @@ spring:
     import: classpath:application-secret.properties   # 이후 테스트 값으로 대체 예정
   datasource:
     url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
-    username: root
+    username: sa
     password:
     driver-class-name: org.h2.Driver
 
@@ -34,6 +34,9 @@ spring:
               secret-key: ${S3_SECRET_KEY}
             presigned-url:
               expire-time: 3600
+  h2:
+    console:
+      enabled: true
 
 encrypt:
   secret: FKKTQWMSMillz3Jr4pdFUQ==
@@ -45,8 +48,6 @@ file:
   studio-path: /Users/fong/files/upload/studio/
   project-reference-file-path: /Users/fong/files/upload/project/reference/
   project-reference-file-url: /files/project/reference/
-  prefix-secret-file-url: files/secret/local              # base presigned url이 /로 끝나서 생략
-  member-settlement-file-url: /settlements/members/%s/
 
 jwt:
   secret: Qb+NiKnqgiFnZnKc7uziuwFX/cq0yzFrJvrpio0JofQ=

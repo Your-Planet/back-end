@@ -11,11 +11,13 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import kr.co.yourplanet.core.enums.BusinessType;
-import kr.co.yourplanet.core.enums.ValidEnum;
+import kr.co.yourplanet.core.validation.annotation.ValidEnum;
 import kr.co.yourplanet.online.business.user.dto.BusinessForm;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
 public class BaseUpdateForm {
 
     @NotBlank(message = "이름을 입력해주세요.")
