@@ -26,10 +26,12 @@ import lombok.RequiredArgsConstructor;
 public class FileUrlService {
 
     private final FileService fileService;
+    private final FileValidationService fileValidationService;
     private final MemberQueryService memberQueryService;
 
     private final StorageAdapter storageAdapter;
     private final FileManageUtil fileManageUtil;
+    private final FileQueryService fileQueryService;
 
     @Value("${spring.cloud.config.server.aws.s3.expire-time.download}")
     private long downloadExpireTime;
@@ -59,5 +61,13 @@ public class FileUrlService {
                 .fileId(fileId)
                 .url(url)
                 .build();
+    }
+
+    public String getDownloadUrl(long fileId, long requesterId) {
+        fileValidationService.checkUploaded(fileId);
+        fileValidationService.checkPermission(fileId, requesterId);
+        FileMetadata file = fileQueryService.getFileMetaData(fileId);
+
+        return storageAdapter.getDownloadUrl(file.getKey(), downloadExpireTime).toString();
     }
 }

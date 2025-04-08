@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -12,25 +11,21 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import kr.co.yourplanet.core.enums.StatusCode;
-import kr.co.yourplanet.core.model.FileMetadata;
 import kr.co.yourplanet.online.business.file.adapter.StorageAdapter;
 import kr.co.yourplanet.online.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
-import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
-import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
 @Component
 @RequiredArgsConstructor
 public class S3StorageAdapter implements StorageAdapter {
-
-    private static final String ORIGINAL_FILENAME = "original-filename";
 
     private final S3Client s3Client;
     private final S3Presigner s3Presigner;
@@ -41,8 +36,8 @@ public class S3StorageAdapter implements StorageAdapter {
     @Value("${spring.cloud.config.server.aws.s3.endpoint}")
     private String endpoint;
 
-    @Value("${spring.cloud.config.server.aws.s3.presigned-url.expire-time}")
-    private long expireTime;
+    @Value("${spring.cloud.config.server.aws.s3.expire-time.upload}")
+    private long uploadExpireTime;
 
     @Override
     public URL upload(MultipartFile file, String fileKey) {
@@ -66,56 +61,47 @@ public class S3StorageAdapter implements StorageAdapter {
     }
 
     @Override
-    public URL generatePresignedUrl(String fileName, String fileKey, MediaType mediaType) {
-        PutObjectRequest objectRequest = PutObjectRequest.builder()
-                .bucket(bucket)
-                .key(fileKey)
-                .contentType(mediaType.toString())
-                .metadata(Map.of(ORIGINAL_FILENAME, fileName))
-                .build();
-
+    public URL getUploadUrl(String fileKey, MediaType mediaType) {
         PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofSeconds(expireTime))
-                .putObjectRequest(objectRequest)
+                .signatureDuration(Duration.ofSeconds(uploadExpireTime))
+                .putObjectRequest(b -> b.bucket(bucket)
+                        .key(fileKey)
+                        .contentType(mediaType.toString()))
                 .build();
 
         PresignedPutObjectRequest request = s3Presigner.presignPutObject(presignRequest);
-        return getURL(request.url().toString());
+        return request.url();
     }
 
     @Override
-    public FileMetadata getMetadata(String fileUrl) {
-        String fileKey = parseFileKey(fileUrl);
-        HeadObjectRequest headRequest = HeadObjectRequest.builder()
-                .bucket(bucket)
-                .key(fileKey)
+    public URL getDownloadUrl(String fileKey, long expireTime) {
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(expireTime))
+                .getObjectRequest(b -> b.bucket(bucket)
+                        .key(fileKey)
+                        .responseContentDisposition("attachment"))
                 .build();
 
-        try {
-            HeadObjectResponse headResponse = s3Client.headObject(headRequest);
+        PresignedGetObjectRequest request = s3Presigner.presignGetObject(presignRequest);
+        return request.url();
+    }
 
-            return FileMetadata.builder()
-                    .fileName(headResponse.metadata().get(ORIGINAL_FILENAME))
-                    .bytes(headResponse.contentLength())
-                    .build();
-        } catch (NoSuchKeyException e) {
-            throw new BusinessException(StatusCode.NOT_FOUND, "파일이 존재하지 않습니다.", false);
-        }
+    @Override
+    public URL getPublicUrl(String fileKey) {
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                .getObjectRequest(b -> b.bucket(bucket)
+                        .key(fileKey))
+                .build();
+
+        PresignedGetObjectRequest request = s3Presigner.presignGetObject(presignRequest);
+        return request.url();
     }
 
     private URL getS3FileUrl(String fileKey) {
-        return getURL(endpoint + fileKey);
-    }
-
-    private URL getURL(String url) {
         try {
-            return new URL(url);
+            return new URL(endpoint + fileKey);
         } catch (MalformedURLException e) {
             throw new BusinessException(StatusCode.INTERNAL_SERVER_ERROR, "잘못된 형식의 URL 변환에 실패했습니다.", true, e);
         }
-    }
-
-    private String parseFileKey(String fileUrl) {
-        return fileUrl.replace(endpoint, "");
     }
 }
