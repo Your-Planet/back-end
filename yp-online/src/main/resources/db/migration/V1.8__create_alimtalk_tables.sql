@@ -5,8 +5,8 @@ CREATE TABLE alim_talk_request_history (
     send_text VARCHAR(1000),
     msg_key VARCHAR(255),
     member_id BIGINT,
-    send_request_code VARCHAR(100),
-    send_request_message VARCHAR(255),
+    send_request_result_code VARCHAR(100),
+    send_request_result_message VARCHAR(255),
     create_date TIMESTAMP,
     update_date TIMESTAMP
 );
