@@ -13,8 +13,10 @@ ALTER TABLE member
         FOREIGN KEY (business_license_file_id) REFERENCES file_metadata(id);
 
 -- profile
-ALTER TABLE profile
-    ADD COLUMN profile_image_file_id BIGINT;
+ALTER TABLE profile DROP COLUMN profile_image_path;
+ALTER TABLE profile DROP COLUMN profile_image_url;
+
+ALTER TABLE profile ADD COLUMN profile_image_file_id BIGINT;
 
 ALTER TABLE profile
     ADD CONSTRAINT fk_profile_profile_image_file
