@@ -17,6 +17,7 @@ public class AlimTalkTask {
         // 애플리케이션 시작 시 즉시 실행
         runAlimTalkAuthJob();
     }
+
     @Scheduled(cron = "0 0 */12 * * *")
     public void scheduledTask() throws Exception {
         runAlimTalkAuthJob();

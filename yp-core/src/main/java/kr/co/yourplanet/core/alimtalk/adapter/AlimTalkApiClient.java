@@ -80,9 +80,11 @@ public class AlimTalkApiClient {
      * 토큰 갱신
      */
     public boolean getNewAuth() {
+        RequestBody emptyBody = RequestBody.create("", MediaType.get("application/json"));
+
         Request request = new Request.Builder()
             .url(String.format("%s%s", host, authUrl))
-            .method("POST", null)
+            .method("POST", emptyBody)
             .addHeader("Content-Type", "application/json")
             .addHeader("X-IB-Client-Id", this.id)
             .addHeader("X-IB-Client-Passwd", this.password)
