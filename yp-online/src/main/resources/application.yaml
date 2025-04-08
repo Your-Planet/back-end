@@ -16,8 +16,6 @@ spring:
 logging:
   level:
     root : info
-    org.hibernate.SQL: debug
-    org.hibernate.type: trace # sql 쿼리 input 값 확인하고 싶을 때
 
 jwt:
   header: X-AUTH-TOKEN

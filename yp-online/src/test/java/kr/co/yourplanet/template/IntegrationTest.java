@@ -25,14 +25,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Testcontainers
 public abstract class IntegrationTest {
 
-    @Container
-    @ServiceConnection
-    protected static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:16")
-            .withReuse(true);
+    // TODO: 싱글톤으로 생성되도록 변경 예정
+    // @Container
+    // @ServiceConnection
+    // protected static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:16")
+    //         .withReuse(true);
 
     @Container
     @ServiceConnection
-    protected static GenericContainer<?> redisContainer = new GenericContainer<>(DockerImageName.parse("redis:6-alpine"))
+    protected static final GenericContainer<?> redisContainer = new GenericContainer<>(DockerImageName.parse("redis:6-alpine"))
             .withExposedPorts(6379);
 
     @Autowired
