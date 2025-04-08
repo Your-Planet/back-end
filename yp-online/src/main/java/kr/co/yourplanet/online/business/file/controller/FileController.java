@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.file.dto.UploadFilesForm;
 import kr.co.yourplanet.online.business.file.dto.UploadUrlInfo;
+import kr.co.yourplanet.online.business.file.service.FileUploadService;
 import kr.co.yourplanet.online.business.file.service.FileUrlService;
 import kr.co.yourplanet.online.common.ResponseForm;
 import kr.co.yourplanet.online.common.exception.BusinessException;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.MalformedURLException;
@@ -89,6 +91,20 @@ public class FileController {
 
         return new ResponseEntity<>(
                 new ResponseForm<>(StatusCode.CREATED, response),
+                HttpStatus.CREATED
+        );
+    }
+
+    @Operation(summary = "download url 테스트 API")
+    @PostMapping("/download-url")
+    public ResponseEntity<ResponseForm<String>> generateDownloadUrl(
+            @AuthenticationPrincipal JwtPrincipal principal,
+            @RequestParam Long fileId
+    ) {
+        String url = fileUrlService.getDownloadUrl(fileId, principal.getId());
+
+        return new ResponseEntity<>(
+                new ResponseForm<>(StatusCode.CREATED, url),
                 HttpStatus.CREATED
         );
     }
