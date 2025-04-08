@@ -69,8 +69,23 @@ public class FileMetadata extends BasicColumn {
                 .build();
     }
 
-    public boolean canAccessBy(long memberId) {
+    public static FileMetadata createUploaded(Member uploader, String key, String name, String extension, FileType fileType) {
+        return FileMetadata.builder()
+                .key(key)
+                .originalName(name)
+                .extension(extension)
+                .uploaded(true)
+                .fileType(fileType)
+                .uploader(uploader)
+                .build();
+    }
+
+    public boolean isUploader(long memberId) {
         return uploader.getId().equals(memberId);
+    }
+
+    public boolean isSecret() {
+        return FileType.SETTLEMENT_FILE.equals(this.fileType);
     }
 
     public void linkReference(long referenceId) {

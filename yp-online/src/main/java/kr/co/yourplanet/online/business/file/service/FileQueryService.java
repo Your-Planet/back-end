@@ -17,6 +17,11 @@ public class FileQueryService {
 
     private final FileMetadataRepository fileMetadataRepository;
 
+    public FileMetadata getById(long fileId) {
+        return fileMetadataRepository.findById(fileId)
+                .orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "해당하는 파일을 찾을 수 없습니다.", false));
+    }
+
     public FileMetadataInfo getFileMetaDataInfo(long fileId) {
         FileMetadata file = fileMetadataRepository.findById(fileId)
                 .orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "해당하는 파일을 찾을 수 없습니다.", false));
@@ -25,10 +30,5 @@ public class FileQueryService {
                 .fileName(file.getOriginalName())
                 .bytes(file.getSize())
                 .build();
-    }
-
-    public FileMetadata getFileMetaData(long fileId) {
-        return fileMetadataRepository.findById(fileId)
-                .orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "해당하는 파일을 찾을 수 없습니다.", false));
     }
 }

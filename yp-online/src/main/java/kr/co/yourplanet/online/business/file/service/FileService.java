@@ -25,7 +25,7 @@ public class FileService {
     public void completeUpload(long fileId, long uploaderId, Long referenceId, FileType fileType) {
         fileValidationService.checkMatchingFile(fileId, uploaderId, fileType);
 
-        FileMetadata file = fileQueryService.getFileMetaData(fileId);
+        FileMetadata file = fileQueryService.getById(fileId);
         file.linkReference(referenceId);
 
         fileMetadataRepository.save(file);
@@ -38,7 +38,7 @@ public class FileService {
     }
 
     public void delete(long fileId) {
-        FileMetadata file = fileQueryService.getFileMetaData(fileId);
+        FileMetadata file = fileQueryService.getById(fileId);
         fileMetadataRepository.delete(file);
     }
 }
