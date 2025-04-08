@@ -114,13 +114,44 @@ VALUES (4, 4, '2025-02-24 13:07:45.755085', '2025-02-24 13:07:45.755085',
         'xA3hcx8ZqcFSZT0F5VzD2BLJFdDDxW+1aUxyUK0wFoQ=');
 
 
+-- FILE_METADATA --
+INSERT INTO file_metadata (id, file_key, original_name, file_type, extension, size, uploaded, uploader_id)
+VALUES (1,
+        'file/settlement/secret/bank_account_copy.png',
+        'bank_account_copy.png',
+        'SETTLEMENT_FILE',
+        'png',
+        204800,
+        true,
+        1);
+
+INSERT INTO file_metadata (id, file_key, original_name, file_type, extension, size, uploaded, uploader_id)
+VALUES (2,
+        'file/settlement/secret/business_license.jpg',
+        'business_license.jpg',
+        'SETTLEMENT_FILE',
+        'jpg',
+        500023,
+        true,
+        1);
+
+INSERT INTO file_metadata (id, file_key, original_name, file_type, extension, size, uploaded, uploader_id)
+VALUES (3,
+        'file/profile/member/profile_image.jpg',
+        'profile_image.jpg',
+        'PROFILE_IMAGE',
+        'jpg',
+        1024585,
+        true,
+        1);
+
+
 -- PROFILE --
 
 -- 작가 ID 1의 프로필
-INSERT INTO profile (id, member_id, description, profile_image_path, profile_image_url, toon_name, create_date,
+INSERT INTO profile (id, member_id, description, profile_image_file_id, toon_name, create_date,
                      update_date)
-VALUES (1, 1, '작가 ID 1 프로필', '/app/files/upload/profile/sample-profile.jpg',
-        '/files/profile/sample-profile.jpg', '인스타툰', '2024-11-29 19:44:14', '2024-11-29 19:44:14');
+VALUES (1, 1, '작가 ID 1 프로필', 3, '인스타툰', '2024-11-29 19:44:14', '2024-11-29 19:44:14');
 
 
 -- PRICE --
@@ -263,25 +294,3 @@ VALUES (2, 4, '2025-03-18 12:00:00', '2025-03-20 18:00:00', 750000,
         'ABC 기업', '123-45-67890', '서울특별시 강남구 테헤란로 123', '김철수',
         '디자인 주식회사', '987-65-43210', '부산광역시 해운대구 센텀로 45', '이영희',
         '2025-03-17 15:00:00', '2025-03-18 10:00:00');
-
-
--- FILE_METADATA --
-INSERT INTO file_metadata (id, file_key, original_name, file_type, extension, size, uploaded, uploader_id)
-VALUES (1,
-        'file/settlement/secret/bank_account_copy.png',
-        'bank_account_copy.png',
-        'SETTLEMENT_FILE',
-        'png',
-        204800,
-        true,
-        1);
-
-INSERT INTO file_metadata (id, file_key, original_name, file_type, extension, size, uploaded, uploader_id)
-VALUES (2,
-        'file/settlement/secret/business_license.jpg',
-        'business_license.jpg',
-        'SETTLEMENT_FILE',
-        'jpg',
-        500023,
-        true,
-        1);
