@@ -122,6 +122,7 @@ public class ProjectServiceImpl implements ProjectService {
         projectHistoryRepository.save(projectHistory);
 
         // 참고자료 저장
+        // TODO: 파일 메타데이터 참고 키 수정
         if (!CollectionUtils.isEmpty(referenceFiles)) {
             for (MultipartFile referenceFile : referenceFiles) {
                 FileUploadResult uploadResult = fileManageUtil.uploadFile(referenceFile,

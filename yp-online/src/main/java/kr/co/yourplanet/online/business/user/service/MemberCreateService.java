@@ -33,8 +33,8 @@ public class MemberCreateService {
                 settlementForm.getBankName(),
                 settlementForm.getAccountHolder(),
                 settlementForm.getAccountNumber(),
-                settlementForm.getBankAccountCopyUrl(),
-                settlementForm.getBusinessLicenseUrl(),
+                settlementForm.getBankAccountCopyFileId(),
+                settlementForm.getBusinessLicenseFileId(),
                 settlementForm.getRrn()
         );
     }

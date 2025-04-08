@@ -96,8 +96,8 @@ public class MemberQueryService {
                 .accountHolder(isSettlementExist ? settlementInfo.getAccountHolder() : null)
                 .accountNumber(isSettlementExist ? settlementInfo.getAccountNumber() : null)
                 .maskedRrn(isSettlementExist && !isBusinessExist ? MaskingUtil.maskRRN(settlementInfo.getRrn()) : null)
-                .bankAccountCopyFileMetadata(isSettlementExist && isBusinessExist ? fileQueryService.getFileMetaData(settlementInfo.getBankAccountCopyUrl()) : null)
-                .businessLicenseFileMetadata(isSettlementExist && isBusinessExist ? fileQueryService.getFileMetaData(settlementInfo.getBusinessLicenseUrl()) : null)
+                .bankAccountCopyFile(isSettlementExist && isBusinessExist ? fileQueryService.getFileMetaDataInfo(settlementInfo.getBankAccountCopyFileId()) : null)
+                .businessLicenseFile(isSettlementExist && isBusinessExist ? fileQueryService.getFileMetaDataInfo(settlementInfo.getBusinessLicenseFileId()) : null)
                 .build();
     }
 }
