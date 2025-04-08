@@ -72,4 +72,8 @@ public class FileMetadata extends BasicColumn {
     public boolean canAccessBy(long memberId) {
         return uploader.getId().equals(memberId);
     }
+
+    public void linkReference(long referenceId) {
+        this.referenceId = referenceId;
+    }
 }

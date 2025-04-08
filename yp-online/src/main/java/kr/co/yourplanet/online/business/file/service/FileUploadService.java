@@ -21,6 +21,7 @@ public class FileUploadService {
 
     public URL upload(MultipartFile imageFile, FileType fileType, String fileKey) {
         fileManageUtil.validateFile(imageFile, fileType);
+        // TODO: 파일 메타데이터 저장
         return storageAdapter.upload(imageFile, fileKey);
     }
 }
