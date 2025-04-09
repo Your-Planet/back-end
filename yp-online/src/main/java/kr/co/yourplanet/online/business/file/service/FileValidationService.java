@@ -16,6 +16,13 @@ public class FileValidationService {
 
     private final FileQueryService fileQueryService;
 
+    public void checkMatchingFile(long fileId, long uploaderId, FileType fileType) {
+        checkUploaded(fileId);
+        checkUploader(fileId, uploaderId);
+        checkFileType(fileId, fileType);
+        checkAlreadyLinked(fileId);
+    }
+
     public void checkUploaded(long fileId) {
         FileMetadata file = fileQueryService.getById(fileId);
 
@@ -48,9 +55,11 @@ public class FileValidationService {
         }
     }
 
-    public void checkMatchingFile(long fileId, long uploaderId, FileType fileType) {
-        checkUploaded(fileId);
-        checkUploader(fileId, uploaderId);
-        checkFileType(fileId, fileType);
+    public void checkAlreadyLinked(long fileId) {
+        FileMetadata file = fileQueryService.getById(fileId);
+
+        if (file.getReferenceId() != null) {
+            throw new BusinessException(StatusCode.CONFLICT, "이미 연결된 파일입니다.", true);
+        }
     }
 }
