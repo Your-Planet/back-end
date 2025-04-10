@@ -83,6 +83,9 @@ public class Member extends BasicColumn {
         return MemberType.SPONSOR.equals(this.getMemberType());
     }
 
+    public boolean hasSettlementInfo() {
+        return this.settlementInfo != null;
+    }
 
     // Simplified Getters
     public String getEmail() {
