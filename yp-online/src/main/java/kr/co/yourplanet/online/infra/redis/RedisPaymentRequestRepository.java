@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 
-import kr.co.yourplanet.online.business.payment.domain.IdempotencyKeyGenerator;
+import kr.co.yourplanet.online.business.payment.util.IdempotencyKeyGenerator;
 import kr.co.yourplanet.online.business.payment.repository.PaymentRequestRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -19,7 +19,6 @@ public class RedisPaymentRequestRepository implements PaymentRequestRepository {
     private static final long TTL_TIME = 600L;  // 10분
 
     private final RedisRepository redisRepository;
-    private final IdempotencyKeyGenerator idempotencyKeyGenerator;
 
     @Override
     public void save(Long memberId, String orderId, Long amount) {
@@ -27,7 +26,7 @@ public class RedisPaymentRequestRepository implements PaymentRequestRepository {
 
         redisRepository.saveHashWithTTL(key, MEMBER_ID, memberId, TTL_TIME);
         redisRepository.saveHashWithTTL(key, AMOUNT, amount, TTL_TIME);
-        redisRepository.saveHashWithTTL(key, IDEMPOTENCY_KEY, idempotencyKeyGenerator.generate(orderId), TTL_TIME);
+        redisRepository.saveHashWithTTL(key, IDEMPOTENCY_KEY, IdempotencyKeyGenerator.generate(orderId), TTL_TIME);
     }
 
     @Override
