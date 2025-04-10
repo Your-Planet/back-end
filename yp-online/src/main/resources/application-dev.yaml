@@ -12,6 +12,8 @@ spring:
     redis:
       host: ${DEV_REDIS_HOST}
       port: ${DEV_REDIS_PORT}
+      ssl:
+        enabled: true
 
   jpa:
     hibernate:
