@@ -22,7 +22,7 @@ public class AlimTalkSendServiceImpl implements AlimTalkSendService {
     private final AlimTalkRequestRepository alimTalkRequestRepository;
 
     /**
-     * ✅ API 호출 후 DB 저장하는 비즈니스 로직
+     * API 호출 후 DB 저장하는 비즈니스 로직
      */
     @Transactional
     @Override

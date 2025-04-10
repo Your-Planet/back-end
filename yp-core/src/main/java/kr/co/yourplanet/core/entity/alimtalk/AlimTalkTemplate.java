@@ -35,11 +35,14 @@ public class AlimTalkTemplate extends BasicColumn {
     @Column(name = "template_code", unique = true, nullable = false)
     private String templateCode;
 
-    @Column(name = "title", nullable = false)
-    private String title;
+    @Column(name = "template_name", nullable = false)
+    private String templateName;
 
     @Column(name = "text", nullable = false)
     private String text;
+
+    @Column(name = "title")
+    private String title;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "category")

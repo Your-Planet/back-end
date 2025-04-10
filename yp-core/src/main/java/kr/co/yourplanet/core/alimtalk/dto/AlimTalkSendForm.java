@@ -16,4 +16,18 @@ public record AlimTalkSendForm(
     String ref, // 참조 필드
     Object fallback // 실패 시 전송될 Fallback 메시지 정보
 ) {
+    public static AlimTalkSendForm ofRequiredFields(String to, String templateCode, String text) {
+        return new AlimTalkSendForm(
+            null, // senderKey - 공통 메소드에서 채워짐
+            null, // msgType - 선택
+            to,
+            templateCode,
+            text,
+            null, // title
+            null, // header
+            null, // button
+            null, // ref
+            null  // fallback
+        );
+    }
 }

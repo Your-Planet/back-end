@@ -5,8 +5,8 @@ CREATE TABLE alim_talk_request_history (
     send_text VARCHAR(1000),
     msg_key VARCHAR(255),
     member_id BIGINT,
-    send_request_code VARCHAR(100),
-    send_request_message VARCHAR(255),
+    send_request_result_code VARCHAR(100),
+    send_request_result_message VARCHAR(255),
     create_date TIMESTAMP,
     update_date TIMESTAMP
 );
@@ -31,8 +31,9 @@ CREATE SEQUENCE alim_talk_report_history_seq START WITH 1 INCREMENT BY 50;
 CREATE TABLE alim_talk_template (
     id BIGINT PRIMARY KEY,
     template_code VARCHAR(100) NOT NULL,
-    title VARCHAR(100) NOT NULL,
+    template_name VARCHAR(100) NOT NULL,
     text VARCHAR(1000) NOT NULL,
+    title VARCHAR(100),
     category VARCHAR(50),
     create_date TIMESTAMP,
     update_date TIMESTAMP

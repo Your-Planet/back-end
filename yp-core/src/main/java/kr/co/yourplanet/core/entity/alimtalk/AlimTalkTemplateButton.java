@@ -29,7 +29,7 @@ public class AlimTalkTemplateButton extends BasicColumn {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "alim_talk_button_seq")
     @SequenceGenerator(name = "alim_talk_button_seq", sequenceName = "alim_talk_button_seq", allocationSize = 50)
     @Column(name = "id")
-    private String id;
+    private Long id;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
