@@ -10,12 +10,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
 import kr.co.yourplanet.core.enums.MemberType;
-import kr.co.yourplanet.helper.WithMockJwtPrincipal;
+import kr.co.yourplanet.support.helper.WithMockJwtPrincipal;
 import kr.co.yourplanet.online.common.HeaderConstant;
-import kr.co.yourplanet.stub.ProjectContractFormBuilder;
-import kr.co.yourplanet.stub.ProjectStub;
-import kr.co.yourplanet.stub.TokenStub;
-import kr.co.yourplanet.template.IntegrationTest;
+import kr.co.yourplanet.support.stub.ProjectContractFormBuilder;
+import kr.co.yourplanet.support.stub.ProjectStub;
+import kr.co.yourplanet.support.stub.TokenStub;
+import kr.co.yourplanet.support.template.IntegrationTest;
 
 class ProjectControllerTest extends IntegrationTest {
 

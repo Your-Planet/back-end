@@ -11,11 +11,11 @@ import org.springframework.http.MediaType;
 
 import kr.co.yourplanet.core.enums.BusinessType;
 import kr.co.yourplanet.core.enums.MemberType;
-import kr.co.yourplanet.helper.WithMockJwtPrincipal;
+import kr.co.yourplanet.support.helper.WithMockJwtPrincipal;
 import kr.co.yourplanet.online.common.HeaderConstant;
-import kr.co.yourplanet.stub.MemberFormBuilder;
-import kr.co.yourplanet.stub.TokenStub;
-import kr.co.yourplanet.template.IntegrationTest;
+import kr.co.yourplanet.support.stub.MemberFormBuilder;
+import kr.co.yourplanet.support.stub.TokenStub;
+import kr.co.yourplanet.support.template.IntegrationTest;
 
 class MemberControllerTest extends IntegrationTest {
 

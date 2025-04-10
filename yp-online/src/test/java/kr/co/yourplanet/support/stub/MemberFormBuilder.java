@@ -1,4 +1,4 @@
-package kr.co.yourplanet.stub;
+package kr.co.yourplanet.support.stub;
 
 import java.time.LocalDate;
 
