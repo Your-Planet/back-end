@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import jakarta.validation.constraints.NotNull;
 import kr.co.yourplanet.core.entity.project.ProjectHistory;
 import kr.co.yourplanet.core.enums.MemberType;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectCommonAttribute;
@@ -19,7 +20,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ProjectHistoryForm {
 
+    @NotNull
     private Long id;
+    @NotNull
     private Integer seq;
     /**
      * 추가 컷
@@ -65,6 +68,7 @@ public class ProjectHistoryForm {
      */
     private Integer offerPrice;
 
+    @NotNull
     private MemberType requestMemberType;
 
     public ProjectHistoryForm(ProjectHistory projectHistory) {

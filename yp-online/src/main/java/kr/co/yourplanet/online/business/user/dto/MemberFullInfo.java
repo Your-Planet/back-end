@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import kr.co.yourplanet.core.enums.BusinessType;
 import kr.co.yourplanet.core.enums.GenderType;
 import kr.co.yourplanet.core.enums.MemberType;
@@ -13,7 +14,10 @@ import lombok.Builder;
 
 @Builder
 public record MemberFullInfo(
+
+        @NotNull
         Long id,
+        @NotNull
         MemberType memberType,
         String instagramUsername,
 

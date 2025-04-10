@@ -17,6 +17,7 @@ import java.util.Set;
 public class ProfileRegisterForm {
     @NotBlank
     private String name;
+    @NotBlank
     private String description;
     private List<String> categories;
     private List<String> portfolioIds;
