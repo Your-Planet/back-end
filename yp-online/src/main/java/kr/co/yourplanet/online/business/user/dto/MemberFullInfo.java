@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import kr.co.yourplanet.core.enums.BusinessType;
 import kr.co.yourplanet.core.enums.GenderType;
 import kr.co.yourplanet.core.enums.MemberType;
-import kr.co.yourplanet.core.model.FileMetadata;
+import kr.co.yourplanet.online.business.file.dto.FileMetadataInfo;
 import lombok.Builder;
 
 @Builder
@@ -37,7 +37,7 @@ public record MemberFullInfo(
         @Schema(description = "마스킹된 주민등록번호", example = "123456-1******")
         String maskedRrn,
 
-        FileMetadata bankAccountCopyFileMetadata,
-        FileMetadata businessLicenseFileMetadata
+        FileMetadataInfo bankAccountCopyFile,
+        FileMetadataInfo businessLicenseFile
 ) {
 }

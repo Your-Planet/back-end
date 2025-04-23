@@ -3,6 +3,7 @@ package kr.co.yourplanet.online.business.project.dto.request;
 import java.time.LocalDate;
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -85,6 +86,12 @@ public class ProjectRequestForm {
     @NotBlank(message = "캠페인 소개는 필수입니다")
     @Size(max = 500)
     private String campaignDescription;
+
+    /**
+     * 참고자료 파일 목록
+     */
+    @Schema(description = "업로드한 참고자료 파일 id 목록")
+    private List<Long> referenceFiles;
 
     /**
      * 기타 요청사항

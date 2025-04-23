@@ -28,8 +28,9 @@ spring:
             credentials:
               access-key: ${S3_ACCESS_KEY}
               secret-key: ${S3_SECRET_KEY}
-            presigned-url:
-              expire-time: 3600
+            expire-time:
+              upload: 3600
+              download: 600
 
 encrypt:
   secret: ${DEV_ENCRYPT_SECRET}

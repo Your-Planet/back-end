@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
@@ -113,15 +112,13 @@ public class FileManageUtil {
         }
     }
 
-    private void validateMetadata(Map<String, String> metadata, String key) {
-        if (!metadata.containsKey(key)) {
-            throw new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 메타 데이터 입니다.", true);
-        }
-    }
-
     /**
      * 파일 정보 생성
      */
+    public String generateFileKey(FileType fileType, String fileName) {
+        return fileType.getPath() + generateRandomFileName(fileName);
+    }
+
     private Path generateFileAbsolutePath(FileType fileType, String fileName) {
         if (FileType.PROFILE_IMAGE.equals(fileType)) {
             return Paths.get(fileProperties.getProfilePath()).resolve(fileName);
@@ -145,7 +142,7 @@ public class FileManageUtil {
         return propertyUrl + fileName;
     }
 
-    private String generateRandomFileName(String fileName) {
+    public String generateRandomFileName(String fileName) {
         return UUID.randomUUID().toString() + "-" + fileName;
     }
 

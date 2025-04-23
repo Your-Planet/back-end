@@ -1,5 +1,6 @@
 package kr.co.yourplanet.core.entity.studio;
 
+import kr.co.yourplanet.core.entity.file.FileMetadata;
 import kr.co.yourplanet.core.entity.instagram.InstagramMedia;
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.BasicColumn;
@@ -43,11 +44,9 @@ public class Profile extends BasicColumn {
     @Column(name = "toon_name")
     private String toonName;
 
-    @Column(name = "profile_image_path")
-    private String profileImagePath;
-
-    @Column(name = "profile_image_url")
-    private String profileImageUrl;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "profile_image_file_id")
+    private FileMetadata profileImageFile;
 
     @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY)
     private List<ProfileCategoryMap> profileCategoryMapList;
@@ -72,14 +71,17 @@ public class Profile extends BasicColumn {
         this.description = description;
     }
 
-    public void updateProfileImage(String profileImagePath, String profileImageUrl) {
-        this.profileImagePath = profileImagePath;
-        this.profileImageUrl = profileImageUrl;
+    public void updateProfileImage(FileMetadata file) {
+        this.profileImageFile = file;
     }
 
     public Optional<Price> getLatestPrice() {
         return (priceList == null || priceList.isEmpty() || !priceList.get(priceList.size() - 1).isLatest())
                 ? Optional.empty()
                 : Optional.of(priceList.get(priceList.size() - 1));
+    }
+
+    public boolean hasProfileImage() {
+        return this.profileImageFile != null;
     }
 }
