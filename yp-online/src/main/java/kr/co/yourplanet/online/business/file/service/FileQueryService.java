@@ -3,8 +3,11 @@ package kr.co.yourplanet.online.business.file.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import kr.co.yourplanet.core.model.FileMetadata;
-import kr.co.yourplanet.online.business.file.adapter.StorageAdapter;
+import kr.co.yourplanet.core.entity.file.FileMetadata;
+import kr.co.yourplanet.core.enums.StatusCode;
+import kr.co.yourplanet.online.business.file.dto.FileMetadataInfo;
+import kr.co.yourplanet.online.business.file.repository.FileMetadataRepository;
+import kr.co.yourplanet.online.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 
 @Transactional(readOnly = true)
@@ -12,9 +15,20 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FileQueryService {
 
-    private final StorageAdapter storageAdapter;
+    private final FileMetadataRepository fileMetadataRepository;
 
-    public FileMetadata getFileMetaData(String fileUrl) {
-        return storageAdapter.getMetadata(fileUrl);
+    public FileMetadata getById(long fileId) {
+        return fileMetadataRepository.findById(fileId)
+                .orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "해당하는 파일을 찾을 수 없습니다.", false));
+    }
+
+    public FileMetadataInfo getFileMetaDataInfo(long fileId) {
+        FileMetadata file = fileMetadataRepository.findById(fileId)
+                .orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "해당하는 파일을 찾을 수 없습니다.", false));
+
+        return FileMetadataInfo.builder()
+                .fileName(file.getOriginalName())
+                .bytes(file.getSize())
+                .build();
     }
 }

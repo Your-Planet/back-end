@@ -86,6 +86,10 @@ public class Member extends BasicColumn {
     public boolean hasSettlementInfo() {
         return this.settlementInfo != null;
     }
+  
+    public boolean isBusinessCreator() {
+        return isCreator() && BusinessType.BUSINESS.equals(getBusinessType());
+    }
 
     // Simplified Getters
     public String getEmail() {

@@ -1,4 +1,4 @@
-package kr.co.yourplanet.core.model;
+package kr.co.yourplanet.online.business.file.dto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Getter
-public class FileMetadata {
+public class FileMetadataInfo {
 
     private String fileName;
     private long bytes;

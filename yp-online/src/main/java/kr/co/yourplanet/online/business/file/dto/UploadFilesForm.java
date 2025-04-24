@@ -7,9 +7,9 @@ import jakarta.validation.constraints.Size;
 import kr.co.yourplanet.core.enums.FileType;
 import kr.co.yourplanet.core.validation.annotation.ValidEnum;
 
-public record PresignedUrlsForm(
+public record UploadFilesForm(
 
-        @Schema(defaultValue = "SETTLEMENT_FILE")
+        @Schema(examples = {"SETTLEMENT_FILE", "PROFILE_IMAGE", "PROJECT_REFERENCE_FILE"})
         @ValidEnum(enumClass = FileType.class)
         FileType fileType,
 
