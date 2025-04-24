@@ -81,11 +81,22 @@ public class MemberValidationService {
     public void validatePassword(long memberId, String password) {
         Member member = memberQueryService.getById(memberId);
 
-        String encryptSalt = member.getMemberSalt().getSalt();
-        String encryptPassword = encryptManager.encryptPassword(password, encryptManager.decryptSalt(encryptSalt));
+        String decryptedSalt = encryptManager.decryptSalt(member.getMemberSalt().getSalt());
+        String encryptPassword = encryptManager.encryptPassword(password, encryptManager.decryptSalt(decryptedSalt));
 
         if (!member.getPassword().equals(encryptPassword)) {
             throw new BusinessException(StatusCode.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.", false);
+        }
+    }
+
+    public void validatePasswordReused(long memberId, String newPassword) {
+        Member member = memberQueryService.getById(memberId);
+
+        String decryptedSalt = encryptManager.decryptSalt(member.getMemberSalt().getSalt());
+        String encryptNewPassword = encryptManager.encryptPassword(newPassword, decryptedSalt);
+
+        if (member.getPassword().equals(encryptNewPassword)) {
+            throw new BusinessException(StatusCode.BAD_REQUEST, "직전에 사용한 비밀번호는 다시 설정할 수 없습니다.", false);
         }
     }
 
