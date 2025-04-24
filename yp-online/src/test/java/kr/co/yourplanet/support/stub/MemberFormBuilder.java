@@ -17,7 +17,7 @@ public class MemberFormBuilder {
      */
 
     // 기본 정보
-    private static BaseUpdateForm individualBaseUpdateForm() {
+    public static BaseUpdateForm individualBaseUpdateForm() {
         return BaseUpdateForm.builder()
                 .name("개인")
                 .tel("010-1234-5678")
@@ -26,7 +26,7 @@ public class MemberFormBuilder {
                 .build();
     }
 
-    private static BaseUpdateForm businessBaseUpdateForm() {
+    public static BaseUpdateForm businessBaseUpdateForm() {
         return BaseUpdateForm.builder()
                 .name("사업자")
                 .tel("010-1234-5678")
