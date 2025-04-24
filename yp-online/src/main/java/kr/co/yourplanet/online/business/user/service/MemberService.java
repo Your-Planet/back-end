@@ -4,7 +4,9 @@ import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.member.MemberSalt;
 import kr.co.yourplanet.core.entity.member.RefreshToken;
 import kr.co.yourplanet.core.enums.StatusCode;
-import kr.co.yourplanet.online.business.user.dto.*;
+import kr.co.yourplanet.online.business.user.dto.request.LoginForm;
+import kr.co.yourplanet.online.business.user.dto.request.RefreshTokenForm;
+import kr.co.yourplanet.online.business.user.dto.request.ResetPasswordForm;
 import kr.co.yourplanet.online.business.user.repository.MemberRepository;
 import kr.co.yourplanet.online.business.user.repository.MemberSaltRepository;
 import kr.co.yourplanet.online.business.user.repository.RefreshTokenRepository;
@@ -86,7 +88,7 @@ public class MemberService {
         }
 
         // 비밀번호 정책 확인
-        memberValidationService.validatePassword(resetPasswordForm.getNewPassword());
+        memberValidationService.validatePasswordFormat(resetPasswordForm.getNewPassword());
 
         // 비밀번호 암호화
         String salt = encryptManager.generateSalt();

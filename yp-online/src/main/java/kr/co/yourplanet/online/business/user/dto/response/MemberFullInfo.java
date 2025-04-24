@@ -1,4 +1,4 @@
-package kr.co.yourplanet.online.business.user.dto;
+package kr.co.yourplanet.online.business.user.dto.response;
 
 import java.time.LocalDate;
 
