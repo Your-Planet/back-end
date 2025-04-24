@@ -4,6 +4,7 @@ import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.member.MemberSalt;
 import kr.co.yourplanet.core.entity.member.RefreshToken;
 import kr.co.yourplanet.core.enums.StatusCode;
+import kr.co.yourplanet.online.business.user.dto.request.ChangePasswordForm;
 import kr.co.yourplanet.online.business.user.dto.request.LoginForm;
 import kr.co.yourplanet.online.business.user.dto.request.RefreshTokenForm;
 import kr.co.yourplanet.online.business.user.dto.request.ResetPasswordForm;
@@ -28,6 +29,7 @@ import java.util.Optional;
 public class MemberService {
 
     private final MemberValidationService memberValidationService;
+    private final MemberQueryService memberQueryService;
     private final JwtTokenProvider jwtTokenProvider;
 
     private final MemberRepository memberRepository;
@@ -68,6 +70,18 @@ public class MemberService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
+    }
+
+    public void changePassword(long memberId, ChangePasswordForm form) {
+        memberValidationService.validatePasswordReused(memberId, form.password());
+        memberValidationService.validatePasswordFormat(form.password());
+        Member member = memberQueryService.getById(memberId);
+
+        String decryptedSalt = encryptManager.decryptSalt(member.getMemberSalt().getSalt());
+        String newPassword = encryptManager.encryptPassword(form.password(), decryptedSalt);
+
+        member.updatePassword(newPassword);
+        memberRepository.saveMember(member);
     }
 
     public void resetPassword(ResetPasswordForm resetPasswordForm) {
