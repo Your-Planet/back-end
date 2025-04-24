@@ -8,8 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.enums.StatusCode;
-import kr.co.yourplanet.online.business.user.dto.MemberValidateForm;
+import kr.co.yourplanet.online.business.user.dto.request.MemberValidateForm;
 import kr.co.yourplanet.online.business.user.repository.MemberRepository;
+import kr.co.yourplanet.online.common.encrypt.EncryptManager;
 import kr.co.yourplanet.online.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 
@@ -26,7 +27,9 @@ public class MemberValidationService {
     private static final int MIN_LENGTH = 8;
     private static final int MAX_LENGTH = 20;
 
+    private final MemberQueryService memberQueryService;
     private final MemberRepository memberRepository;
+    private final EncryptManager encryptManager;
 
     public void checkDuplicateEmail(String email) {
         if (memberRepository.findMemberByEmail(email).isPresent()) {
@@ -40,7 +43,7 @@ public class MemberValidationService {
         }
     }
 
-    public void validatePassword(String password) {
+    public void validatePasswordFormat(String password) {
         int patternCount = 0;
 
         // 비밀번호 길이 체크
@@ -73,6 +76,17 @@ public class MemberValidationService {
         // if (Pattern.matches(SEQUENTIAL_REGEX, password)){
         //     throw new BuisnessException("3자리 연속된 문자/숫자는 비밀번호로 사용할 수 없어요.");
         // }
+    }
+
+    public void validatePassword(long memberId, String password) {
+        Member member = memberQueryService.getById(memberId);
+
+        String encryptSalt = member.getMemberSalt().getSalt();
+        String encryptPassword = encryptManager.encryptPassword(password, encryptManager.decryptSalt(encryptSalt));
+
+        if (!member.getPassword().equals(encryptPassword)) {
+            throw new BusinessException(StatusCode.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.", false);
+        }
     }
 
     public void validateMember(MemberValidateForm memberValidateForm) {
