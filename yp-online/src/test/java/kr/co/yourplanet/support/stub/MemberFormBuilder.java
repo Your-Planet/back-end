@@ -116,8 +116,8 @@ public class MemberFormBuilder {
                 .bankName("국민은행")
                 .accountHolder("사업자")
                 .accountNumber("987-6543-2100")
-                .bankAccountCopyUrl("https://example.com/bank-account.jpg")
-                .businessLicenseUrl("https://example.com/business-license.jpg")
+                .bankAccountCopyFileId(1L)
+                .businessLicenseFileId(2L)
                 .build();
     }
 }

@@ -48,7 +48,7 @@ public class ProjectController {
             @RequestPart(required = false) List<MultipartFile> referenceFiles,
             @AuthenticationPrincipal JwtPrincipal principal) {
 
-        projectService.createProject(projectRequestForm, referenceFiles, principal.getId());
+        projectService.createProject(projectRequestForm, principal.getId());
 
         return new ResponseEntity<>(new ResponseForm<>(StatusCode.OK), HttpStatus.OK);
     }

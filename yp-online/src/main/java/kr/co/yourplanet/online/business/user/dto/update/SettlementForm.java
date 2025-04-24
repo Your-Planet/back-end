@@ -1,7 +1,5 @@
 package kr.co.yourplanet.online.business.user.dto.update;
 
-import org.hibernate.validator.constraints.URL;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -30,13 +28,9 @@ public class SettlementForm {
     @NotBlank(message = "계좌번호는 비어있을 수 없습니다.")
     private String accountNumber;
 
-    @Schema(defaultValue = "https://naver.com")
-    @URL(message = "유효한 URL 형식이 아닙니다.")
-    private String bankAccountCopyUrl;
+    private Long bankAccountCopyFileId;
 
-    @Schema(defaultValue = "https://naver.com")
-    @URL(message = "유효한 URL 형식이 아닙니다.")
-    private String businessLicenseUrl;
+    private Long businessLicenseFileId;
 
     @Schema(defaultValue = "123456-1234567")
     @Pattern(regexp = "^\\d{6}-\\d{7}$", message = "유효한 주민등록번호 형식이 아닙니다.")
@@ -47,7 +41,7 @@ public class SettlementForm {
     @JsonIgnore
     public boolean isBusinessSettlement() {
         if (BusinessType.BUSINESS.equals(businessType)) {
-            return bankAccountCopyUrl != null && businessLicenseUrl != null;
+            return bankAccountCopyFileId != null && businessLicenseFileId != null;
         }
         return true;
     }
