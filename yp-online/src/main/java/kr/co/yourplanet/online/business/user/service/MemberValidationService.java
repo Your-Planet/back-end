@@ -82,7 +82,7 @@ public class MemberValidationService {
         Member member = memberQueryService.getById(memberId);
 
         String decryptedSalt = encryptManager.decryptSalt(member.getMemberSalt().getSalt());
-        String encryptPassword = encryptManager.encryptPassword(password, encryptManager.decryptSalt(decryptedSalt));
+        String encryptPassword = encryptManager.encryptPassword(password, decryptedSalt);
 
         if (!member.getPassword().equals(encryptPassword)) {
             throw new BusinessException(StatusCode.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.", false);

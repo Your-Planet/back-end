@@ -73,8 +73,8 @@ public class MemberService {
     }
 
     public void changePassword(long memberId, ChangePasswordForm form) {
-        memberValidationService.validatePasswordReused(memberId, form.password());
         memberValidationService.validatePasswordFormat(form.password());
+        memberValidationService.validatePasswordReused(memberId, form.password());
         Member member = memberQueryService.getById(memberId);
 
         String decryptedSalt = encryptManager.decryptSalt(member.getMemberSalt().getSalt());
