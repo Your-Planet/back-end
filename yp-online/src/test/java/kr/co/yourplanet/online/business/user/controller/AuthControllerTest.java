@@ -1,0 +1,56 @@
+package kr.co.yourplanet.online.business.user.controller;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
+
+import kr.co.yourplanet.core.enums.MemberType;
+import kr.co.yourplanet.helper.WithMockJwtPrincipal;
+import kr.co.yourplanet.online.business.user.dto.request.ValidatePasswordForm;
+import kr.co.yourplanet.online.common.HeaderConstant;
+import kr.co.yourplanet.stub.MemberStub;
+import kr.co.yourplanet.stub.TokenStub;
+import kr.co.yourplanet.template.IntegrationTest;
+
+class AuthControllerTest extends IntegrationTest {
+
+    @Nested
+    @DisplayName("비밀번호 검증 API")
+    class ValidatePassword {
+
+        private final String path = "/auth/validate-password";
+
+        @Test
+        @DisplayName("[성공] 입력 비밀번호와 기존 비밀번호가 일치하면 검증에 성공한다.")
+        @WithMockJwtPrincipal(id = 1L, memberType = MemberType.CREATOR)
+        void success() throws Exception {
+            ValidatePasswordForm form = new ValidatePasswordForm(MemberStub.getPassword());
+
+            mockMvc.perform(post(path)
+                            .header(HeaderConstant.ACCESS_TOKEN, TokenStub.getMockAccessToken())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(toJson(form)))
+                    .andDo(print())
+                    .andExpect(status().isOk());
+        }
+
+        @Test
+        @DisplayName("[실패] 입력 비밀번호와 기존 비밀번호가 일치하지 않으면 검증에 실패한다.")
+        @WithMockJwtPrincipal(id = 1L, memberType = MemberType.CREATOR)
+        void fail() throws Exception {
+            ValidatePasswordForm form = new ValidatePasswordForm("InvalidPassword123@");
+
+            mockMvc.perform(post(path)
+                            .header(HeaderConstant.ACCESS_TOKEN, TokenStub.getMockAccessToken())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(toJson(form)))
+                    .andDo(print())
+                    .andExpect(status().isUnauthorized());
+        }
+    }
+}
