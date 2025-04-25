@@ -1,4 +1,4 @@
-package kr.co.yourplanet.online.business.user.dto;
+package kr.co.yourplanet.online.business.user.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

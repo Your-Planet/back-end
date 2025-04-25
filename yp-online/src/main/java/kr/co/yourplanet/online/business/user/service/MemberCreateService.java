@@ -6,10 +6,10 @@ import kr.co.yourplanet.core.entity.member.AgreementInfo;
 import kr.co.yourplanet.core.entity.member.BusinessInfo;
 import kr.co.yourplanet.core.entity.member.InstagramInfo;
 import kr.co.yourplanet.core.entity.member.SettlementInfo;
-import kr.co.yourplanet.online.business.user.dto.BusinessForm;
-import kr.co.yourplanet.online.business.user.dto.InstagramForm;
-import kr.co.yourplanet.online.business.user.dto.TermsForm;
-import kr.co.yourplanet.online.business.user.dto.update.SettlementForm;
+import kr.co.yourplanet.online.business.user.dto.request.BusinessForm;
+import kr.co.yourplanet.online.business.user.dto.request.InstagramForm;
+import kr.co.yourplanet.online.business.user.dto.request.TermsForm;
+import kr.co.yourplanet.online.business.user.dto.request.SettlementForm;
 
 @Service
 public class MemberCreateService {
@@ -33,8 +33,8 @@ public class MemberCreateService {
                 settlementForm.getBankName(),
                 settlementForm.getAccountHolder(),
                 settlementForm.getAccountNumber(),
-                settlementForm.getBankAccountCopyUrl(),
-                settlementForm.getBusinessLicenseUrl(),
+                settlementForm.getBankAccountCopyFileId(),
+                settlementForm.getBusinessLicenseFileId(),
                 settlementForm.getRrn()
         );
     }

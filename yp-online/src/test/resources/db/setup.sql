@@ -114,13 +114,44 @@ VALUES (4, 4, '2025-02-24 13:07:45.755085', '2025-02-24 13:07:45.755085',
         'xA3hcx8ZqcFSZT0F5VzD2BLJFdDDxW+1aUxyUK0wFoQ=');
 
 
+-- FILE_METADATA --
+INSERT INTO file_metadata (id, file_key, original_name, file_type, extension, size, uploaded, uploader_id)
+VALUES (1,
+        'file/settlement/secret/bank_account_copy.png',
+        'bank_account_copy.png',
+        'SETTLEMENT_FILE',
+        'png',
+        204800,
+        true,
+        1);
+
+INSERT INTO file_metadata (id, file_key, original_name, file_type, extension, size, uploaded, uploader_id)
+VALUES (2,
+        'file/settlement/secret/business_license.jpg',
+        'business_license.jpg',
+        'SETTLEMENT_FILE',
+        'jpg',
+        500023,
+        true,
+        1);
+
+INSERT INTO file_metadata (id, file_key, original_name, file_type, extension, size, uploaded, uploader_id)
+VALUES (3,
+        'file/profile/member/profile_image.jpg',
+        'profile_image.jpg',
+        'PROFILE_IMAGE',
+        'jpg',
+        1024585,
+        true,
+        1);
+
+
 -- PROFILE --
 
 -- 작가 ID 1의 프로필
-INSERT INTO profile (id, member_id, description, profile_image_path, profile_image_url, toon_name, create_date,
+INSERT INTO profile (id, member_id, description, profile_image_file_id, toon_name, create_date,
                      update_date)
-VALUES (1, 1, '작가 ID 1 프로필', '/app/files/upload/profile/sample-profile.jpg',
-        '/files/profile/sample-profile.jpg', '인스타툰', '2024-11-29 19:44:14', '2024-11-29 19:44:14');
+VALUES (1, 1, '작가 ID 1 프로필', 3, '인스타툰', '2024-11-29 19:44:14', '2024-11-29 19:44:14');
 
 
 -- PRICE --

@@ -3,14 +3,13 @@ package kr.co.yourplanet.online.business.studio.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import kr.co.yourplanet.core.entity.file.FileMetadata;
 import kr.co.yourplanet.core.entity.instagram.InstagramMedia;
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.studio.Category;
@@ -19,6 +18,9 @@ import kr.co.yourplanet.core.entity.studio.Profile;
 import kr.co.yourplanet.core.entity.studio.ProfileCategoryMap;
 import kr.co.yourplanet.core.enums.FileType;
 import kr.co.yourplanet.core.enums.StatusCode;
+import kr.co.yourplanet.online.business.file.service.FileService;
+import kr.co.yourplanet.online.business.file.service.FileUploadService;
+import kr.co.yourplanet.online.business.file.service.FileUrlService;
 import kr.co.yourplanet.online.business.instagram.repository.InstagramMediaRepository;
 import kr.co.yourplanet.online.business.studio.dto.PortfolioInfo;
 import kr.co.yourplanet.online.business.studio.dto.ProfileInfo;
@@ -31,13 +33,16 @@ import kr.co.yourplanet.online.business.studio.service.ProfileService;
 import kr.co.yourplanet.online.business.user.repository.MemberRepository;
 import kr.co.yourplanet.online.common.exception.BusinessException;
 import kr.co.yourplanet.online.common.util.FileManageUtil;
-import kr.co.yourplanet.online.common.util.FileUploadResult;
 import kr.co.yourplanet.online.properties.FileProperties;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
+
+    private final FileService fileService;
+    private final FileUploadService fileUploadService;
+    private final FileUrlService fileUrlService;
 
     private final FileManageUtil fileManageUtil;
     private final ProfileRepository profileRepository;
@@ -60,8 +65,7 @@ public class ProfileServiceImpl implements ProfileService {
         List<PortfolioInfo> portfolioInfoList = new ArrayList<>();
 
         if (!CollectionUtils.isEmpty(medias)) {
-            portfolioInfoList = medias.stream().map(PortfolioInfo::new)
-                    .collect(Collectors.toList());
+            portfolioInfoList = medias.stream().map(PortfolioInfo::new).toList();
         }
 
         return ProfileInfo.builder()
@@ -70,7 +74,9 @@ public class ProfileServiceImpl implements ProfileService {
                 .description(profile.getDescription())
                 .categories(profile.getCategoryTypes())
                 .portfolios(portfolioInfoList)
-                .profileImageUrl(fileProperties.getBaseUrl() + profile.getProfileImageUrl())
+                .profileImageUrl(profile.hasProfileImage() ?
+                        fileUrlService.getUrl(profile.getProfileImageFile().getId(), profile.getMember().getId()) :
+                        fileProperties.getBaseUrl())
                 .instagramUsername(profile.getMember().getInstagramInfo().getInstagramUsername())
                 .build();
     }
@@ -124,21 +130,21 @@ public class ProfileServiceImpl implements ProfileService {
         profileCategoryMapRepository.saveAll(profileCategoryMapList);
 
 
-        // 프로필 이미지 저장 부분
+        // 프로필 이미지 저장
         if (profileImageFile != null && !profileImageFile.isEmpty()) {
-
-            // 아래 fileManageUtil.uploadFile() 메소드에서도 validateFile() 수행하지만 deleteFile() 전에 유효성 먼저 체크해야 하므로 추가
             fileManageUtil.validateFile(profileImageFile, FileType.PROFILE_IMAGE);
+            FileMetadata uploaded = fileUploadService.upload(profileImageFile, FileType.PROFILE_IMAGE, memberId);
 
-            // 모든 스튜디오 프로필 저장 로직이 완료된 후 프로필 이미지 저장처리
-            // 기존에 존재하는 프로필 이미지 삭제
-            if (StringUtils.hasText(profile.getProfileImagePath())) {
-                fileManageUtil.deleteFile(profile.getProfileImagePath());
-                profile.updateProfileImage("", "");
-            }
-            // 프로필 이미지 파일시스템 저장
-            FileUploadResult uploadResult = fileManageUtil.uploadFile(profileImageFile, FileType.PROFILE_IMAGE);
-            profile.updateProfileImage(uploadResult.getFilePath(), uploadResult.getFileUrl());
+            // 기존 이미지 존재 여부에 따라 교체 / 완료
+            optionalProfile
+                    .map(Profile::getProfileImageFile)
+                    .map(FileMetadata::getId)
+                    .ifPresentOrElse(
+                            oldId -> fileService.replace(oldId, uploaded.getId(), memberId, memberId, FileType.PROFILE_IMAGE),
+                            () -> fileService.completeUpload(uploaded.getId(), memberId, memberId, FileType.PROFILE_IMAGE)
+                    );
+
+            profile.updateProfileImage(uploaded);
         }
     }
 }
