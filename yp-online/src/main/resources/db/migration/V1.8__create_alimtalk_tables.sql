@@ -33,12 +33,13 @@ CREATE TABLE alim_talk_template (
     template_code VARCHAR(100) NOT NULL,
     template_name VARCHAR(100) NOT NULL,
     text VARCHAR(1000) NOT NULL,
+    msg_type VARCHAR(50) NOT NULL,
     title VARCHAR(100),
     category VARCHAR(50),
     create_date TIMESTAMP,
     update_date TIMESTAMP
 );
-CREATE SEQUENCE alim_talk_template_seq START WITH 1 INCREMENT BY 50;
+CREATE SEQUENCE alim_talk_template_seq START WITH 1 INCREMENT BY 1;
 
 CREATE TABLE alim_talk_template_button (
     id BIGINT PRIMARY KEY,
@@ -59,4 +60,4 @@ CREATE TABLE alim_talk_template_button (
     update_date TIMESTAMP,
     FOREIGN KEY (alim_talk_template_id) REFERENCES alim_talk_template(id)
 );
-CREATE SEQUENCE alim_talk_button_seq START WITH 1 INCREMENT BY 50;
+CREATE SEQUENCE alim_talk_button_seq START WITH 1 INCREMENT BY 1;

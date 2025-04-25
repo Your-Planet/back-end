@@ -28,12 +28,13 @@ import okhttp3.Response;
 public class AlimTalkApiClient {
     private final RedisTemplate<String, String> redisTemplate;
     private final OkHttpClient client;
-    private final ObjectMapper objectMapper;
 
     private static final String OMNI_SUCCESS = "A000";
     private static final String SCHEMA_KEY = "schema";
     private static final String TOKEN_KEY = "token";
     private static final String EXPIRED_KEY = "expired";
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @Value("${omni.id}")
     private String id;
@@ -51,7 +52,9 @@ public class AlimTalkApiClient {
      */
     public AlimTalkSendResponseForm sendAlimTalk(AlimTalkSendForm alimTalkSendForm) throws
         JsonProcessingException {
+
         String authToken = getAuthToken();
+
         String json = objectMapper.writeValueAsString(alimTalkSendForm);
 
         RequestBody body = RequestBody.create(json, MediaType.get("application/json"));

@@ -8,6 +8,7 @@ import kr.co.yourplanet.core.entity.member.MemberSalt;
 import kr.co.yourplanet.core.entity.member.MemberBasicInfo;
 import kr.co.yourplanet.core.enums.BusinessType;
 import kr.co.yourplanet.core.enums.MemberType;
+import kr.co.yourplanet.online.business.alimtalk.util.BusinessAlimTalkSendUtil;
 import kr.co.yourplanet.online.business.user.dto.BaseJoinForm;
 import kr.co.yourplanet.online.business.user.dto.CreatorJoinForm;
 import kr.co.yourplanet.online.business.user.dto.InstagramForm;
@@ -30,6 +31,8 @@ public class MemberJoinService {
 
     private final EncryptManager encryptManager;
 
+    private final BusinessAlimTalkSendUtil businessAlimTalkSendUtil;
+
     public void join(MemberJoinForm joinForm) {
         validateJoin(joinForm);
 
@@ -39,6 +42,8 @@ public class MemberJoinService {
 
         MemberSalt memberSalt = createMemberSalt(member, salt);
         memberSaltRepository.saveMemberSalt(memberSalt);
+
+        businessAlimTalkSendUtil.sendMemberJoinCompleteAlimTalk(member);
     }
 
     private void validateJoin(MemberJoinForm joinForm) {

@@ -2,6 +2,8 @@ package kr.co.yourplanet.core.alimtalk.dto;
 
 import java.util.List;
 
+import kr.co.yourplanet.core.entity.alimtalk.AlimTalkTemplate;
+import kr.co.yourplanet.core.entity.alimtalk.AlimTalkTemplateButton;
 import kr.co.yourplanet.core.enums.AlimTalkMsgType;
 
 public record AlimTalkSendForm(
@@ -16,18 +18,40 @@ public record AlimTalkSendForm(
     String ref, // 참조 필드
     Object fallback // 실패 시 전송될 Fallback 메시지 정보
 ) {
-    public static AlimTalkSendForm ofRequiredFields(String to, String templateCode, String text) {
+    public static AlimTalkSendForm ofRequiredFields(AlimTalkTemplate alimTalkTemplate, String senderKey, String to, String text) {
         return new AlimTalkSendForm(
-            null, // senderKey - 공통 메소드에서 채워짐
-            null, // msgType - 선택
+            senderKey,
+            alimTalkTemplate.getMsgType(),
             to,
-            templateCode,
+            alimTalkTemplate.getTemplateCode(),
             text,
-            null, // title
+            alimTalkTemplate.getTitle(), // title
             null, // header
-            null, // button
+            setAlimTalkButtons(alimTalkTemplate.getButton()), // button
             null, // ref
             null  // fallback
         );
+    }
+
+    public static List<AlimTalkButtonForm> setAlimTalkButtons(List<AlimTalkTemplateButton> alimTalkButtons) {
+        if (alimTalkButtons == null || alimTalkButtons.isEmpty()) {
+            return List.of();
+        }
+
+        return alimTalkButtons.stream()
+            .map(button -> new AlimTalkButtonForm(
+                button.getType(),
+                button.getName(),
+                button.getUrlPc(),
+                button.getUrlMobile(),
+                button.getSchemeIos(),
+                button.getSchemeAndroid(),
+                button.getTarget(),
+                button.getChatExtra(),
+                button.getChatEvent(),
+                button.getBizFormKey(),
+                button.getBizFormId()
+            ))
+            .toList();
     }
 }

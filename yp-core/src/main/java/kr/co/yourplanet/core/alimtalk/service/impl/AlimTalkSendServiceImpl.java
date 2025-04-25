@@ -44,5 +44,4 @@ public class AlimTalkSendServiceImpl implements AlimTalkSendService {
 
         alimTalkRequestRepository.save(history);
     }
-
 }

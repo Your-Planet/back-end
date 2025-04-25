@@ -14,6 +14,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import kr.co.yourplanet.core.entity.BasicColumn;
 import kr.co.yourplanet.core.enums.AlimTalkCategory;
+import kr.co.yourplanet.core.enums.AlimTalkMsgType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -41,6 +42,10 @@ public class AlimTalkTemplate extends BasicColumn {
     @Column(name = "text", nullable = false)
     private String text;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "msg_type", nullable = false)
+    private AlimTalkMsgType msgType;
+
     @Column(name = "title")
     private String title;
 
@@ -48,6 +53,6 @@ public class AlimTalkTemplate extends BasicColumn {
     @Column(name = "category")
     private AlimTalkCategory category;
 
-    @OneToMany(mappedBy = "alimTalkTemplate", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "alimTalkTemplate", fetch = FetchType.EAGER)
     private List<AlimTalkTemplateButton> button;
 }
