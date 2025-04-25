@@ -29,7 +29,7 @@ public class AlimTalkTemplate extends BasicColumn {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "alim_talk_template_seq")
-    @SequenceGenerator(name = "alim_talk_template_seq", sequenceName = "alim_talk_template_seq", allocationSize = 50)
+    @SequenceGenerator(name = "alim_talk_template_seq", sequenceName = "alim_talk_template_seq", allocationSize = 1)
     @Column(name = "id")
     private Long id;
 
