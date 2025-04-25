@@ -1,7 +1,8 @@
-package kr.co.yourplanet.online.business.user.dto;
+package kr.co.yourplanet.online.business.user.dto.response;
 
 import kr.co.yourplanet.core.enums.GenderType;
 import kr.co.yourplanet.core.enums.MemberType;
+import kr.co.yourplanet.online.business.user.dto.request.TermsForm;
 import lombok.*;
 
 @Getter
