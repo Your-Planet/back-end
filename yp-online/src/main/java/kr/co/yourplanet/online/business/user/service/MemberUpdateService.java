@@ -1,15 +1,21 @@
 package kr.co.yourplanet.online.business.user.service;
 
+import java.util.Objects;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.member.MemberBasicInfo;
+import kr.co.yourplanet.core.entity.member.SettlementInfo;
 import kr.co.yourplanet.core.enums.BusinessType;
+import kr.co.yourplanet.core.enums.FileType;
 import kr.co.yourplanet.core.enums.MemberType;
-import kr.co.yourplanet.online.business.user.dto.update.BaseUpdateForm;
-import kr.co.yourplanet.online.business.user.dto.update.CreatorUpdateForm;
-import kr.co.yourplanet.online.business.user.dto.update.MemberUpdateForm;
+import kr.co.yourplanet.online.business.file.service.FileService;
+import kr.co.yourplanet.online.business.user.dto.request.BaseUpdateForm;
+import kr.co.yourplanet.online.business.user.dto.request.CreatorUpdateForm;
+import kr.co.yourplanet.online.business.user.dto.request.MemberUpdateForm;
+import kr.co.yourplanet.online.business.user.dto.request.SettlementForm;
 import kr.co.yourplanet.online.business.user.repository.MemberRepository;
 import kr.co.yourplanet.online.common.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +29,7 @@ public class MemberUpdateService {
     private final MemberQueryService memberQueryService;
 
     private final MemberRepository memberRepository;
+    private final FileService fileService;
 
     public void updateMember(Long memberId, MemberUpdateForm memberUpdateForm) {
         Member member = memberQueryService.getById(memberId);
@@ -31,6 +38,10 @@ public class MemberUpdateService {
 
         Member updatedMember = createUpdateMember(member, memberUpdateForm);
         memberRepository.saveMember(updatedMember);
+
+        if (member.isBusinessCreator()) {
+            upsertSettlementFile(member, memberUpdateForm.getCreatorUpdateForm().getSettlementForm());
+        }
     }
 
     private Member createUpdateMember(Member member, MemberUpdateForm memberUpdateForm) {
@@ -50,8 +61,8 @@ public class MemberUpdateService {
                 .memberSalt(member.getMemberSalt());
 
         if (MemberType.CREATOR.equals(memberType)) {
-            builder.settlementInfo(memberCreateService.createSettlementInfo(creatorUpdateForm.getSettlementForm()));
-            // TODO: 정산 정보 이미지가 변경되었을 경우 기존 이미지 삭제
+            SettlementForm form = creatorUpdateForm.getSettlementForm();
+            builder.settlementInfo(memberCreateService.createSettlementInfo(form));
         }
 
         if (BusinessType.BUSINESS.equals(businessType)) {
@@ -87,5 +98,31 @@ public class MemberUpdateService {
                 baseForm.getBirthDate(),
                 creatorUpdateForm != null ? creatorUpdateForm.getGenderType() : null
         );
+    }
+
+    private void upsertSettlementFile(Member member, SettlementForm form) {
+        if (form == null) {
+            return;
+        }
+
+        long uploaderId = member.getId();
+
+        SettlementInfo existing = member.getSettlementInfo();
+        Long newBankFileId = form.getBankAccountCopyFileId();
+        Long newLicenseFileId = form.getBusinessLicenseFileId();
+
+        if (existing != null) {
+            replaceSettlementFileIfChanged(existing.getBankAccountCopyFileId(), newBankFileId, uploaderId);
+            replaceSettlementFileIfChanged(existing.getBusinessLicenseFileId(), newLicenseFileId, uploaderId);
+        } else {
+            fileService.completeUpload(newBankFileId, uploaderId, uploaderId, FileType.SETTLEMENT_FILE);
+            fileService.completeUpload(newLicenseFileId, uploaderId, uploaderId, FileType.SETTLEMENT_FILE);
+        }
+    }
+
+    private void replaceSettlementFileIfChanged(Long oldId, Long newId, long uploaderId) {
+        if (!Objects.equals(oldId, newId)) {
+            fileService.replace(oldId, newId, uploaderId, uploaderId, FileType.SETTLEMENT_FILE);
+        }
     }
 }

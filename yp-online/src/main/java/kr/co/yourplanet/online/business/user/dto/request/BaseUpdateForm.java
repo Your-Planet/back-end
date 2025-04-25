@@ -1,4 +1,4 @@
-package kr.co.yourplanet.online.business.user.dto.update;
+package kr.co.yourplanet.online.business.user.dto.request;
 
 import java.time.LocalDate;
 
@@ -12,7 +12,6 @@ import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import kr.co.yourplanet.core.enums.BusinessType;
 import kr.co.yourplanet.core.validation.annotation.ValidEnum;
-import kr.co.yourplanet.online.business.user.dto.BusinessForm;
 import lombok.Builder;
 import lombok.Getter;
 

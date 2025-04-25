@@ -4,11 +4,11 @@ import java.time.LocalDate;
 
 import kr.co.yourplanet.core.enums.BusinessType;
 import kr.co.yourplanet.core.enums.GenderType;
-import kr.co.yourplanet.online.business.user.dto.BusinessForm;
-import kr.co.yourplanet.online.business.user.dto.update.BaseUpdateForm;
-import kr.co.yourplanet.online.business.user.dto.update.CreatorUpdateForm;
-import kr.co.yourplanet.online.business.user.dto.update.MemberUpdateForm;
-import kr.co.yourplanet.online.business.user.dto.update.SettlementForm;
+import kr.co.yourplanet.online.business.user.dto.request.BusinessForm;
+import kr.co.yourplanet.online.business.user.dto.request.BaseUpdateForm;
+import kr.co.yourplanet.online.business.user.dto.request.CreatorUpdateForm;
+import kr.co.yourplanet.online.business.user.dto.request.MemberUpdateForm;
+import kr.co.yourplanet.online.business.user.dto.request.SettlementForm;
 
 public class MemberFormBuilder {
 
@@ -116,8 +116,8 @@ public class MemberFormBuilder {
                 .bankName("국민은행")
                 .accountHolder("사업자")
                 .accountNumber("987-6543-2100")
-                .bankAccountCopyUrl("https://example.com/bank-account.jpg")
-                .businessLicenseUrl("https://example.com/business-license.jpg")
+                .bankAccountCopyFileId(1L)
+                .businessLicenseFileId(2L)
                 .build();
     }
 }

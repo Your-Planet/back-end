@@ -8,17 +8,16 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.project.Project;
 import kr.co.yourplanet.core.entity.project.ProjectHistory;
-import kr.co.yourplanet.core.entity.project.ProjectReferenceFile;
 import kr.co.yourplanet.core.entity.studio.Price;
 import kr.co.yourplanet.core.enums.FileType;
 import kr.co.yourplanet.core.enums.MemberType;
 import kr.co.yourplanet.core.enums.ProjectStatus;
 import kr.co.yourplanet.core.enums.StatusCode;
+import kr.co.yourplanet.online.business.file.service.FileService;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectAcceptForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectNegotiateForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectRejectForm;
@@ -31,14 +30,11 @@ import kr.co.yourplanet.online.business.project.dto.response.ProjectOverview;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectTimes;
 import kr.co.yourplanet.online.business.project.dto.response.ReferenceFileInfo;
 import kr.co.yourplanet.online.business.project.repository.ProjectHistoryRepository;
-import kr.co.yourplanet.online.business.project.repository.ProjectReferenceFileRepository;
 import kr.co.yourplanet.online.business.project.repository.ProjectRepository;
 import kr.co.yourplanet.online.business.project.service.ProjectService;
 import kr.co.yourplanet.online.business.studio.repository.PriceRepository;
 import kr.co.yourplanet.online.business.user.repository.MemberRepository;
 import kr.co.yourplanet.online.common.exception.BusinessException;
-import kr.co.yourplanet.online.common.util.FileManageUtil;
-import kr.co.yourplanet.online.common.util.FileUploadResult;
 import kr.co.yourplanet.online.common.util.SnowflakeIdGenerator;
 import kr.co.yourplanet.online.properties.FileProperties;
 import lombok.RequiredArgsConstructor;
@@ -50,20 +46,18 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional(readOnly = true)
 public class ProjectServiceImpl implements ProjectService {
 
-    private final FileManageUtil fileManageUtil;
     private final FileProperties fileProperties;
     private final SnowflakeIdGenerator snowflakeIdGenerator;
 
     private final ProjectRepository projectRepository;
     private final ProjectHistoryRepository projectHistoryRepository;
-    private final ProjectReferenceFileRepository projectReferenceFileRepository;
     private final MemberRepository memberRepository;
     private final PriceRepository priceRepository;
+    private final FileService fileService;
 
     @Override
     @Transactional
-    public void createProject(ProjectRequestForm projectRequestForm, List<MultipartFile> referenceFiles,
-        Long sponsorId) {
+    public void createProject(ProjectRequestForm projectRequestForm, Long sponsorId) {
         Member sponsor = findMemberById(sponsorId);
         Price creatorPrice = priceRepository.findById(projectRequestForm.getPriceId())
             .orElseThrow(() -> new BusinessException(StatusCode.BAD_REQUEST, "작가의 스튜디오 정보가 존재하지 않습니다", false));
@@ -100,8 +94,6 @@ public class ProjectServiceImpl implements ProjectService {
             .creatorPrice(creatorPrice)
             .build();
 
-        projectRepository.save(project);
-
         // 프로젝트 히스토리 저장
         ProjectHistory projectHistory = ProjectHistory.builder()
             .project(project) // 필요한 Project 객체
@@ -121,22 +113,14 @@ public class ProjectServiceImpl implements ProjectService {
             .build();
         projectHistoryRepository.save(projectHistory);
 
-        // 참고자료 저장
-        if (!CollectionUtils.isEmpty(referenceFiles)) {
-            for (MultipartFile referenceFile : referenceFiles) {
-                FileUploadResult uploadResult = fileManageUtil.uploadFile(referenceFile,
-                    FileType.PROJECT_REFERENCE_FILE);
-                ProjectReferenceFile projectReferenceFile = ProjectReferenceFile.builder()
-                    .project(project)
-                    .originalFileName(uploadResult.getOriginalFileName())
-                    .randomFileName(uploadResult.getRandomFileName())
-                    .referenceFilePath(uploadResult.getFilePath())
-                    .referenceFileUrl(uploadResult.getFileUrl())
-                    .build();
-                projectReferenceFileRepository.save(projectReferenceFile);
+        // 참고자료 파일 처리
+        long projectId = projectRepository.save(project).getId();
+        List<Long> referenceFiles = projectRequestForm.getReferenceFiles();
+        if (!referenceFiles.isEmpty()) {
+            for (Long fileId : referenceFiles) {
+                fileService.completeUpload(fileId, sponsorId, projectId, FileType.PROJECT_REFERENCE_FILE);
             }
         }
-
     }
 
     @Override

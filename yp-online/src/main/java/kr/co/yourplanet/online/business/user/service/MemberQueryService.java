@@ -13,10 +13,10 @@ import kr.co.yourplanet.core.enums.BusinessType;
 import kr.co.yourplanet.core.enums.MemberType;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.file.service.FileQueryService;
-import kr.co.yourplanet.online.business.user.dto.FindIdForm;
-import kr.co.yourplanet.online.business.user.dto.MemberDetail;
-import kr.co.yourplanet.online.business.user.dto.MemberFullInfo;
-import kr.co.yourplanet.online.business.user.dto.TermsForm;
+import kr.co.yourplanet.online.business.user.dto.request.FindIdForm;
+import kr.co.yourplanet.online.business.user.dto.response.MemberDetail;
+import kr.co.yourplanet.online.business.user.dto.response.MemberFullInfo;
+import kr.co.yourplanet.online.business.user.dto.request.TermsForm;
 import kr.co.yourplanet.online.business.user.repository.MemberRepository;
 import kr.co.yourplanet.online.common.exception.BusinessException;
 import kr.co.yourplanet.online.common.util.MaskingUtil;
@@ -101,8 +101,8 @@ public class MemberQueryService {
                 .accountHolder(isSettlementExist ? settlementInfo.getAccountHolder() : null)
                 .accountNumber(isSettlementExist ? settlementInfo.getAccountNumber() : null)
                 .maskedRrn(isSettlementExist && !isBusiness ? MaskingUtil.maskRRN(settlementInfo.getRrn()) : null)
-                .bankAccountCopyFileMetadata(isSettlementExist && isBusiness ? fileQueryService.getFileMetaData(settlementInfo.getBankAccountCopyUrl()) : null)
-                .businessLicenseFileMetadata(isSettlementExist && isBusiness ? fileQueryService.getFileMetaData(settlementInfo.getBusinessLicenseUrl()) : null)
+                .bankAccountCopyFile(isSettlementExist && isBusiness ? fileQueryService.getFileMetaDataInfo(settlementInfo.getBankAccountCopyFileId()) : null)
+                .businessLicenseFile(isSettlementExist && isBusiness ? fileQueryService.getFileMetaDataInfo(settlementInfo.getBusinessLicenseFileId()) : null)
                 .build();
     }
 }

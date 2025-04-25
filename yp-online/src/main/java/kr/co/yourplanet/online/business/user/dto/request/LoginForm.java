@@ -1,4 +1,4 @@
-package kr.co.yourplanet.online.business.user.dto;
+package kr.co.yourplanet.online.business.user.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
