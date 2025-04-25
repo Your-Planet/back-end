@@ -46,3 +46,12 @@ payments:
   toss:
     uri: https://api.tosspayments.com/v1/payments/confirm
     secret-key: ${TEST_PAYMENTS_TOSS_SECRET_KEY}
+
+omni:
+  id: ${OMNI-ALIMTALK-ID}
+  password: ${OMNI-ALIMTALK-PASSWORD}
+  senderkey: ${OMNI-ALIMTALK-SENDERKEY}
+  host: https://stg-omni.ibapi.kr
+  url:
+    auth: /v1/auth/token
+    alimtalk: /v1/send/alimtalk
