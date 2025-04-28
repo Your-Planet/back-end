@@ -11,6 +11,7 @@ on:
 
 jobs:
   notify:
+    environment: develop
     runs-on: ubuntu-latest
     steps:
       - name: Send Discord Notification
