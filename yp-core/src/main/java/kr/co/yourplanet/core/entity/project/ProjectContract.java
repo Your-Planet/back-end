@@ -15,7 +15,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
-import kr.co.yourplanet.core.entity.studio.Price;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -53,7 +52,7 @@ public class ProjectContract {
     @Comment("디자인 수요자 정보")
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "companyName", column = @Column(name = "client_company_name")),
+            @AttributeOverride(name = "name", column = @Column(name = "client_company_name")),
             @AttributeOverride(name = "registrationNumber", column = @Column(name = "client_registration_number")),
             @AttributeOverride(name = "address", column = @Column(name = "client_address")),
             @AttributeOverride(name = "representativeName", column = @Column(name = "client_representative_name"))
@@ -63,7 +62,7 @@ public class ProjectContract {
     @Comment("디자인 공급자 정보")
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "companyName", column = @Column(name = "provider_company_name")),
+            @AttributeOverride(name = "name", column = @Column(name = "provider_company_name")),
             @AttributeOverride(name = "registrationNumber", column = @Column(name = "provider_registration_number")),
             @AttributeOverride(name = "address", column = @Column(name = "provider_address")),
             @AttributeOverride(name = "representativeName", column = @Column(name = "provider_representative_name"))
