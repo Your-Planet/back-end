@@ -35,23 +35,4 @@ public class SettlementForm {
     @Schema(defaultValue = "123456-1234567")
     @Pattern(regexp = "^\\d{6}-\\d{7}$", message = "유효한 주민등록번호 형식이 아닙니다.")
     private String rrn;
-
-
-    @AssertTrue(message = "사업자 회원은 사업자 정산 정보를 반드시 입력해야 합니다.")
-    @JsonIgnore
-    public boolean isBusinessSettlement() {
-        if (BusinessType.BUSINESS.equals(businessType)) {
-            return bankAccountCopyFileId != null && businessLicenseFileId != null;
-        }
-        return true;
-    }
-
-    @AssertTrue(message = "개인 회원은 개인 정산 정보를 반드시 입력해야 합니다.")
-    @JsonIgnore
-    public boolean isIndividualSettlement() {
-        if (BusinessType.INDIVIDUAL.equals(businessType)) {
-            return rrn != null;
-        }
-        return true;
-    }
 }

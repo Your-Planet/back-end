@@ -34,7 +34,7 @@ public class MemberUpdateService {
     public void updateMember(Long memberId, MemberUpdateForm memberUpdateForm) {
         Member member = memberQueryService.getById(memberId);
 
-        validateUpdate(member, memberUpdateForm);
+        validateUpdateRequirements(member, memberUpdateForm);
 
         Member updatedMember = createUpdateMember(member, memberUpdateForm);
         memberRepository.saveMember(updatedMember);
@@ -72,17 +72,59 @@ public class MemberUpdateService {
         return builder.build();
     }
 
-    private void validateUpdate(Member member, MemberUpdateForm memberUpdateForm) {
-        if (member.isCreator() && memberUpdateForm.getCreatorUpdateForm() == null) {
-            throw new BadRequestException("창작자 회원 정보 수정의 경우 창작자 정보를 포함해야 합니다.");
+    private void validateUpdateRequirements(Member member, MemberUpdateForm memberUpdateForm) {
+        BusinessType businessType = memberUpdateForm.getBaseUpdateForm().getBusinessType();
+
+        validateByMemberType(member, memberUpdateForm);
+        validateByBusinessType(businessType, memberUpdateForm);
+    }
+
+    private void validateByMemberType(Member member, MemberUpdateForm memberUpdateForm) {
+        if (member.isCreator()) {
+            CreatorUpdateForm creatorForm = memberUpdateForm.getCreatorUpdateForm();
+            if (creatorForm == null) {
+                throw new BadRequestException("작가 회원 정보 수정의 경우 작가 정보를 포함해야 합니다.");
+            }
+
+            SettlementForm settlementForm = creatorForm.getSettlementForm();
+            if (settlementForm == null) {
+                throw new BadRequestException("작가 회원 정보 수정의 경우 정산 정보를 포함해야 합니다.");
+            }
+
+            if (memberUpdateForm.getBaseUpdateForm().getBusinessType() != settlementForm.getBusinessType()) {
+                throw new BadRequestException("기본 정보의 사업자 여부와 정산 정보의 사업자 여부가 다릅니다.");
+            }
+        }
+    }
+
+    private void validateByBusinessType(BusinessType businessType, MemberUpdateForm updateForm) {
+        switch (businessType) {
+            case BUSINESS -> validateBusinessMember(updateForm.getBaseUpdateForm(), updateForm.getCreatorUpdateForm());
+            case INDIVIDUAL -> validateIndividualMember(updateForm.getCreatorUpdateForm());
+        }
+    }
+
+    private void validateBusinessMember(BaseUpdateForm baseForm, CreatorUpdateForm creatorForm) {
+        if (baseForm.getBusinessForm() == null) {
+            throw new BadRequestException("사업자 회원은 사업자 정보를 반드시 입력해야 합니다.");
         }
 
-        if (member.isCreator() && memberUpdateForm.getCreatorUpdateForm().getSettlementForm() == null) {
-            throw new BadRequestException("창작자 회원 정보 수정의 경우 창작자 정산 정보를 포함해야 합니다.");
+        if (creatorForm != null) {
+            SettlementForm settlementForm = creatorForm.getSettlementForm();
+            if (settlementForm == null
+                    || settlementForm.getBankAccountCopyFileId() == null
+                    || settlementForm.getBusinessLicenseFileId() == null) {
+                throw new BadRequestException("사업자 회원은 사업자 정산 정보를 반드시 입력해야 합니다.");
+            }
         }
+    }
 
-        if (member.isCreator() && memberUpdateForm.getCreatorUpdateForm().getGenderType() == null) {
-            throw new BadRequestException("창작자 회원 정보 수정의 경우 성별 정보를 포함해야 합니다.");
+    private void validateIndividualMember(CreatorUpdateForm creatorForm) {
+        if (creatorForm != null) {
+            SettlementForm settlementForm = creatorForm.getSettlementForm();
+            if (settlementForm == null || settlementForm.getRrn() == null) {
+                throw new BadRequestException("개인 회원은 개인 정산 정보를 반드시 입력해야 합니다.");
+            }
         }
     }
 
