@@ -1,5 +1,6 @@
 package kr.co.yourplanet.online.business.studio.dto;
 
+import jakarta.validation.constraints.NotNull;
 import kr.co.yourplanet.core.enums.PostDurationMonthType;
 import kr.co.yourplanet.core.enums.ProvisionType;
 import lombok.AllArgsConstructor;
@@ -12,8 +13,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class PriceInfoWithoutPrice {
+    @NotNull
     private Long id;
+    @NotNull
     private DefaultOptionWithoutPrice service;
+    @NotNull
     private AdditionalPriceFormWithoutPrice option;
 
     public static PriceInfoWithoutPrice from(PriceInfo priceInfo, Long priceId) {

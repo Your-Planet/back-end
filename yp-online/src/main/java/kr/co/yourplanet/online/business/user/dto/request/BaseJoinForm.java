@@ -22,10 +22,12 @@ public class BaseJoinForm {
 
     @ValidEnum(enumClass = MemberType.class)
     @Schema(defaultValue = "CREATOR")
+    @NotNull
     private MemberType memberType;
 
     @Schema(defaultValue = "BUSINESS")
     @ValidEnum(enumClass = BusinessType.class)
+    @NotNull
     private BusinessType businessType;
 
     @Schema(defaultValue = "hongildong@gmail.com")
