@@ -8,10 +8,10 @@ import kr.co.yourplanet.core.entity.member.MemberSalt;
 import kr.co.yourplanet.core.entity.member.MemberBasicInfo;
 import kr.co.yourplanet.core.enums.BusinessType;
 import kr.co.yourplanet.core.enums.MemberType;
-import kr.co.yourplanet.online.business.user.dto.BaseJoinForm;
-import kr.co.yourplanet.online.business.user.dto.CreatorJoinForm;
-import kr.co.yourplanet.online.business.user.dto.InstagramForm;
-import kr.co.yourplanet.online.business.user.dto.MemberJoinForm;
+import kr.co.yourplanet.online.business.user.dto.request.BaseJoinForm;
+import kr.co.yourplanet.online.business.user.dto.request.CreatorJoinForm;
+import kr.co.yourplanet.online.business.user.dto.request.InstagramForm;
+import kr.co.yourplanet.online.business.user.dto.request.MemberJoinForm;
 import kr.co.yourplanet.online.business.user.repository.MemberRepository;
 import kr.co.yourplanet.online.business.user.repository.MemberSaltRepository;
 import kr.co.yourplanet.online.common.encrypt.EncryptManager;
@@ -45,7 +45,7 @@ public class MemberJoinService {
         BaseJoinForm baseForm = joinForm.getBaseJoinForm();
 
         memberValidationService.checkDuplicateEmail(baseForm.getEmail());
-        memberValidationService.validatePassword(baseForm.getPassword());
+        memberValidationService.validatePasswordFormat(baseForm.getPassword());
 
         if (MemberType.CREATOR.equals(baseForm.getMemberType())) {
             InstagramForm instagramForm = joinForm.getCreatorJoinForm().getInstagramForm();

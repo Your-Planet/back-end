@@ -1,6 +1,7 @@
-package kr.co.yourplanet.online.business.user.dto;
+package kr.co.yourplanet.online.business.user.dto.response;
 
 import kr.co.yourplanet.core.enums.StatusCode;
+import kr.co.yourplanet.online.business.user.dto.request.RefreshTokenForm;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
