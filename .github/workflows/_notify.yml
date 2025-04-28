@@ -20,6 +20,6 @@ jobs:
           curl -H "Content-Type: application/json" \
                -X POST \
                -d "{
-                     \"content\": \"${{ inputs.title }}: ${{ github.event.head_commit.message || 'No commit message' }}\"
+                     \"content\": \"${{ inputs.title }} - ${{ github.event.head_commit.message || '(No commit info)' }}\"
                    }" \
                ${{ secrets.DISCORD_WEBHOOK_URL }}

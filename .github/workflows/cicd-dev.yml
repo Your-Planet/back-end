@@ -2,11 +2,11 @@ name: yp-online CI/CD
 
 on:
   push:
-    branches: [ "main", "dev", "env/YP-755-cicd_workflow" ]
-#    paths:
-#      - 'yp-core/**'
-#      - 'yp-online/**'
-#      - 'Dockerfile'
+    branches: [ "main", "dev" ]
+    paths:
+      - 'yp-core/**'
+      - 'yp-online/**'
+      - 'Dockerfile'
 
 jobs:
   build-deploy:
@@ -88,6 +88,6 @@ jobs:
     if: ${{ success() }}
     uses: ./.github/workflows/_notify.yml
     with:
-      title: yp-online CI/CD
+      title: yp-online deploy
     secrets:
       DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
