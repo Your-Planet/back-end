@@ -10,83 +10,83 @@ on:
 #      - 'Dockerfile'
 
 jobs:
-  build-deploy:
-    environment: develop
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      deployments: none
-
-    env:
-      IMAGE_NAME: your-planet-online
-      MODULE_DIR: yp-online
-      CORE_MODULE_DIR: yp-core
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Set environment variables
-        run: |
-          mkdir -p ${{ github.workspace }}/${{ env.MODULE_DIR }}/src/main/resources
-          mkdir -p ${{ github.workspace }}/${{ env.MODULE_DIR }}/src/test/resources
-          mkdir -p ${{ github.workspace }}/${{ env.CORE_MODULE_DIR }}/src/main/resources
-          echo "${{ secrets.SECRET_DEV }}" > ${{ env.MODULE_DIR }}/src/main/resources/application-secret.properties
-          echo "${{ secrets.SECRET_ALIMTALK }}" > ${{ env.CORE_MODULE_DIR }}/src/main/resources/alimtalk-secret.properties
-          echo "${{ secrets.SECRET_TEST }}" > ${{ env.MODULE_DIR }}/src/test/resources/test-secret.properties
-
-      - name: Gradle Caching
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-
-      - name: Build modules with Gradle Wrapper
-        run: ./gradlew clean :yp-online:build
-
-      - name: Docker login
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Image Build & Push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-
-      - name: Deploy to dev
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.DEV_SERVER_HOST }}
-          username: ${{ secrets.DEV_SERVER_USER }}
-          key: ${{ secrets.DEV_SERVER_KEY }}
-          script: |
-            docker stop yp-online || true
-            docker rm yp-online || true
-            docker pull ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-            docker run -d -p 8080:8080 -e SPRING_PROFILES_ACTIVE=dev -v /app:/app -v /logsvc:/logsvc --name yp-online ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-            sudo docker image prune -f
+#  build-deploy:
+#    environment: develop
+#    runs-on: ubuntu-latest
+#    permissions:
+#      contents: read
+#      deployments: none
+#
+#    env:
+#      IMAGE_NAME: your-planet-online
+#      MODULE_DIR: yp-online
+#      CORE_MODULE_DIR: yp-core
+#
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v4
+#
+#      - name: Set up JDK 17
+#        uses: actions/setup-java@v4
+#        with:
+#          java-version: '17'
+#          distribution: 'temurin'
+#
+#      - name: Set environment variables
+#        run: |
+#          mkdir -p ${{ github.workspace }}/${{ env.MODULE_DIR }}/src/main/resources
+#          mkdir -p ${{ github.workspace }}/${{ env.MODULE_DIR }}/src/test/resources
+#          mkdir -p ${{ github.workspace }}/${{ env.CORE_MODULE_DIR }}/src/main/resources
+#          echo "${{ secrets.SECRET_DEV }}" > ${{ env.MODULE_DIR }}/src/main/resources/application-secret.properties
+#          echo "${{ secrets.SECRET_ALIMTALK }}" > ${{ env.CORE_MODULE_DIR }}/src/main/resources/alimtalk-secret.properties
+#          echo "${{ secrets.SECRET_TEST }}" > ${{ env.MODULE_DIR }}/src/test/resources/test-secret.properties
+#
+#      - name: Gradle Caching
+#        uses: actions/cache@v3
+#        with:
+#          path: |
+#            ~/.gradle/caches
+#            ~/.gradle/wrapper
+#          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+#          restore-keys: |
+#            ${{ runner.os }}-gradle-
+#
+#      - name: Setup Gradle
+#        uses: gradle/actions/setup-gradle@v4
+#
+#      - name: Build modules with Gradle Wrapper
+#        run: ./gradlew clean :yp-online:build
+#
+#      - name: Docker login
+#        uses: docker/login-action@v2
+#        with:
+#          username: ${{ secrets.DOCKER_USERNAME }}
+#          password: ${{ secrets.DOCKER_PASSWORD }}
+#
+#      - name: Docker Image Build & Push
+#        uses: docker/build-push-action@v5
+#        with:
+#          context: .
+#          file: ./Dockerfile
+#          push: true
+#          tags: ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+#
+#      - name: Deploy to dev
+#        uses: appleboy/ssh-action@master
+#        with:
+#          host: ${{ secrets.DEV_SERVER_HOST }}
+#          username: ${{ secrets.DEV_SERVER_USER }}
+#          key: ${{ secrets.DEV_SERVER_KEY }}
+#          script: |
+#            docker stop yp-online || true
+#            docker rm yp-online || true
+#            docker pull ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+#            docker run -d -p 8080:8080 -e SPRING_PROFILES_ACTIVE=dev -v /app:/app -v /logsvc:/logsvc --name yp-online ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+#            sudo docker image prune -f
 
   notify:
     needs: build-deploy
-    if: ${{ success() }}
+#    if: ${{ success() }}
     uses: ./.github/workflows/_notify.yml
     with:
       status: success
