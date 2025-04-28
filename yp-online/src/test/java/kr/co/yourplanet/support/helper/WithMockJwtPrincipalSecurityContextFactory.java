@@ -1,4 +1,4 @@
-package kr.co.yourplanet.helper;
+package kr.co.yourplanet.support.helper;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

@@ -19,7 +19,7 @@ public class Contractor {
 
     @Comment("상호 또는 명칭")
     @Column(nullable = true)
-    private String companyName;
+    private String name;
 
     @Comment("사업자 등록번호 혹은 주민번호")
     private String registrationNumber;

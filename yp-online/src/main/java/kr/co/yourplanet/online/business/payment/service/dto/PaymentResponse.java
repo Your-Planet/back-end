@@ -2,6 +2,8 @@ package kr.co.yourplanet.online.business.payment.service.dto;
 
 import org.springframework.http.HttpStatusCode;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import kr.co.yourplanet.core.entity.payment.PaymentProvider;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -12,15 +14,21 @@ import lombok.Getter;
 @AllArgsConstructor
 @Builder(access = AccessLevel.PRIVATE)
 public class PaymentResponse {
+    @NotNull
     private boolean isSuccess;
+    @NotNull
     private HttpStatusCode httpStatusCode;
+    @NotNull
     private PaymentProvider provider;
+    @NotBlank
     private String paymentKey;
+    @NotBlank
     private String orderId;
     private SuccessResponse successResponse;
     private FailResponse failResponse;
     private String providerResponse;
 
+    @Builder
     @Getter
     public static class SuccessResponse {
         private String orderName;
@@ -29,6 +37,7 @@ public class PaymentResponse {
         private Long totalAmount;
     }
 
+    @Builder
     @Getter
     public static class FailResponse {
         private String code;

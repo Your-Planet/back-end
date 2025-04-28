@@ -3,12 +3,16 @@ package kr.co.yourplanet.online.business.project.dto.response;
 import java.time.LocalDateTime;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
 public record ContractInfo(
         // 프로젝트 정보
+        @NotNull
         Long projectId,
+        @NotBlank
         String projectName,
         LocalDateTime acceptDateTime,
         LocalDateTime completeDateTime,

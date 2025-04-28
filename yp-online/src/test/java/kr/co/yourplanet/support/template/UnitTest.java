@@ -1,4 +1,4 @@
-package kr.co.yourplanet.template;
+package kr.co.yourplanet.support.template;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;

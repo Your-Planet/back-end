@@ -79,7 +79,7 @@ public class MemberQueryService {
         BusinessInfo businessInfo = member.getBusinessInfo();
 
         boolean isCreator = MemberType.CREATOR.equals(member.getMemberType());
-        boolean isSettlementExist = settlementInfo != null;
+        boolean isSettlementExist = member.hasSettlementInfo();
         boolean isBusiness = BusinessType.BUSINESS.equals(member.getBusinessType());
 
         return MemberFullInfo.builder()

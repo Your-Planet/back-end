@@ -1,4 +1,4 @@
-package kr.co.yourplanet.stub;
+package kr.co.yourplanet.support.stub;
 
 import kr.co.yourplanet.online.business.project.dto.request.ContractDraftForm;
 

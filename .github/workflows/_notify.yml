@@ -1,0 +1,25 @@
+name: notify
+
+on:
+  workflow_call:
+    inputs:
+      title:
+        required: true
+        type: string
+    secrets:
+      DISCORD_WEBHOOK_URL:
+        required: true
+
+jobs:
+  notify:
+    environment: develop
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Discord Notification
+        run: |
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d "{
+                     \"content\": \"${{ inputs.title }} - ${{ github.event.head_commit.message || '(No commit info)' }}\"
+                   }" \
+               ${{ secrets.DISCORD_WEBHOOK_URL }}
