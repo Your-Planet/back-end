@@ -1,4 +1,4 @@
-package kr.co.yourplanet.online.config;
+package kr.co.yourplanet.core.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

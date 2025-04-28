@@ -32,6 +32,8 @@ jobs:
         echo "${{ secrets.SECRET_TEST }}" > ./test-secret.properties
         cd ${{ github.workspace }}/yp-batch/src/main/resources
         echo "${{ secrets.SECRET_BATCH_DEV }}" > ./batch-secret.properties
+        cd ${{ github.workspace }}/yp-core/src/main/resources
+        echo "${{ secrets.SECRET_ALIMTALK }}" > ./alimtalk-secret.properties
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4

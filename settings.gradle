@@ -2,4 +2,5 @@ rootProject.name = 'yp-backend'
 include 'yp-core'
 include 'yp-online'
 include 'yp-batch'
+include 'yp-connect-hub'
 

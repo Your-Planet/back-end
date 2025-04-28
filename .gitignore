@@ -220,6 +220,7 @@ gradle-app.setting
 application-secret.properties
 batch-secret.properties
 test-secret.properties
+alimtalk-secret.properties
 
 ## bat
 docker-deploy.bat
