@@ -11,11 +11,11 @@ import kr.co.yourplanet.core.enums.MemberType;
 import kr.co.yourplanet.online.business.alimtalk.util.BusinessAlimTalkSendUtil;
 import kr.co.yourplanet.online.business.user.dto.request.BaseJoinForm;
 import kr.co.yourplanet.online.business.user.dto.request.CreatorJoinForm;
-import kr.co.yourplanet.online.business.user.dto.request.InstagramForm;
 import kr.co.yourplanet.online.business.user.dto.request.MemberJoinForm;
 import kr.co.yourplanet.online.business.user.repository.MemberRepository;
 import kr.co.yourplanet.online.business.user.repository.MemberSaltRepository;
 import kr.co.yourplanet.online.common.encrypt.EncryptManager;
+import kr.co.yourplanet.online.common.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 
 @Transactional
@@ -34,7 +34,7 @@ public class MemberJoinService {
     private final BusinessAlimTalkSendUtil businessAlimTalkSendUtil;
 
     public void join(MemberJoinForm joinForm) {
-        validateJoin(joinForm);
+        validateJoinRequirements(joinForm);
 
         String salt = encryptManager.generateSalt();
         Member member = createJoinMember(joinForm, salt);
@@ -46,16 +46,18 @@ public class MemberJoinService {
         businessAlimTalkSendUtil.sendMemberJoinCompleteAlimTalk(member);
     }
 
-    private void validateJoin(MemberJoinForm joinForm) {
+    private void validateJoinRequirements(MemberJoinForm joinForm) {
         BaseJoinForm baseForm = joinForm.getBaseJoinForm();
 
         memberValidationService.checkDuplicateEmail(baseForm.getEmail());
         memberValidationService.validatePasswordFormat(baseForm.getPassword());
 
-        if (MemberType.CREATOR.equals(baseForm.getMemberType())) {
-            InstagramForm instagramForm = joinForm.getCreatorJoinForm().getInstagramForm();
+        if (BusinessType.BUSINESS.equals(baseForm.getBusinessType()) && baseForm.getBusinessForm() == null) {
+            throw new BadRequestException("사업자 회원은 사업자 정보를 반드시 입력해야 합니다.");
+        }
 
-            memberValidationService.checkDuplicateInstagramId(instagramForm.instagramId());
+        if (MemberType.CREATOR.equals(baseForm.getMemberType()) && joinForm.getCreatorJoinForm() == null) {
+            throw new BadRequestException("작가 가입을 위해 필요한 정보가 누락되었습니다.");
         }
     }
 

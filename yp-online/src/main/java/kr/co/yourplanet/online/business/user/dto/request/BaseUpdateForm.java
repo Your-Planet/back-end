@@ -4,11 +4,8 @@ import java.time.LocalDate;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import kr.co.yourplanet.core.enums.BusinessType;
 import kr.co.yourplanet.core.validation.annotation.ValidEnum;
@@ -34,13 +31,4 @@ public class BaseUpdateForm {
 
     @Valid
     private BusinessForm businessForm;
-
-    @AssertTrue(message = "사업자 회원은 사업자 정보를 반드시 입력해야 합니다.")
-    @JsonIgnore
-    public boolean isBusinessValid() {
-        if (BusinessType.BUSINESS.equals(businessType)) {
-            return businessForm != null;
-        }
-        return true;
-    }
 }
