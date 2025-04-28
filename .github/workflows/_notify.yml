@@ -9,6 +9,9 @@ on:
       title:
         required: true
         type: string
+    secrets:
+      DISCORD_WEBHOOK_URL:
+        required: true
 
 jobs:
   notify:
