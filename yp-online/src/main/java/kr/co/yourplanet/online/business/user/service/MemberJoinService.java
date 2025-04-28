@@ -8,14 +8,13 @@ import kr.co.yourplanet.core.entity.member.MemberSalt;
 import kr.co.yourplanet.core.entity.member.MemberBasicInfo;
 import kr.co.yourplanet.core.enums.BusinessType;
 import kr.co.yourplanet.core.enums.MemberType;
-import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.user.dto.request.BaseJoinForm;
 import kr.co.yourplanet.online.business.user.dto.request.CreatorJoinForm;
 import kr.co.yourplanet.online.business.user.dto.request.MemberJoinForm;
 import kr.co.yourplanet.online.business.user.repository.MemberRepository;
 import kr.co.yourplanet.online.business.user.repository.MemberSaltRepository;
 import kr.co.yourplanet.online.common.encrypt.EncryptManager;
-import kr.co.yourplanet.online.common.exception.BusinessException;
+import kr.co.yourplanet.online.common.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 
 @Transactional
@@ -49,11 +48,11 @@ public class MemberJoinService {
         memberValidationService.validatePasswordFormat(baseForm.getPassword());
 
         if (BusinessType.BUSINESS.equals(baseForm.getBusinessType()) && baseForm.getBusinessForm() == null) {
-            throw new BusinessException(StatusCode.BAD_REQUEST, "사업자 회원은 사업자 정보를 반드시 입력해야 합니다.", false);
+            throw new BadRequestException("사업자 회원은 사업자 정보를 반드시 입력해야 합니다.");
         }
 
         if (MemberType.CREATOR.equals(baseForm.getMemberType()) && joinForm.getCreatorJoinForm() == null) {
-            throw new BusinessException(StatusCode.BAD_REQUEST, "작가 가입을 위해 필요한 정보가 누락되었습니다.", false);
+            throw new BadRequestException("작가 가입을 위해 필요한 정보가 누락되었습니다.");
         }
     }
 
