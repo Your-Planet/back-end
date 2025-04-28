@@ -28,6 +28,7 @@ public class PaymentResponse {
     private FailResponse failResponse;
     private String providerResponse;
 
+    @Builder
     @Getter
     public static class SuccessResponse {
         private String orderName;
@@ -36,6 +37,7 @@ public class PaymentResponse {
         private Long totalAmount;
     }
 
+    @Builder
     @Getter
     public static class FailResponse {
         private String code;

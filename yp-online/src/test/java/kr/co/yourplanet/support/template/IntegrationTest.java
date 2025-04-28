@@ -1,21 +1,25 @@
-package kr.co.yourplanet.template;
+package kr.co.yourplanet.support.template;
 
+import java.io.IOException;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import okhttp3.mockwebserver.MockWebServer;
 
 @SpringBootTest
 @Sql(scripts = "classpath:db/setup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -23,18 +27,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @ActiveProfiles("test")
 @AutoConfigureMockMvc(print = MockMvcPrint.SYSTEM_OUT)
 @Testcontainers
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class IntegrationTest {
 
-    // TODO: 싱글톤으로 생성되도록 변경 예정
-    // @Container
-    // @ServiceConnection
-    // protected static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:16")
-    //         .withReuse(true);
+    private static final int MOCK_SERVER_PORT = 8090;
 
-    @Container
-    @ServiceConnection
-    protected static final GenericContainer<?> redisContainer = new GenericContainer<>(DockerImageName.parse("redis:6-alpine"))
-            .withExposedPorts(6379);
+    protected MockWebServer mockWebServer;
 
     @Autowired
     protected MockMvc mockMvc;
@@ -42,6 +40,26 @@ public abstract class IntegrationTest {
     @Autowired
     protected ObjectMapper objectMapper;
 
+    @BeforeAll
+    void setup() throws IOException {
+        mockWebServer = new MockWebServer();
+        mockWebServer.start(MOCK_SERVER_PORT);
+    }
+
+    @AfterAll
+    void teardown() throws IOException {
+        mockWebServer.shutdown();
+    }
+
+    @DynamicPropertySource
+    static void overrideProperties(DynamicPropertyRegistry registry) {
+        registry.add("payments.toss.uri",
+                () -> "http://localhost:" + MOCK_SERVER_PORT + "/v1/payments/confirm");
+    }
+
+    /**
+     * 유틸 메서드
+     */
     protected String toJson(Object object) throws JsonProcessingException {
         return objectMapper.writeValueAsString(object);
     }
