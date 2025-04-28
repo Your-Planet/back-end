@@ -17,9 +17,11 @@ jobs:
     steps:
       - name: Send Discord Notification
         run: |
+          COMMIT_MESSAGE="$(echo "${{ github.event.head_commit.message }}" | head -n 1)"
+
+          PAYLOAD=$(jq -n --arg content "${{ inputs.title }} - ${COMMIT_MESSAGE}" '{content: $content}')
+
           curl -H "Content-Type: application/json" \
                -X POST \
-               -d "{
-                     \"content\": \"${{ inputs.title }} - ${{ github.event.head_commit.message || '(No commit info)' }}\"
-                   }" \
+               -d "$PAYLOAD" \
                ${{ secrets.DISCORD_WEBHOOK_URL }}
