@@ -3,9 +3,6 @@ package kr.co.yourplanet.online.business.payment.util;
 import java.time.Instant;
 import java.util.UUID;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class IdempotencyKeyGenerator {
 
     private static final String IDEMPOTENCY_KEY_TEMPLATE = "IDEMPOTENCY-%s-%s-%s";
