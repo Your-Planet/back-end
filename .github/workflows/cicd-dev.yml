@@ -85,7 +85,7 @@ jobs:
 #            sudo docker image prune -f
 
   notify:
-    needs: build-deploy
+#    needs: build-deploy
 #    if: ${{ success() }}
     uses: ./.github/workflows/_notify.yml
     with:
