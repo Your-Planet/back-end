@@ -15,10 +15,6 @@ jobs:
     environment: develop
     runs-on: ubuntu-latest
     steps:
-      - name: Debug Webhook URL
-        run:
-          echo "Webhook URL: ${{ secrets.DISCORD_WEBHOOK_URL }}"
-
       - name: Send Discord Notification
         run: |
           curl -H "Content-Type: application/json" \
