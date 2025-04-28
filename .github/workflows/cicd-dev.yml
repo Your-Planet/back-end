@@ -4,10 +4,10 @@ on:
   push:
     # 마지막은 테스트용 브런치 / 머지 시 삭제 예정
     branches: [ "main", "dev", "env/YP-755-cicd_workflow" ]
-    paths:
-      - 'yp-core/**'
-      - 'yp-online/**'
-      - 'Dockerfile'
+#    paths:
+#      - 'yp-core/**'
+#      - 'yp-online/**'
+#      - 'Dockerfile'
 
 jobs:
   build-deploy:
@@ -83,7 +83,7 @@ jobs:
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
             docker run -d -p 8080:8080 -e SPRING_PROFILES_ACTIVE=dev -v /app:/app -v /logsvc:/logsvc --name yp-online ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest
             sudo docker image prune -f
-            
+
   notify:
     needs: build-deploy
     if: ${{ success() }}
