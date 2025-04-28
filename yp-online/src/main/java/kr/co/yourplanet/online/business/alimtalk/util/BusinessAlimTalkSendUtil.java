@@ -25,6 +25,8 @@ public class BusinessAlimTalkSendUtil {
     private final AlimTalkSendService alimTalkSendService;
     private final AlimTalkTemplateRepository alimTalkTemplateRepository;
 
+    private static final String ALIM_TALK_SEND_REQUEST_SUCCESS = "A000";
+
     @Value("${omni.senderkey}")
     private String senderkey;
 

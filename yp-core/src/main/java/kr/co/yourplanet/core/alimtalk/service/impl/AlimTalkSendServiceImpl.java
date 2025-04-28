@@ -26,7 +26,7 @@ public class AlimTalkSendServiceImpl implements AlimTalkSendService {
      */
     @Transactional
     @Override
-    public void sendAlimTalk(AlimTalkSendForm alimTalkSendForm, Long memberId) throws JsonProcessingException {
+    public AlimTalkSendResponseForm sendAlimTalk(AlimTalkSendForm alimTalkSendForm, Long memberId) throws JsonProcessingException {
 
         // ToDo : AlimTalkSendForm 객체에 대한 validation
 
@@ -43,5 +43,7 @@ public class AlimTalkSendServiceImpl implements AlimTalkSendService {
             .build();
 
         alimTalkRequestRepository.save(history);
+
+        return result;
     }
 }
