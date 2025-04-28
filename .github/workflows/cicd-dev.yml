@@ -91,3 +91,5 @@ jobs:
     with:
       status: success
       title: yp-online CI/CD
+    secrets:
+      DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
