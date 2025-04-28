@@ -1,5 +1,7 @@
 package kr.co.yourplanet.online.business.studio.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import kr.co.yourplanet.core.entity.instagram.InstagramMedia;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +14,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class PortfolioInfo {
 
+    @NotBlank
     private String id;
+    @NotNull
     private Long memberId;
     private String caption;
     private String mediaType;

@@ -13,10 +13,10 @@ import kr.co.yourplanet.core.enums.BusinessType;
 import kr.co.yourplanet.core.enums.MemberType;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.file.service.FileQueryService;
-import kr.co.yourplanet.online.business.user.dto.FindIdForm;
-import kr.co.yourplanet.online.business.user.dto.MemberDetail;
-import kr.co.yourplanet.online.business.user.dto.MemberFullInfo;
-import kr.co.yourplanet.online.business.user.dto.TermsForm;
+import kr.co.yourplanet.online.business.user.dto.request.FindIdForm;
+import kr.co.yourplanet.online.business.user.dto.response.MemberDetail;
+import kr.co.yourplanet.online.business.user.dto.response.MemberFullInfo;
+import kr.co.yourplanet.online.business.user.dto.request.TermsForm;
 import kr.co.yourplanet.online.business.user.repository.MemberRepository;
 import kr.co.yourplanet.online.common.exception.BusinessException;
 import kr.co.yourplanet.online.common.util.MaskingUtil;
@@ -79,7 +79,7 @@ public class MemberQueryService {
         BusinessInfo businessInfo = member.getBusinessInfo();
 
         boolean isCreator = MemberType.CREATOR.equals(member.getMemberType());
-        boolean isSettlementExist = settlementInfo != null;
+        boolean isSettlementExist = member.hasSettlementInfo();
         boolean isBusiness = BusinessType.BUSINESS.equals(member.getBusinessType());
 
         return MemberFullInfo.builder()

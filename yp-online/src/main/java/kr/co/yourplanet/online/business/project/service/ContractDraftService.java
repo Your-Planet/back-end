@@ -3,7 +3,9 @@ package kr.co.yourplanet.online.business.project.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import kr.co.yourplanet.core.entity.member.BusinessInfo;
 import kr.co.yourplanet.core.entity.member.Member;
+import kr.co.yourplanet.core.entity.member.SettlementInfo;
 import kr.co.yourplanet.core.entity.project.Contractor;
 import kr.co.yourplanet.core.entity.project.Project;
 import kr.co.yourplanet.core.entity.project.ProjectContract;
@@ -79,15 +81,45 @@ public class ContractDraftService {
                             .acceptDateTime(project.getAcceptDateTime())
                             .completeDateTime(project.getCompleteDateTime())
                             .contractAmount(history.getOfferPrice().longValue())
+                            .provider(createTempContractor(project.getCreator()))
+                            .client(createTempContractor(project.getSponsor()))
                             .build();
                     contractService.save(newContract);
                     return newContract;
                 });
     }
 
+    private Contractor createTempContractor(Member member) {
+        switch (member.getBusinessType()) {
+            case BUSINESS -> {
+                BusinessInfo businessInfo = member.getBusinessInfo();
+
+                return Contractor.builder()
+                        .name(businessInfo.getCompanyName())
+                        .registrationNumber(businessInfo.getBusinessNumber())
+                        .address(businessInfo.getBusinessAddress())
+                        .representativeName(businessInfo.getRepresentativeName())
+                        .build();
+            }
+            case INDIVIDUAL -> {
+                SettlementInfo settlementInfo = member.getSettlementInfo();
+
+                return Contractor.builder()
+                        .name(member.getName())
+                        .registrationNumber(member.hasSettlementInfo() ? settlementInfo.getRrn() : null)
+                        .address(null)
+                        .representativeName(null)
+                        .build();
+            }
+            default -> {
+                throw new BusinessException(StatusCode.CONFLICT, "계약서를 작성할 수 없는 멤버 타입입니다.", false);
+            }
+        }
+    }
+
     private Contractor createContractor(ContractDraftForm form) {
         return Contractor.builder()
-                .companyName(form.companyName())
+                .name(form.companyName())
                 .registrationNumber(form.identificationNumber())
                 .address(form.address())
                 .representativeName(form.representativeName())
@@ -131,7 +163,7 @@ public class ContractDraftService {
         }
 
         return ContractInfo.ContractorInfo.builder()
-                .companyName(contractor.getCompanyName())
+                .companyName(contractor.getName())
                 .registrationNumber(contractor.getRegistrationNumber())
                 .address(contractor.getAddress())
                 .representativeName(contractor.getRepresentativeName())
