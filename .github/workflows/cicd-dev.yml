@@ -2,7 +2,6 @@ name: yp-online CI/CD
 
 on:
   push:
-    # 마지막은 테스트용 브런치 / 머지 시 삭제 예정
     branches: [ "main", "dev", "env/YP-755-cicd_workflow" ]
 #    paths:
 #      - 'yp-core/**'
@@ -89,7 +88,6 @@ jobs:
     if: ${{ success() }}
     uses: ./.github/workflows/_notify.yml
     with:
-      status: success
       title: yp-online CI/CD
     secrets:
       DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}

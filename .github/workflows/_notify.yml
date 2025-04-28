@@ -3,9 +3,6 @@ name: notify
 on:
   workflow_call:
     inputs:
-      status:
-        required: true
-        type: string
       title:
         required: true
         type: string
@@ -23,6 +20,6 @@ jobs:
           curl -H "Content-Type: application/json" \
                -X POST \
                -d "{
-                     \"content\": \"${{ inputs.title }}: ${{ inputs.status }}\"
+                     \"content\": \"${{ inputs.title }}: ${{ github.event.head_commit.message || 'No commit message' }}\"
                    }" \
                ${{ secrets.DISCORD_WEBHOOK_URL }}
