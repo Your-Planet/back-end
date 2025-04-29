@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.project.service.ProjectValidationService;
 import kr.co.yourplanet.online.business.payment.service.dto.PaymentResponse;
+import kr.co.yourplanet.online.business.settlement.service.ProjectSettlementService;
 import kr.co.yourplanet.online.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProjectPaymentProcessor implements PaymentProcessor {
 
+    private final ProjectSettlementService projectSettlementService;
     private final ProjectValidationService projectValidationService;
 
     @Override
@@ -29,6 +31,7 @@ public class ProjectPaymentProcessor implements PaymentProcessor {
             throw new BusinessException(StatusCode.INTERNAL_SERVER_ERROR, "결제에 실패하여 후처리가 불가능 합니다.", false);
         }
 
-        // TODO: 정산 상태 처리 (결제 일시, 상태 변경)
+        PaymentResponse.SuccessResponse successResponse = response.getSuccessResponse();
+        projectSettlementService.markPaymentCompleted(targetId, successResponse.getApprovedAt());
     }
 }
