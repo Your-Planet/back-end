@@ -27,9 +27,6 @@ public class PaymentHistory extends BasicColumn {
     @SequenceGenerator(name = "payment_history_seq", sequenceName = "payment_history_seq", allocationSize = 50)
     private Long id;
 
-    @Column(name = "project_id", nullable = false)
-    private Long projectId;
-
     @Column(nullable = false)
     private String paymentKey;
 
@@ -57,4 +54,10 @@ public class PaymentHistory extends BasicColumn {
 
     @Column(nullable = false)
     private String providerResponse;
+
+    @Column(name = "target_type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private PaymentType paymentType;
+
+    private Long targetId;
 }
