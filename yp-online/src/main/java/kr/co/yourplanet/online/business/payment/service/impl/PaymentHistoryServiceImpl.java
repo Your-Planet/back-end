@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import kr.co.yourplanet.core.entity.payment.PaymentHistory;
 import kr.co.yourplanet.core.entity.payment.PaymentStatus;
+import kr.co.yourplanet.core.entity.payment.PaymentType;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.payment.repository.PaymentHistoryRepository;
 import kr.co.yourplanet.online.business.payment.service.PaymentHistoryService;
@@ -23,11 +24,10 @@ public class PaymentHistoryServiceImpl implements PaymentHistoryService {
     }
 
     @Override
-    public void saveSuccessHistory(PaymentResponse response, long projectId) {
+    public void saveSuccessHistory(PaymentResponse response, PaymentType paymentType, Long targetId) {
         PaymentResponse.SuccessResponse successResponse = response.getSuccessResponse();
 
         PaymentHistory history = PaymentHistory.builder()
-                .projectId(projectId)
                 .paymentKey(response.getPaymentKey())
                 .orderId(response.getOrderId())
                 .orderName(successResponse.getOrderName())
@@ -37,23 +37,26 @@ public class PaymentHistoryServiceImpl implements PaymentHistoryService {
                 .totalAmount(successResponse.getTotalAmount())
                 .provider(response.getProvider())
                 .providerResponse(response.getProviderResponse())
+                .paymentType(paymentType)
+                .targetId(targetId)
                 .build();
 
         save(history);
     }
 
     @Override
-    public void saveFailHistory(PaymentResponse response, long projectId) {
+    public void saveFailHistory(PaymentResponse response, PaymentType paymentType, Long targetId) {
         PaymentResponse.FailResponse failResponse = response.getFailResponse();
 
         PaymentHistory history = PaymentHistory.builder()
-                .projectId(projectId)
                 .paymentKey(response.getPaymentKey())
                 .orderId(response.getOrderId())
                 .status(PaymentStatus.ABORTED)
                 .reason(failResponse.getMessage())
                 .provider(response.getProvider())
                 .providerResponse(response.getProviderResponse())
+                .paymentType(paymentType)
+                .targetId(targetId)
                 .build();
 
         save(history);
