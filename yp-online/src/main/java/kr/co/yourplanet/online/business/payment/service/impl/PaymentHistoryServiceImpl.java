@@ -39,6 +39,7 @@ public class PaymentHistoryServiceImpl implements PaymentHistoryService {
                 .providerResponse(response.getProviderResponse())
                 .paymentType(paymentType)
                 .targetId(targetId)
+                .approvedAt(successResponse.getApprovedAt())
                 .build();
 
         save(history);

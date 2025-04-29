@@ -1,5 +1,7 @@
 package kr.co.yourplanet.core.entity.payment;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -60,4 +62,7 @@ public class PaymentHistory extends BasicColumn {
     private PaymentType paymentType;
 
     private Long targetId;
+
+    @Column(name = "approved_at")
+    private LocalDateTime approvedAt;
 }
