@@ -71,6 +71,11 @@ public class ContractDraftService {
         }
 
         contractService.save(contract);
+
+        // 계약서 작성 완료 시 ProjectStatus 변경 ACCEPTED -> IN_PROGRESS
+        if (contract.isCompleted()) {
+            project.startProjectAfterContract();
+        }
     }
 
     private ProjectContract getOrCreateProjectContract(Project project, ProjectHistory history) {
