@@ -24,7 +24,7 @@ public class ContractValidationService {
     }
 
     public void validateProjectStatus(ProjectStatus status) {
-        if (!ProjectStatus.IN_PROGRESS.equals(status)) {
+        if (!ProjectStatus.ACCEPTED.equals(status)) {
             throw new BusinessException(StatusCode.CONFLICT, "승인되지 않은 프로젝트에서는 계약서를 작성할 수 없습니다.", false);
         }
     }

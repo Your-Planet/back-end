@@ -202,7 +202,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         // Validation
         checkProjectValidation(member, project);
-        validateProjectStatusTransition(member, project, ProjectStatus.IN_PROGRESS);
+        validateProjectStatusTransition(member, project, ProjectStatus.ACCEPTED);
 
         List<ProjectHistory> projectHistoryList = projectHistoryRepository.findAllByProject(project);
 
