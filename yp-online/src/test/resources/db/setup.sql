@@ -115,31 +115,34 @@ VALUES (4, 4, '2025-02-24 13:07:45.755085', '2025-02-24 13:07:45.755085',
 
 
 -- FILE_METADATA --
-INSERT INTO file_metadata (id, file_key, original_name, file_type, extension, size, uploaded, uploader_id)
+INSERT INTO file_metadata (id, file_key, original_name, target_type, target_id, extension, size, uploaded, uploader_id)
 VALUES (1,
         'file/settlement/secret/bank_account_copy.png',
         'bank_account_copy.png',
         'SETTLEMENT_FILE',
+        1,
         'png',
         204800,
         true,
         1);
 
-INSERT INTO file_metadata (id, file_key, original_name, file_type, extension, size, uploaded, uploader_id)
+INSERT INTO file_metadata (id, file_key, original_name, target_type, target_id, extension, size, uploaded, uploader_id)
 VALUES (2,
         'file/settlement/secret/business_license.jpg',
         'business_license.jpg',
         'SETTLEMENT_FILE',
+        1,
         'jpg',
         500023,
         true,
         1);
 
-INSERT INTO file_metadata (id, file_key, original_name, file_type, extension, size, uploaded, uploader_id)
+INSERT INTO file_metadata (id, file_key, original_name, target_type, target_id, extension, size, uploaded, uploader_id)
 VALUES (3,
         'file/profile/member/profile_image.jpg',
         'profile_image.jpg',
         'PROFILE_IMAGE',
+        1,
         'jpg',
         1024585,
         true,
@@ -294,3 +297,19 @@ VALUES (2, 4, '2025-03-18 12:00:00', '2025-03-20 18:00:00', 750000,
         'ABC 기업', '123-45-67890', '서울특별시 강남구 테헤란로 123', '김철수',
         '디자인 주식회사', '987-65-43210', '부산광역시 해운대구 센텀로 45', '이영희',
         '2025-03-17 15:00:00', '2025-03-18 10:00:00');
+
+
+-- PROJECT SETTLEMENT --
+
+-- 프로젝트 1의 정산 정보
+INSERT INTO project_settlement (id, project_id, payment_amount, settlement_amount, fee,
+                                payment_date, settlement_date, payment_status, settlement_status)
+VALUES (1,
+        1,
+        100000,
+        90000,
+        10000,
+        '2025-03-30 09:00:00',
+        NULL,
+        'PAYMENT_PENDING',
+        'SETTLEMENT_PENDING');

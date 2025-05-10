@@ -11,6 +11,7 @@ import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.user.dto.request.MemberValidateForm;
 import kr.co.yourplanet.online.business.user.repository.MemberRepository;
 import kr.co.yourplanet.online.common.encrypt.EncryptManager;
+import kr.co.yourplanet.online.common.exception.BadRequestException;
 import kr.co.yourplanet.online.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 
@@ -114,6 +115,14 @@ public class MemberValidationService {
 
         if (!memberValidateForm.getName().equals(member.getName())) {
             throw new BusinessException(StatusCode.BAD_REQUEST, "사용자 이름이 일치하지 않습니다.", false);
+        }
+    }
+
+    public void validateIsCreator(long memberId) {
+        Member member = memberQueryService.getById(memberId);
+
+        if (!member.isCreator()) {
+            throw new BadRequestException("작가 사용자가 아닙니다.");
         }
     }
 }

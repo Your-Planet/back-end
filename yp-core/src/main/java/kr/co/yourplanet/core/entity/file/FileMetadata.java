@@ -38,10 +38,6 @@ public class FileMetadata extends BasicColumn {
     @Column(name = "original_name", nullable = false)
     private String originalName;
 
-    @Column(name = "file_type", nullable = false, length = 50)
-    @Enumerated(EnumType.STRING)
-    private FileType fileType;
-
     @Column(nullable = false, length = 10)
     private String extension;
 
@@ -55,8 +51,12 @@ public class FileMetadata extends BasicColumn {
     @JoinColumn(name = "uploader_id")
     private Member uploader;
 
-    @Column(name = "reference_id")
-    private Long referenceId;
+    @Column(name = "target_type", nullable = false, length = 50)
+    @Enumerated(EnumType.STRING)
+    private FileType fileType;
+
+    @Column(name = "target_id")
+    private Long targetId;
 
     public static FileMetadata createReserved(Member uploader, String key, String name, String extension, FileType fileType) {
         return FileMetadata.builder()
@@ -84,11 +84,11 @@ public class FileMetadata extends BasicColumn {
         return uploader.getId().equals(memberId);
     }
 
-    public boolean isSecret() {
-        return FileType.SETTLEMENT_FILE.equals(this.fileType);
+    public boolean isViewable() {
+        return this.fileType.isViewable();
     }
 
-    public void linkReference(long referenceId) {
-        this.referenceId = referenceId;
+    public void linkTarget(long referenceId) {
+        this.targetId = referenceId;
     }
 }

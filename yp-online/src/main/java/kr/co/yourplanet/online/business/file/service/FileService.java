@@ -22,19 +22,19 @@ public class FileService {
         return fileMetadataRepository.save(fileMetadata).getId();
     }
 
-    public void completeUpload(long fileId, long uploaderId, Long referenceId, FileType fileType) {
+    public void completeUpload(long fileId, long uploaderId, Long targetId, FileType fileType) {
         fileValidationService.checkMatchingFile(fileId, uploaderId, fileType);
 
         FileMetadata file = fileQueryService.getById(fileId);
-        file.linkReference(referenceId);
+        file.linkTarget(targetId);
 
         fileMetadataRepository.save(file);
     }
 
-    public void replace(long existId, long newId, long uploaderId, Long referenceId, FileType fileType) {
+    public void replace(long existId, long newId, long uploaderId, Long targetId, FileType fileType) {
         // 삭제 전 외래키 해제가 선행되어야 함
         delete(existId);
-        completeUpload(newId, uploaderId, referenceId, fileType);
+        completeUpload(newId, uploaderId, targetId, fileType);
     }
 
     public void delete(long fileId) {
