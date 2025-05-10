@@ -215,7 +215,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         // 프로젝트 정산 정보 생성
-        projectSettlementService.create(requestMemberId, project.getId());
+        projectSettlementService.createForAcceptedProject(requestMemberId, project.getId());
     }
 
     @Override

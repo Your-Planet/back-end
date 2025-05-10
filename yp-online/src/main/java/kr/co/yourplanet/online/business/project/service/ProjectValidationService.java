@@ -32,8 +32,16 @@ public class ProjectValidationService {
         }
     }
 
-    public void checkSponsor(long id, long memberId) {
-        Project project = projectQueryService.getById(id);
+    public void checkCreator(long projectId, long memberId) {
+        Project project = projectQueryService.getById(projectId);
+
+        if (project.getCreator().getId() != memberId) {
+            throw new BusinessException(StatusCode.FORBIDDEN, "해당 프로젝트의 작가가 아닙니다.", false);
+        }
+    }
+
+    public void checkSponsor(long projectId, long memberId) {
+        Project project = projectQueryService.getById(projectId);
 
         if (project.getSponsor().getId() != memberId) {
             throw new BusinessException(StatusCode.FORBIDDEN, "해당 프로젝트의 광고주가 아닙니다.", false);

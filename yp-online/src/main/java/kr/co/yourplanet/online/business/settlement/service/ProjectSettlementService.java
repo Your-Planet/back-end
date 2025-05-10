@@ -9,6 +9,7 @@ import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.project.Project;
 import kr.co.yourplanet.core.entity.project.ProjectHistory;
 import kr.co.yourplanet.core.entity.settlement.ProjectSettlement;
+import kr.co.yourplanet.core.entity.settlement.SettlementStatus;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.project.service.ProjectQueryService;
 import kr.co.yourplanet.online.business.project.service.ProjectValidationService;
@@ -30,19 +31,27 @@ public class ProjectSettlementService {
     private final ProjectSettlementRepository projectSettlementRepository;
 
     // 프로젝트 수락 시 호출
-    public void create(long sponsorId, long projectId) {
-        projectValidationService.checkSponsor(projectId, sponsorId);
+    public void createForAcceptedProject(long creatorId, long projectId) {
+        projectValidationService.checkCreator(projectId, creatorId);
         projectValidationService.checkInProgress(projectId);
 
-        Member sponsor = memberQueryService.getById(sponsorId);
         Project project = projectQueryService.getById(projectId);
+
         ProjectHistory history = project.getAcceptedHistory()
                 .orElseThrow(() -> new BusinessException(StatusCode.CONFLICT, "수락된 프로젝트가 아닙니다.", false));
 
+        Member creator = memberQueryService.getById(creatorId);
+        SettlementStatus settlementStatus = determineSettlementStatus(creator);
         long paymentAmount = history.getOfferPrice();
 
-        ProjectSettlement settlement = ProjectSettlement.create(sponsor, project, paymentAmount);
+        ProjectSettlement settlement = ProjectSettlement.create(project, paymentAmount, settlementStatus);
         projectSettlementRepository.save(settlement);
+    }
+
+    private SettlementStatus determineSettlementStatus(Member creator) {
+        return creator.hasSettlementInfo()
+                ? SettlementStatus.SETTLEMENT_PENDING
+                : SettlementStatus.REVIEW_REQUIRED;
     }
 
     // 결제 완료 시 호출
