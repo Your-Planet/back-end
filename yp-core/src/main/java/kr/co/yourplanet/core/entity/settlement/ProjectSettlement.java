@@ -6,16 +6,13 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import kr.co.yourplanet.core.entity.BasicColumn;
-import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.project.Project;
 import kr.co.yourplanet.core.util.FeeCalculator;
 import lombok.AccessLevel;
@@ -40,10 +37,6 @@ public class ProjectSettlement extends BasicColumn {
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sponsor_id", nullable = false)
-    private Member sponsor;
-
     @Column(name = "payment_amount", nullable = false)
     private Long paymentAmount;
 
@@ -67,18 +60,17 @@ public class ProjectSettlement extends BasicColumn {
     @Column(name = "settlement_status", nullable = false)
     private SettlementStatus settlementStatus;
 
-    public static ProjectSettlement create(Member sponsor, Project project, long paymentAmount) {
+    public static ProjectSettlement create(Project project, long paymentAmount, SettlementStatus settlementStatus) {
         long fee = FeeCalculator.calculateFee(paymentAmount, 10);
         long settlementAmount = paymentAmount - fee;
 
         return ProjectSettlement.builder()
-                .sponsor(sponsor)
                 .project(project)
                 .paymentAmount(paymentAmount)
                 .settlementAmount(settlementAmount)
                 .fee(fee)
                 .paymentStatus(SettlementPaymentStatus.PAYMENT_PENDING)
-                .settlementStatus(SettlementStatus.SETTLEMENT_PENDING)
+                .settlementStatus(settlementStatus)
                 .build();
     }
 

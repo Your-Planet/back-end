@@ -2,7 +2,6 @@ CREATE TABLE project_settlement
 (
     id                BIGINT PRIMARY KEY,
     project_id        BIGINT                              NOT NULL,
-    sponsor_id        BIGINT                              NOT NULL,
     payment_amount    BIGINT                              NOT NULL,
     settlement_amount BIGINT                              NOT NULL,
     fee               BIGINT                              NOT NULL,
@@ -17,10 +16,6 @@ CREATE TABLE project_settlement
 ALTER TABLE project_settlement
     ADD CONSTRAINT fk_project_settlement_project
         FOREIGN KEY (project_id) REFERENCES project (id) ON DELETE RESTRICT;
-
-ALTER TABLE project_settlement
-    ADD CONSTRAINT fk_project_settlement_sponsor
-        FOREIGN KEY (sponsor_id) REFERENCES member (id) ON DELETE RESTRICT;
 
 CREATE
 SEQUENCE project_settlement_seq
