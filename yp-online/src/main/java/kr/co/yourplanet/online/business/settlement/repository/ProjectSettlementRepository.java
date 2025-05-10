@@ -1,12 +1,5 @@
 package kr.co.yourplanet.online.business.settlement.repository;
 
-import java.util.Optional;
+public interface ProjectSettlementRepository extends ProjectSettlementJpaRepository, ProjectSettlementRepositoryCustom {
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import kr.co.yourplanet.core.entity.settlement.ProjectSettlement;
-
-public interface ProjectSettlementRepository extends JpaRepository<ProjectSettlement, Long> {
-
-    Optional<ProjectSettlement> findByProjectId(long projectId);
 }
