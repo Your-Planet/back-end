@@ -81,7 +81,7 @@ public class StudioRepositoryImpl implements StudioRepositoryCustom {
         List<Long> profileIds = studioQuery.getResultList();
 
         // 2.1 스튜디오 기본 정보 조회
-        String studioBasicQuery = "select new kr.co.yourplanet.online.business.studio.dao.StudioBasicDao(m.id, s.toonName, s.description, s.profileImageUrl, m.instagramInfo.instagramUsername, scm.category.categoryCode) " +
+        String studioBasicQuery = "select new kr.co.yourplanet.online.business.studio.dao.StudioBasicDao(m.id, s.toonName, s.description, s.profileImageFile.key, m.instagramInfo.instagramUsername, scm.category.categoryCode) " +
                 "from Profile s " +
                 "join ProfileCategoryMap scm on s.id = scm.profile.id " +
                 "join Member m on s.member.id = m.id " +

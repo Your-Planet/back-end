@@ -1,22 +1,11 @@
 package kr.co.yourplanet.online.business.studio.service.impl;
 
-import kr.co.yourplanet.core.entity.member.Member;
-import kr.co.yourplanet.core.entity.studio.Category;
-import kr.co.yourplanet.core.enums.MemberType;
-import kr.co.yourplanet.core.enums.StatusCode;
-import kr.co.yourplanet.online.business.studio.dao.StudioBasicDao;
-import kr.co.yourplanet.online.business.studio.dto.PriceInfoWithoutPrice;
-import kr.co.yourplanet.online.business.studio.dto.ProfileInfo;
-import kr.co.yourplanet.online.business.studio.dto.CreatorBasicInfo;
-import kr.co.yourplanet.online.business.studio.dto.CreatorDetailInfo;
-import kr.co.yourplanet.online.business.studio.repository.StudioRepositoryCustom;
-import kr.co.yourplanet.online.business.studio.service.CreatorService;
-import kr.co.yourplanet.online.business.studio.service.PriceService;
-import kr.co.yourplanet.online.business.studio.service.ProfileService;
-import kr.co.yourplanet.online.business.user.repository.MemberRepository;
-import kr.co.yourplanet.online.common.exception.BusinessException;
-import kr.co.yourplanet.online.properties.FileProperties;
-import lombok.RequiredArgsConstructor;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -24,10 +13,23 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import kr.co.yourplanet.core.entity.member.Member;
+import kr.co.yourplanet.core.entity.studio.Category;
+import kr.co.yourplanet.core.enums.MemberType;
+import kr.co.yourplanet.core.enums.StatusCode;
+import kr.co.yourplanet.online.business.studio.dao.StudioBasicDao;
+import kr.co.yourplanet.online.business.studio.dto.CreatorBasicInfo;
+import kr.co.yourplanet.online.business.studio.dto.CreatorDetailInfo;
+import kr.co.yourplanet.online.business.studio.dto.PriceInfoWithoutPrice;
+import kr.co.yourplanet.online.business.studio.dto.ProfileInfo;
+import kr.co.yourplanet.online.business.studio.repository.StudioRepositoryCustom;
+import kr.co.yourplanet.online.business.studio.service.CreatorService;
+import kr.co.yourplanet.online.business.studio.service.PriceService;
+import kr.co.yourplanet.online.business.studio.service.ProfileService;
+import kr.co.yourplanet.online.business.user.repository.MemberRepository;
+import kr.co.yourplanet.online.common.exception.BusinessException;
+import kr.co.yourplanet.online.infra.aws.S3StorageAdapter;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +39,7 @@ public class CreatorServiceImpl implements CreatorService {
     private final ProfileService profileService;
     private final PriceService priceService;
     private final StudioRepositoryCustom studioRepositoryCustom;
-    private final FileProperties fileProperties;
+    private final S3StorageAdapter s3StorageAdapter;
 
     @Override
     public Page<CreatorBasicInfo> searchStudios(Long requestMemberId, List<String> inputCategories, String keywordType, String keyword, Integer minPrice, Integer maxPrice, Integer inputPageNumber, Integer inputPageSize) {
@@ -97,11 +99,16 @@ public class CreatorServiceImpl implements CreatorService {
             if (creatorBasicInfo == null) {
                 List<String> categoryList = new ArrayList<>();
                 categoryList.add(studioBasicDao.getCategoryCode());
+
+                // S3 프로필이미지 URL
+                // TODO : getDownloadUrl()에 대한 예외처리 필요
+                URL profileImageUrl = s3StorageAdapter.getDownloadUrl(studioBasicDao.getProfileImageKey(), 15);
+
                 studioBasicSearchMap.put(creatorId, CreatorBasicInfo.builder()
                         .id(studioBasicDao.getCreatorId())
                         .name(studioBasicDao.getToonName())
                         .description(studioBasicDao.getDescription())
-                        .profileImageUrl(fileProperties.getBaseUrl() + studioBasicDao.getProfileImageUrl())
+                        .profileImageUrl(profileImageUrl.toString())
                         .instagramUsername(studioBasicDao.getInstagramUsername())
                         .categories(categoryList)
                         .build());
