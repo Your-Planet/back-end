@@ -49,6 +49,7 @@ file:
   studio-path: /Users/fong/files/upload/studio/
   project-reference-file-path: /Users/fong/files/upload/project/reference/
   project-reference-file-url: /files/project/reference/
+  base-profile-image-url: ${BASE_PROFILE_IMAGE_URL}
 
 jwt:
   secret: Qb+NiKnqgiFnZnKc7uziuwFX/cq0yzFrJvrpio0JofQ=
