@@ -9,9 +9,11 @@ public interface StorageAdapter {
 
     URL upload(MultipartFile file, String fileKey);
 
-    URL getUploadUrl(String fileKey, MediaType mediaType);
+    URL getUploadUrl(String fileKey, MediaType mediaType, long expireTime);
 
     URL getDownloadUrl(String fileKey, long expireTime);
 
     URL getPublicUrl(String fileKey);
+
+    URL getSecureUrl(String fileKey, long expireTime);
 }
