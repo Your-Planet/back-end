@@ -332,7 +332,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     private List<ReferenceFileInfo> getReferenceFileInfos(Project project) {
         List<FileMetadata> referenceFiles =
-                fileQueryService.getByReference(FileType.PROJECT_REFERENCE_FILE, project.getId());
+                fileQueryService.getByTarget(FileType.PROJECT_REFERENCE_FILE, project.getId());
 
         return referenceFiles.stream()
                 .map(file -> ReferenceFileInfo.builder()

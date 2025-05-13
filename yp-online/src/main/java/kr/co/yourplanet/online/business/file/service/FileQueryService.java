@@ -25,8 +25,8 @@ public class FileQueryService {
                 .orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "해당하는 파일을 찾을 수 없습니다.", false));
     }
 
-    public List<FileMetadata> getByReference(FileType fileType, long referenceId) {
-        return fileMetadataRepository.findAllByReferenceIdAndFileType(referenceId, fileType);
+    public List<FileMetadata> getByTarget(FileType fileType, long targetId) {
+        return fileMetadataRepository.findAllByTargetIdAndFileType(targetId, fileType);
     }
 
     public FileMetadataInfo getFileMetaDataInfo(long fileId) {

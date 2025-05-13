@@ -61,6 +61,7 @@ public class PaymentHistory extends BasicColumn {
     @Enumerated(EnumType.STRING)
     private PaymentType paymentType;
 
+    @Column(name = "target_id")
     private Long targetId;
 
     @Column(name = "approved_at")
