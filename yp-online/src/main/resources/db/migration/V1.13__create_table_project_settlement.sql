@@ -5,10 +5,12 @@ CREATE TABLE project_settlement
     payment_amount    BIGINT                              NOT NULL,
     settlement_amount BIGINT                              NOT NULL,
     fee               BIGINT                              NOT NULL,
+    contract_date     TIMESTAMP,
     payment_date      TIMESTAMP,
     settlement_date   TIMESTAMP,
     payment_status    VARCHAR(50)                         NOT NULL,
     settlement_status VARCHAR(50)                         NOT NULL,
+    memo              VARCHAR(500),
     create_date       TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     update_date       TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );

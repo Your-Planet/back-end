@@ -16,6 +16,7 @@ import kr.co.yourplanet.core.enums.MemberType;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.project.dto.request.ContractDraftForm;
 import kr.co.yourplanet.online.business.project.dto.response.ContractInfo;
+import kr.co.yourplanet.online.business.settlement.service.ProjectSettlementService;
 import kr.co.yourplanet.online.business.user.service.MemberQueryService;
 import kr.co.yourplanet.online.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class ContractDraftService {
     private final ContractService contractService;
     private final ContractValidationService contractValidationService;
     private final MemberQueryService memberQueryService;
+    private final ProjectSettlementService projectSettlementService;
 
     /**
      * 계약서 조회 및 DB에 기본 계약서 저장
@@ -48,29 +50,51 @@ public class ContractDraftService {
      * 계약서 작성
      */
     public void draftContract(Long projectId, Long memberId, ContractDraftForm form) {
-        Project project = projectQueryService.getById(projectId);
+        validateProjectForContract(projectId, memberId);
+        
+        ProjectContract contract = getUncompletedContract(projectId);
+        Member member = memberQueryService.getById(memberId);
+        Contractor contractor = createContractor(form);
 
+        writeContractInfo(contract, member.getMemberType(), contractor);
+
+        completeIfDone(contract);
+        contractService.save(contract);
+
+        // 정산 정보에 계약 완료 시간 기록
+        projectSettlementService.markContractCompleted(projectId, contract.getCompleteDateTime());
+    }
+
+    private void validateProjectForContract(Long projectId, Long memberId) {
+        Project project = projectQueryService.getById(projectId);
         contractValidationService.validateContractParty(memberId, project);
         contractValidationService.validateProjectStatus(project.getProjectStatus());
+    }
 
+    private ProjectContract getUncompletedContract(Long projectId) {
         ProjectContract contract = contractService.getByProjectId(projectId)
                 .orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "계약서가 존재하지 않습니다.", false));
-
-        Member member = memberQueryService.getById(memberId);
-        MemberType memberType = member.getMemberType();
-
         contractValidationService.validateContractCompleted(contract);
+        
+        return contract;
+    }
+
+    private void writeContractInfo(ProjectContract contract, MemberType memberType, Contractor contractor) {
         contractValidationService.validateAlreadyWritten(memberType, contract);
 
         // 수요자/공급자 정보 입력
-        Contractor contractor = createContractor(form);
         if (MemberType.CREATOR.equals(memberType)) {
             contract.writeProviderInfo(contractor);
         } else if (MemberType.SPONSOR.equals(memberType)) {
             contract.writeClientInfo(contractor);
         }
+    }
 
-        contractService.save(contract);
+    private void completeIfDone(ProjectContract contract) {
+        // 계약 완료 시간 기록
+        if (contract.isCompleted()) {
+            contract.completeContract();
+        }
     }
 
     private ProjectContract getOrCreateProjectContract(Project project, ProjectHistory history) {
@@ -101,6 +125,7 @@ public class ContractDraftService {
                         .representativeName(businessInfo.getRepresentativeName())
                         .build();
             }
+            
             case INDIVIDUAL -> {
                 SettlementInfo settlementInfo = member.getSettlementInfo();
 
@@ -111,9 +136,8 @@ public class ContractDraftService {
                         .representativeName(null)
                         .build();
             }
-            default -> {
-                throw new BusinessException(StatusCode.CONFLICT, "계약서를 작성할 수 없는 멤버 타입입니다.", false);
-            }
+            
+            default -> throw new BusinessException(StatusCode.CONFLICT, "계약서를 작성할 수 없는 멤버 타입입니다.", false);
         }
     }
 
@@ -133,7 +157,7 @@ public class ContractDraftService {
                 .projectId(project.getId())
                 .projectName(project.getOrderTitle())
                 .acceptDateTime(contract.getAcceptDateTime())
-                .completeDateTime(contract.getCompleteDateTime())
+                .completeDateTime(contract.getDeadline())
                 .contractAmount(contract.getContractAmount())
                 .additionalDetailInfo(createAdditionalDetailInfo(price, history))
                 .client(createContractorInfo(contract.getClient()))

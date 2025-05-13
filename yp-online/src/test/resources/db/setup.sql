@@ -279,7 +279,7 @@ VALUES (3, 4, 1, 'IN_PROGRESS', 3, 1, 2,
 -- CONTRACT --
 
 -- 프로젝트 ID 3의 미완성 계약서
-INSERT INTO project_contract (id, project_id, accept_date_time, complete_date_time, contract_amount,
+INSERT INTO project_contract (id, project_id, accept_date_time, deadline, contract_amount,
                               provider_company_name, provider_registration_number, provider_address,
                               provider_representative_name, provider_written_date_time)
 VALUES (1, 3, '2025-03-18 12:00:00', '2025-03-20 18:00:00', 500000,
@@ -287,16 +287,16 @@ VALUES (1, 3, '2025-03-18 12:00:00', '2025-03-20 18:00:00', 500000,
         '이영희', '2025-03-18 10:00:00');
 
 -- 프로젝트 ID 4의 완성 계약서
-INSERT INTO project_contract (id, project_id, accept_date_time, complete_date_time, contract_amount,
+INSERT INTO project_contract (id, project_id, accept_date_time, deadline, contract_amount,
                               client_company_name, client_registration_number, client_address,
                               client_representative_name,
                               provider_company_name, provider_registration_number, provider_address,
                               provider_representative_name,
-                              provider_written_date_time, client_written_date_time)
+                              provider_written_date_time, client_written_date_time, complete_date_time)
 VALUES (2, 4, '2025-03-18 12:00:00', '2025-03-20 18:00:00', 750000,
         'ABC 기업', '123-45-67890', '서울특별시 강남구 테헤란로 123', '김철수',
         '디자인 주식회사', '987-65-43210', '부산광역시 해운대구 센텀로 45', '이영희',
-        '2025-03-17 15:00:00', '2025-03-18 10:00:00');
+        '2025-03-17 15:00:00', '2025-03-18 10:00:00', '2025-03-18 10:00:00');
 
 
 -- PROJECT SETTLEMENT --

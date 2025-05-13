@@ -54,6 +54,14 @@ public class ProjectSettlementService {
                 : SettlementStatus.REVIEW_REQUIRED;
     }
 
+    // 계약 완료 시 호출
+    public void markContractCompleted(Long projectId, LocalDateTime completedAt) {
+        ProjectSettlement settlement = projectSettlementQueryService.getByProjectId(projectId);
+
+        settlement.completeContract(completedAt);
+        projectSettlementRepository.save(settlement);
+    }
+
     // 결제 완료 시 호출
     public void markPaymentCompleted(Long projectId, LocalDateTime approvedAt) {
         ProjectSettlement settlement = projectSettlementQueryService.getByProjectId(projectId);

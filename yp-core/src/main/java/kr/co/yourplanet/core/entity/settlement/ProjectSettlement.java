@@ -46,6 +46,9 @@ public class ProjectSettlement extends BasicColumn {
     @Column(name = "fee", nullable = false)
     private Long fee;
 
+    @Column(name = "contract_date")
+    private LocalDateTime contractDate;
+
     @Column(name = "payment_date")
     private LocalDateTime paymentDate;
 
@@ -72,6 +75,10 @@ public class ProjectSettlement extends BasicColumn {
                 .paymentStatus(SettlementPaymentStatus.PAYMENT_PENDING)
                 .settlementStatus(settlementStatus)
                 .build();
+    }
+
+    public void completeContract(LocalDateTime contractDate) {
+        this.contractDate = contractDate;
     }
 
     public void completePayment(LocalDateTime paymentDate) {
