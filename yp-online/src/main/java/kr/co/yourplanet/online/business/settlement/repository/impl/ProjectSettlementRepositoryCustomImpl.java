@@ -1,12 +1,20 @@
 package kr.co.yourplanet.online.business.settlement.repository.impl;
 
 import static kr.co.yourplanet.core.entity.settlement.QProjectSettlement.*;
+import static kr.co.yourplanet.core.entity.project.QProject.*;
+import static kr.co.yourplanet.core.entity.member.QMember.*;
 
+import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
+import kr.co.yourplanet.core.entity.settlement.ProjectSettlement;
 import kr.co.yourplanet.core.entity.settlement.SettlementPaymentStatus;
 import kr.co.yourplanet.core.entity.settlement.SettlementStatus;
 import kr.co.yourplanet.online.business.settlement.repository.ProjectSettlementRepositoryCustom;
@@ -29,6 +37,25 @@ public class ProjectSettlementRepositoryCustomImpl implements ProjectSettlementR
                         )
                         .fetchOne()
         ).orElse(0L);
+    }
+
+    @Override
+    public Page<ProjectSettlement> findAll(Pageable pageable) {
+        List<ProjectSettlement> content = query.select(projectSettlement)
+                .from(projectSettlement)
+                .join(projectSettlement.project, project).fetchJoin()
+                .join(project.sponsor, member).fetchJoin()
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        long total = Optional.ofNullable(
+                query.select(projectSettlement.count())
+                        .from(projectSettlement)
+                        .fetchOne())
+                .orElse(0L);
+
+        return new PageImpl<>(content, pageable, total);
     }
 
     private BooleanExpression isRelatedToMemberId(long memberId) {
