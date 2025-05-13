@@ -301,7 +301,7 @@ VALUES (2, 4, '2025-03-18 12:00:00', '2025-03-20 18:00:00', 750000,
 
 -- PROJECT SETTLEMENT --
 
--- 프로젝트 1의 정산 정보
+-- 프로젝트 1
 INSERT INTO project_settlement (id, project_id, payment_amount, settlement_amount, fee,
                                 payment_date, settlement_date, payment_status, settlement_status)
 VALUES (1,
@@ -309,6 +309,46 @@ VALUES (1,
         100000,
         90000,
         10000,
+        '2025-03-30 09:00:00',
+        NULL,
+        'PAYMENT_PENDING',
+        'SETTLEMENT_PENDING');
+
+-- 프로젝트 2
+INSERT INTO project_settlement (id, project_id, payment_amount, settlement_amount, fee,
+                                payment_date, settlement_date, payment_status, settlement_status)
+VALUES (2,
+        2,
+        500000,
+        450000,
+        50000,
+        '2025-03-30 09:00:00',
+        NULL,
+        'PAYMENT_PENDING',
+        'SETTLEMENT_PENDING');
+
+-- 프로젝트 3
+INSERT INTO project_settlement (id, project_id, payment_amount, settlement_amount, fee,
+                                payment_date, settlement_date, payment_status, settlement_status)
+VALUES (3,
+        3,
+        500000,
+        450000,
+        50000,
+        '2025-03-30 09:00:00',
+        NULL,
+        'PAYMENT_PENDING',
+        'SETTLEMENT_PENDING');
+
+-- 프로젝트 4
+INSERT INTO project_settlement (id, project_id, payment_amount, settlement_amount, fee, contract_date,
+                                payment_date, settlement_date, payment_status, settlement_status)
+VALUES (4,
+        4,
+        750000,
+        675000,
+        75000,
+'2025-03-18 10:00:00',
         '2025-03-30 09:00:00',
         NULL,
         'PAYMENT_PENDING',

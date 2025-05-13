@@ -103,7 +103,7 @@ public class ContractDraftService {
                     ProjectContract newContract = ProjectContract.builder()
                             .project(project)
                             .acceptDateTime(project.getAcceptDateTime())
-                            .completeDateTime(project.getCompleteDateTime())
+                            .deadline(project.getCompleteDateTime())
                             .contractAmount(history.getOfferPrice().longValue())
                             .provider(createTempContractor(project.getCreator()))
                             .client(createTempContractor(project.getSponsor()))
