@@ -9,4 +9,5 @@ public interface ProfileService {
 
     void upsertAndDeleteProfile(Long memberId, ProfileRegisterForm studio, MultipartFile profileImageFile);
 
+    String getProfileImageUrl(Long fileId);
 }

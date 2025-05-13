@@ -74,11 +74,16 @@ public class ProfileServiceImpl implements ProfileService {
                 .description(profile.getDescription())
                 .categories(profile.getCategoryTypes())
                 .portfolios(portfolioInfoList)
-                .profileImageUrl(profile.hasProfileImage() ?
-                        fileUrlService.getUrl(profile.getProfileImageFile().getId(), profile.getMember().getId()) :
-                        fileProperties.getBaseUrl())
+                .profileImageUrl(getProfileImageUrl(profile.getProfileImageFile().getId()))
                 .instagramUsername(profile.getMember().getInstagramInfo().getInstagramUsername())
                 .build();
+    }
+
+    @Override
+    public String getProfileImageUrl(Long fileId) {
+        return fileId == null ?
+                fileProperties.getBaseProfileImageUrl() :
+                fileUrlService.getPublicUrl(fileId);
     }
 
     @Transactional
@@ -104,7 +109,8 @@ public class ProfileServiceImpl implements ProfileService {
         List<ProfileCategoryMap> profileCategoryMapList = new ArrayList<>();
 
         for (String id : profileDto.getPortfolioIds()) {
-            InstagramMedia media = instagramMediaRepository.findById(id).orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "존재하지 않는 미디어 ID가 포함되어 있습니다.", false));
+            InstagramMedia media = instagramMediaRepository.findById(id)
+                    .orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "존재하지 않는 미디어 ID가 포함되어 있습니다.", false));
             portfolioLinkList.add(PortfolioLink.builder()
                     .media(media)
                     .profile(profile)
@@ -114,6 +120,7 @@ public class ProfileServiceImpl implements ProfileService {
         if (categories.size() != profileDto.getCategories().size()) {
             throw new BusinessException(StatusCode.BAD_REQUEST, "존재하지 않는 카테고리 코드가 포함되어 있습니다.", false);
         }
+
         for (Category category : categories) {
             profileCategoryMapList.add(ProfileCategoryMap.builder()
                     .category(category)
@@ -128,7 +135,6 @@ public class ProfileServiceImpl implements ProfileService {
 
         portfolioLinkRepository.saveAll(portfolioLinkList);
         profileCategoryMapRepository.saveAll(profileCategoryMapList);
-
 
         // 프로필 이미지 저장
         if (profileImageFile != null && !profileImageFile.isEmpty()) {
