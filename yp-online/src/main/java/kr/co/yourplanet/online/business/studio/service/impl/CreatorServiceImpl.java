@@ -15,7 +15,6 @@ import kr.co.yourplanet.online.business.studio.service.PriceService;
 import kr.co.yourplanet.online.business.studio.service.ProfileService;
 import kr.co.yourplanet.online.business.user.repository.MemberRepository;
 import kr.co.yourplanet.online.common.exception.BusinessException;
-import kr.co.yourplanet.online.properties.FileProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -37,7 +36,6 @@ public class CreatorServiceImpl implements CreatorService {
     private final ProfileService profileService;
     private final PriceService priceService;
     private final StudioRepositoryCustom studioRepositoryCustom;
-    private final FileProperties fileProperties;
 
     @Override
     public Page<CreatorBasicInfo> searchStudios(Long requestMemberId, List<String> inputCategories, String keywordType, String keyword, Integer minPrice, Integer maxPrice, Integer inputPageNumber, Integer inputPageSize) {
@@ -85,35 +83,32 @@ public class CreatorServiceImpl implements CreatorService {
                 break;
         }
 
-
         List<StudioBasicDao> studioBasicDaoList = studioRepositoryCustom.findStudioBasicsWithFilters(categories, toonName, description, instagramUsername, minPrice, maxPrice, pageable);
 
         Map<Long, CreatorBasicInfo> studioBasicSearchMap = new HashMap<>();
 
         // 카테고리 Grouping
-        for (StudioBasicDao studioBasicDao : studioBasicDaoList) {
-            Long creatorId = studioBasicDao.getCreatorId();
+        for (StudioBasicDao dao : studioBasicDaoList) {
+            Long creatorId = dao.getCreatorId();
             CreatorBasicInfo creatorBasicInfo = studioBasicSearchMap.get(creatorId);
             if (creatorBasicInfo == null) {
                 List<String> categoryList = new ArrayList<>();
-                categoryList.add(studioBasicDao.getCategoryCode());
+                categoryList.add(dao.getCategoryCode());
                 studioBasicSearchMap.put(creatorId, CreatorBasicInfo.builder()
-                        .id(studioBasicDao.getCreatorId())
-                        .name(studioBasicDao.getToonName())
-                        .description(studioBasicDao.getDescription())
-                        .profileImageUrl(fileProperties.getBaseUrl() + studioBasicDao.getProfileImageUrl())
-                        .instagramUsername(studioBasicDao.getInstagramUsername())
+                        .id(dao.getCreatorId())
+                        .name(dao.getToonName())
+                        .description(dao.getDescription())
+                        .profileImageUrl(profileService.getProfileImageUrl(dao.getProfileImageFileId()))
+                        .instagramUsername(dao.getInstagramUsername())
                         .categories(categoryList)
                         .build());
             } else {
-                creatorBasicInfo.getCategories().add(studioBasicDao.getCategoryCode());
+                creatorBasicInfo.getCategories().add(dao.getCategoryCode());
             }
         }
 
         return new PageImpl<>(new ArrayList<>(studioBasicSearchMap.values()), pageable, 0);
     }
-
-
 
     @Override
     public CreatorDetailInfo getStudioDetail(Long creatorId, Long requestMemberId) {
@@ -133,6 +128,4 @@ public class CreatorServiceImpl implements CreatorService {
                 .price(priceInfoWithoutPrice)
                 .build();
     }
-
-
 }
