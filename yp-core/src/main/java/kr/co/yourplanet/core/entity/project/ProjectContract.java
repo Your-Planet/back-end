@@ -1,5 +1,6 @@
 package kr.co.yourplanet.core.entity.project;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.Comment;
@@ -41,7 +42,7 @@ public class ProjectContract {
     private LocalDateTime acceptDateTime;
 
     @Comment("의뢰 마감일 (작업 기한)")
-    private LocalDateTime deadline;
+    private LocalDate dueDate;
 
     @Comment("거래 금액")
     private Long contractAmount;
