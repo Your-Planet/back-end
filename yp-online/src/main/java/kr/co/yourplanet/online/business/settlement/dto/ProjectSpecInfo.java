@@ -10,7 +10,7 @@ public record ProjectSpecInfo(
 
         @Schema(description = "작업 기한")
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-        LocalDate deadline,
+        LocalDate dueDate,
 
         @Schema(description = "기본 컷 수")
         int cutCount,
