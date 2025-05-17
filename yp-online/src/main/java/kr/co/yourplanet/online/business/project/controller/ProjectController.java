@@ -12,9 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -132,7 +130,7 @@ public class ProjectController {
             @RequestBody @Valid ContractDraftForm request
     ) {
         contractDraftService.draftContract(projectId, principal.getId(), request);
-
+;
         return new ResponseEntity<>(new ResponseForm<>(StatusCode.CREATED), HttpStatus.CREATED);
     }
 }
