@@ -1,5 +1,7 @@
 package kr.co.yourplanet.core.entity.payment;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -26,9 +28,6 @@ public class PaymentHistory extends BasicColumn {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "payment_history_seq")
     @SequenceGenerator(name = "payment_history_seq", sequenceName = "payment_history_seq", allocationSize = 50)
     private Long id;
-
-    @Column(name = "project_id", nullable = false)
-    private Long projectId;
 
     @Column(nullable = false)
     private String paymentKey;
@@ -57,4 +56,14 @@ public class PaymentHistory extends BasicColumn {
 
     @Column(nullable = false)
     private String providerResponse;
+
+    @Column(name = "target_type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private PaymentType paymentType;
+
+    @Column(name = "target_id")
+    private Long targetId;
+
+    @Column(name = "approved_at")
+    private LocalDateTime approvedAt;
 }

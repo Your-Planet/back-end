@@ -1,5 +1,6 @@
 package kr.co.yourplanet.online.business.project.dto.response;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -10,24 +11,40 @@ import lombok.Builder;
 @Builder
 public record ContractInfo(
         // 프로젝트 정보
+        @Schema(description = "프로젝트 ID")
         @NotNull
         Long projectId,
+
+        @Schema(description = "프로젝트명")
         @NotBlank
         String projectName,
+
+        @Schema(description = "작업 마감 기한")
+        LocalDate dueDate,
+
+        @Schema(description = "프로젝트 승인 일시 일시")
         LocalDateTime acceptDateTime,
+
+        @Schema(description = "계약 완료 일시")
         LocalDateTime completeDateTime,
+
+        @Schema(description = "계약 금액")
         Long contractAmount,
 
-        // 추가 계약 사항
+        @Schema(description = "추가 계약 사항")
         AdditionalDetailInfo additionalDetailInfo,
 
-        // 계약 내용
+        // 계약자 내용
+        @Schema(description = "디자인 수요자 정보")
         ContractorInfo client,
+
+        @Schema(description = "디자인 수요자 정보")
         ContractorInfo provider,
 
         // 계약 일시
         @Schema(description = "공급자 작성 일시")
         LocalDateTime providerWrittenDateTime,
+
         @Schema(description = "수요자 작성 일시")
         LocalDateTime clientWrittenDateTime
 ) {
@@ -66,8 +83,14 @@ public record ContractInfo(
     public record ContractorInfo(
             @Schema(description = "상호 및 명칭", nullable = true)
             String companyName,
+
+            @Schema(description = "주민등록번호 / 사업자 등록 번호")
             String registrationNumber,
+
+            @Schema(description = "주소")
             String address,
+
+            @Schema(description = "대표자명")
             String representativeName
     ) {
     }

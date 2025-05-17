@@ -115,31 +115,34 @@ VALUES (4, 4, '2025-02-24 13:07:45.755085', '2025-02-24 13:07:45.755085',
 
 
 -- FILE_METADATA --
-INSERT INTO file_metadata (id, file_key, original_name, file_type, extension, size, uploaded, uploader_id)
+INSERT INTO file_metadata (id, file_key, original_name, target_type, target_id, extension, size, uploaded, uploader_id)
 VALUES (1,
         'file/settlement/secret/bank_account_copy.png',
         'bank_account_copy.png',
         'SETTLEMENT_FILE',
+        1,
         'png',
         204800,
         true,
         1);
 
-INSERT INTO file_metadata (id, file_key, original_name, file_type, extension, size, uploaded, uploader_id)
+INSERT INTO file_metadata (id, file_key, original_name, target_type, target_id, extension, size, uploaded, uploader_id)
 VALUES (2,
         'file/settlement/secret/business_license.jpg',
         'business_license.jpg',
         'SETTLEMENT_FILE',
+        1,
         'jpg',
         500023,
         true,
         1);
 
-INSERT INTO file_metadata (id, file_key, original_name, file_type, extension, size, uploaded, uploader_id)
+INSERT INTO file_metadata (id, file_key, original_name, target_type, target_id, extension, size, uploaded, uploader_id)
 VALUES (3,
         'file/profile/member/profile_image.jpg',
         'profile_image.jpg',
         'PROFILE_IMAGE',
+        1,
         'jpg',
         1024585,
         true,
@@ -276,7 +279,7 @@ VALUES (3, 4, 1, 'IN_PROGRESS', 3, 1, 2,
 -- CONTRACT --
 
 -- 프로젝트 ID 3의 미완성 계약서
-INSERT INTO project_contract (id, project_id, accept_date_time, complete_date_time, contract_amount,
+INSERT INTO project_contract (id, project_id, accept_date_time, due_date, contract_amount,
                               provider_company_name, provider_registration_number, provider_address,
                               provider_representative_name, provider_written_date_time)
 VALUES (1, 3, '2025-03-18 12:00:00', '2025-03-20 18:00:00', 500000,
@@ -284,13 +287,69 @@ VALUES (1, 3, '2025-03-18 12:00:00', '2025-03-20 18:00:00', 500000,
         '이영희', '2025-03-18 10:00:00');
 
 -- 프로젝트 ID 4의 완성 계약서
-INSERT INTO project_contract (id, project_id, accept_date_time, complete_date_time, contract_amount,
+INSERT INTO project_contract (id, project_id, accept_date_time, due_date, contract_amount,
                               client_company_name, client_registration_number, client_address,
                               client_representative_name,
                               provider_company_name, provider_registration_number, provider_address,
                               provider_representative_name,
-                              provider_written_date_time, client_written_date_time)
+                              provider_written_date_time, client_written_date_time, complete_date_time)
 VALUES (2, 4, '2025-03-18 12:00:00', '2025-03-20 18:00:00', 750000,
         'ABC 기업', '123-45-67890', '서울특별시 강남구 테헤란로 123', '김철수',
         '디자인 주식회사', '987-65-43210', '부산광역시 해운대구 센텀로 45', '이영희',
-        '2025-03-17 15:00:00', '2025-03-18 10:00:00');
+        '2025-03-17 15:00:00', '2025-03-18 10:00:00', '2025-03-18 10:00:00');
+
+
+-- PROJECT SETTLEMENT --
+
+-- 프로젝트 1
+INSERT INTO project_settlement (id, project_id, payment_amount, settlement_amount, fee,
+                                payment_date, settlement_date, payment_status, settlement_status)
+VALUES (1,
+        1,
+        100000,
+        90000,
+        10000,
+        '2025-03-30 09:00:00',
+        NULL,
+        'PAYMENT_PENDING',
+        'SETTLEMENT_PENDING');
+
+-- 프로젝트 2
+INSERT INTO project_settlement (id, project_id, payment_amount, settlement_amount, fee,
+                                payment_date, settlement_date, payment_status, settlement_status)
+VALUES (2,
+        2,
+        500000,
+        450000,
+        50000,
+        '2025-03-30 09:00:00',
+        NULL,
+        'PAYMENT_PENDING',
+        'SETTLEMENT_PENDING');
+
+-- 프로젝트 3
+INSERT INTO project_settlement (id, project_id, payment_amount, settlement_amount, fee,
+                                payment_date, settlement_date, payment_status, settlement_status)
+VALUES (3,
+        3,
+        500000,
+        450000,
+        50000,
+        '2025-03-30 09:00:00',
+        NULL,
+        'PAYMENT_PENDING',
+        'SETTLEMENT_PENDING');
+
+-- 프로젝트 4
+INSERT INTO project_settlement (id, project_id, payment_amount, settlement_amount, fee, contract_date,
+                                payment_date, settlement_date, payment_status, settlement_status)
+VALUES (4,
+        4,
+        750000,
+        675000,
+        75000,
+'2025-03-18 10:00:00',
+        '2025-03-30 09:00:00',
+        NULL,
+        'PAYMENT_PENDING',
+        'SETTLEMENT_PENDING');

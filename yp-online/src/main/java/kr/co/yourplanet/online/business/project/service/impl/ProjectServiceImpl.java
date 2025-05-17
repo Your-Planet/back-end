@@ -35,6 +35,7 @@ import kr.co.yourplanet.online.business.project.dto.response.ReferenceFileInfo;
 import kr.co.yourplanet.online.business.project.repository.ProjectHistoryRepository;
 import kr.co.yourplanet.online.business.project.repository.ProjectRepository;
 import kr.co.yourplanet.online.business.project.service.ProjectService;
+import kr.co.yourplanet.online.business.settlement.service.ProjectSettlementService;
 import kr.co.yourplanet.online.business.studio.repository.PriceRepository;
 import kr.co.yourplanet.online.business.user.repository.MemberRepository;
 import kr.co.yourplanet.online.common.exception.BusinessException;
@@ -49,6 +50,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ProjectServiceImpl implements ProjectService {
 
     private final SnowflakeIdGenerator snowflakeIdGenerator;
+    private final ProjectSettlementService projectSettlementService;
 
     private final ProjectRepository projectRepository;
     private final ProjectHistoryRepository projectHistoryRepository;
@@ -216,6 +218,8 @@ public class ProjectServiceImpl implements ProjectService {
             throw new BusinessException(StatusCode.NOT_FOUND, "작업 요청 이력이 존재하지 않습니다", false);
         }
 
+        // 프로젝트 정산 정보 생성
+        projectSettlementService.createForAcceptedProject(requestMemberId, project.getId());
     }
 
     @Override
@@ -328,7 +332,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     private List<ReferenceFileInfo> getReferenceFileInfos(Project project) {
         List<FileMetadata> referenceFiles =
-                fileQueryService.getByReference(FileType.PROJECT_REFERENCE_FILE, project.getId());
+                fileQueryService.getByTarget(FileType.PROJECT_REFERENCE_FILE, project.getId());
 
         return referenceFiles.stream()
                 .map(file -> ReferenceFileInfo.builder()

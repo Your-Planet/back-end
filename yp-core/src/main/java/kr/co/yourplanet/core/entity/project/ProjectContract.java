@@ -1,5 +1,6 @@
 package kr.co.yourplanet.core.entity.project;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.Comment;
@@ -40,8 +41,8 @@ public class ProjectContract {
     @Comment("의뢰 수락일 (오늘)")
     private LocalDateTime acceptDateTime;
 
-    @Comment("의뢰 마감일")
-    private LocalDateTime completeDateTime;
+    @Comment("의뢰 마감일 (작업 기한)")
+    private LocalDate dueDate;
 
     @Comment("거래 금액")
     private Long contractAmount;
@@ -75,6 +76,9 @@ public class ProjectContract {
     @Comment("광고주 작성일")
     private LocalDateTime clientWrittenDateTime;
 
+    @Comment("계약 완료일")
+    private LocalDateTime completeDateTime;
+
     public void writeClientInfo(Contractor client) {
         this.client = client;
         this.clientWrittenDateTime = LocalDateTime.now();
@@ -83,6 +87,10 @@ public class ProjectContract {
     public void writeProviderInfo(Contractor provider) {
         this.provider = provider;
         this.providerWrittenDateTime = LocalDateTime.now();
+    }
+
+    public void completeContract() {
+        this.completeDateTime = LocalDateTime.now();
     }
 
     public boolean isCompleted() {

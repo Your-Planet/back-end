@@ -1,5 +1,7 @@
 package kr.co.yourplanet.online.business.payment.service.dto;
 
+import java.time.LocalDateTime;
+
 import org.springframework.http.HttpStatusCode;
 
 import jakarta.validation.constraints.NotBlank;
@@ -35,6 +37,7 @@ public class PaymentResponse {
         private String status;
         private String method;
         private Long totalAmount;
+        private LocalDateTime approvedAt;
     }
 
     @Builder
