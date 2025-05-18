@@ -9,6 +9,8 @@ import java.util.regex.Pattern;
 
 public class AlimTalkVariableResolver {
 
+    private AlimTalkVariableResolver() {}
+
     /**
      * 알림톡 템플릿 문구 내에 포함된 #{객체.필드} 형태의 변수를 실제 객체의 필드 값으로 치환합니다.
      *
