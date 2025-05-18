@@ -2,8 +2,6 @@ package kr.co.yourplanet.core.alimtalk.dto;
 
 import java.util.List;
 
-import kr.co.yourplanet.core.entity.alimtalk.AlimTalkTemplate;
-import kr.co.yourplanet.core.entity.alimtalk.AlimTalkTemplateButton;
 import kr.co.yourplanet.core.enums.AlimTalkMsgType;
 
 public record AlimTalkSendForm(
@@ -18,40 +16,5 @@ public record AlimTalkSendForm(
     String ref, // 참조 필드
     Object fallback // 실패 시 전송될 Fallback 메시지 정보
 ) {
-    public static AlimTalkSendForm ofRequiredFields(AlimTalkTemplate alimTalkTemplate, String senderKey, String to, String text) {
-        return new AlimTalkSendForm(
-            senderKey,
-            alimTalkTemplate.getMsgType(),
-            to,
-            alimTalkTemplate.getTemplateCode(),
-            text,
-            alimTalkTemplate.getTitle(), // title
-            null, // header
-            setAlimTalkButtons(alimTalkTemplate.getButton()), // button
-            null, // ref
-            null  // fallback
-        );
-    }
 
-    public static List<AlimTalkButtonForm> setAlimTalkButtons(List<AlimTalkTemplateButton> alimTalkButtons) {
-        if (alimTalkButtons == null || alimTalkButtons.isEmpty()) {
-            return List.of();
-        }
-
-        return alimTalkButtons.stream()
-            .map(button -> new AlimTalkButtonForm(
-                button.getType(),
-                button.getName(),
-                button.getUrlPc(),
-                button.getUrlMobile(),
-                button.getSchemeIos(),
-                button.getSchemeAndroid(),
-                button.getTarget(),
-                button.getChatExtra(),
-                button.getChatEvent(),
-                button.getBizFormKey(),
-                button.getBizFormId()
-            ))
-            .toList();
-    }
 }
