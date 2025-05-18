@@ -54,5 +54,12 @@ public class AlimTalkTemplate extends BasicColumn {
     private AlimTalkCategory category;
 
     @OneToMany(mappedBy = "alimTalkTemplate", fetch = FetchType.EAGER)
-    private List<AlimTalkTemplateButton> button;
+    private List<AlimTalkTemplateButton> buttons;
+
+
+    public void updateTemplate(String name, String text, AlimTalkMsgType alimTalkMsgType) {
+        this.templateName = name;
+        this.text = text;
+        this.msgType = alimTalkMsgType;
+    }
 }
