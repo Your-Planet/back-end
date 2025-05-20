@@ -82,7 +82,7 @@ public class AuthController {
     }
 
     @Operation(summary = "비밀번호 검증")
-    @PostMapping("/auth/validate-password")
+    @PostMapping("/auth/password/validate")
     public ResponseForm<Void> validatePassword(
             @AuthenticationPrincipal JwtPrincipal principal,
             @Valid @RequestBody ValidatePasswordForm validatePasswordForm
@@ -92,7 +92,7 @@ public class AuthController {
     }
 
     @Operation(summary = "비밀번호 변경")
-    @PatchMapping("/auth/change-password")
+    @PatchMapping("/auth/password/change")
     public ResponseForm<Void> changePassword(
             @AuthenticationPrincipal JwtPrincipal principal,
             @Valid @RequestBody ChangePasswordForm changePasswordForm
@@ -101,8 +101,8 @@ public class AuthController {
         return new ResponseForm<>(StatusCode.OK);
     }
 
-    @Operation(summary = "비밀번호 초기화")
-    @PostMapping("/auth/reset-password")
+    @Operation(summary = "비밀번호 재설정")
+    @PostMapping("/auth/password/reset")
     public ResponseForm<Void> resetPassword(
             @Valid @RequestBody ResetPasswordForm resetPasswordForm
     ) {
