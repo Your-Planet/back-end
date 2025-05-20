@@ -35,7 +35,7 @@ public class MemberQueryService {
                 .orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "요청한 멤버를 찾을 수 없습니다.", true));
     }
 
-    public String findId(FindIdForm accountRecoveryFrom) {
+    public String findEmail(FindIdForm accountRecoveryFrom) {
         Optional<Member> findMember = memberRepository.findByNameAndPhone(accountRecoveryFrom.getName(), accountRecoveryFrom.getTel());
 
         if (findMember.isEmpty()) {
