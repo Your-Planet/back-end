@@ -1,17 +1,14 @@
 package kr.co.yourplanet.online.business.file.service;
 
-import java.net.URL;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import kr.co.yourplanet.core.entity.file.FileMetadata;
+import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.enums.FileType;
 import kr.co.yourplanet.online.business.file.adapter.StorageAdapter;
-import kr.co.yourplanet.online.business.file.dto.PresignedUrlsForm;
-import kr.co.yourplanet.online.business.file.dto.PresignedUrlsResponse;
+import kr.co.yourplanet.online.business.user.service.MemberQueryService;
 import kr.co.yourplanet.online.common.util.FileManageUtil;
 import lombok.RequiredArgsConstructor;
 
@@ -19,31 +16,25 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class FileUploadService {
-    public static final String MEMBER_ID = "memberId";
+
+    private final FileService fileService;
+    private final MemberQueryService memberQueryService;
 
     private final StorageAdapter storageAdapter;
     private final FileManageUtil fileManageUtil;
 
-    public URL uploadImageFile(MultipartFile imageFile, FileType fileType, String fileKey) {
+    public FileMetadata upload(MultipartFile imageFile, FileType fileType, long uploaderId) {
         fileManageUtil.validateFile(imageFile, fileType);
 
-        return storageAdapter.upload(imageFile, fileKey);
-    }
+        Member uploader = memberQueryService.getById(uploaderId);
+        String fileName = imageFile.getOriginalFilename();
+        String fileKey = fileManageUtil.generateFileKey(fileType, fileName);
+        String ext = fileManageUtil.getFileExtension(fileName);
 
-    public PresignedUrlsResponse getPresignedUrls(Map<String, String> metadata, PresignedUrlsForm form) {
-        FileType fileType = form.fileType();
-        List<String> fileKeys = form.fileNames().stream()
-                .map(fileName -> fileManageUtil.generateFileUrl(fileType, fileName, metadata))
-                .toList();
+        FileMetadata file = FileMetadata.createUploaded(uploader, fileKey, fileName, ext, fileType);
+        fileService.save(file);
+        storageAdapter.upload(imageFile, fileKey);
 
-        // TODO: 비동기로 전환
-        List<String> urls = storageAdapter.generatePresignedUrls(fileKeys)
-                .stream()
-                .map(URL::toString)
-                .toList();
-
-        return PresignedUrlsResponse.builder()
-                .presignedUrls(urls)
-                .build();
+        return file;
     }
 }

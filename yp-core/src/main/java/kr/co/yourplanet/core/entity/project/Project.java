@@ -11,6 +11,8 @@ import org.springframework.util.CollectionUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,12 +22,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.SequenceGenerator;
-import jakarta.validation.constraints.Size;
 import kr.co.yourplanet.core.entity.BasicColumn;
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.studio.Price;
 import kr.co.yourplanet.core.enums.ProjectStatus;
-import kr.co.yourplanet.core.enums.ValidEnum;
 import kr.co.yourplanet.core.util.StringListConverter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -68,14 +68,25 @@ public class Project extends BasicColumn {
     /**
      * 프로젝트 상태
      */
-    @ValidEnum(enumClass = ProjectStatus.class)
+    @Enumerated(EnumType.STRING)
     @Column(name = "project_status")
     private ProjectStatus projectStatus;
 
     /**
+     * 프로젝트 이름
+     */
+    @Column(name = "order_title")
+    private String orderTitle;
+
+    /**
+     * 프로젝트 코드
+     */
+    @Column(name = "order_code")
+    private String orderCode;
+
+    /**
      * 브랜드명
      */
-    @Size(max = 30)
     @Column(name = "brand_name")
     private String brandName;
 
@@ -92,26 +103,32 @@ public class Project extends BasicColumn {
     /**
      * 의뢰 의뢰 일시
      */
+    @Column(name = "request_date_time")
     private LocalDateTime requestDateTime;
     /**
      * 의뢰 협상 일시
      */
+    @Column(name = "negotiate_date_time")
     private LocalDateTime negotiateDateTime;
     /**
      * 의뢰 수락 일시
      */
+    @Column(name = "accept_date_time")
     private LocalDateTime acceptDateTime;
     /**
      * 의뢰 완료 일시
      */
+    @Column(name = "complete_date_time")
     private LocalDateTime completeDateTime;
     /**
      * 의뢰 거절/취소 일시
      */
+    @Column(name = "reject_date_time")
     private LocalDateTime rejectDateTime;
     /**
      * 의뢰 거절/취소 사유
      */
+    @Column(name = "reject_reason")
     private String rejectReason;
 
     /**
@@ -120,11 +137,6 @@ public class Project extends BasicColumn {
     @Convert(converter = StringListConverter.class)
     @Column(name = "reference_urls")
     private List<String> referenceUrls;
-    /**
-     * 참고 자료
-     */
-    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
-    private List<ProjectReferenceFile> referenceFiles;
 
     /**
      * 프로젝트 히스토리
@@ -141,7 +153,6 @@ public class Project extends BasicColumn {
     public Project() {
         this.projectHistories = new ArrayList<>();
         this.referenceUrls = new ArrayList<>();
-        this.referenceFiles = new ArrayList<>();
     }
 
     public void negotiate(ProjectStatus projectStatus) {
@@ -166,7 +177,7 @@ public class Project extends BasicColumn {
      * 의뢰 수락된 프로젝트 히스토리를 반환하는 메소드입니다.
      *
      * @return 의뢰 수락된 ProjectHistory 객체를 반환합니다.
-     * 만약 히스토리가 없을 경우 null을 반환합니다.
+     * 만약 히스토리가 없을 경우 Optional.empty()을 반환합니다.
      */
     public Optional<ProjectHistory> getAcceptedHistory() {
         if (projectHistories == null) {

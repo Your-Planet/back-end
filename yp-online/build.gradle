@@ -34,10 +34,8 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
-    // queryDSL
-    implementation "com.querydsl:querydsl-jpa"
-    implementation "com.querydsl:querydsl-core"
-    implementation "com.querydsl:querydsl-collections"
+    // QueryDsl
+    implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
 
     // AWS
     implementation(platform("software.amazon.awssdk:bom:2.21.1"))
@@ -50,26 +48,19 @@ dependencies {
 
     // flyway
     implementation 'org.flywaydb:flyway-core'
+
+    // Test
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    // Test Containers
+    testImplementation "org.testcontainers:junit-jupiter"
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers:3.2.12'
+    testImplementation "org.testcontainers:postgresql"
+
+    // Mock Server
+    testImplementation("com.squareup.okhttp3:mockwebserver")
 }
 
 tasks.named('test') {
     useJUnitPlatform()
-}
-
-// Querydsl 설정부
-def generated = 'src/main/generated'
-
-// querydsl QClass 파일 생성 위치를 지정
-tasks.withType(JavaCompile) {
-    options.getGeneratedSourceOutputDirectory().set(file(generated))
-}
-
-// java source set 에 querydsl QClass 위치 추가
-sourceSets {
-    main.java.srcDirs += [generated]
-}
-
-// gradle clean 시에 QClass 디렉토리 삭제
-clean {
-    delete file(generated)
 }

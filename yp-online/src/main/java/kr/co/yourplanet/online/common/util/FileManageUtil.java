@@ -4,14 +4,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import kr.co.yourplanet.core.entity.FileMetadataKeys;
 import kr.co.yourplanet.core.enums.FileType;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.common.exception.BusinessException;
@@ -28,6 +26,9 @@ public class FileManageUtil {
 
     private final FileProperties fileProperties;
 
+    /**
+     * 파일 관리
+     */
     public FileUploadResult uploadFile(MultipartFile multipartFile, FileType fileType) {
         validateFile(multipartFile, fileType);
 
@@ -61,6 +62,9 @@ public class FileManageUtil {
         }
     }
 
+    /**
+     * 파일 검증
+     */
     public void validateFile(MultipartFile file, FileType fileType) {
         // 빈 파일 검증
         validateFileNotEmpty(file);
@@ -75,12 +79,24 @@ public class FileManageUtil {
         // FileType별 유효성 체크
         switch (fileType) {
             case PROFILE_IMAGE:
-                validateProfileImage(file, fileName);
+                validateProfileImage(file);
                 break;
             case PROJECT_REFERENCE_FILE:
                 break;
             default:
                 throw new BusinessException(StatusCode.BAD_REQUEST, "정의되지 않은 파일형식입니다.", false);
+        }
+    }
+
+    public void validateFileName(String fileName) {
+        if (!StringUtils.hasText(fileName)) {
+            throw new BusinessException(StatusCode.BAD_REQUEST, "파일명이 존재하지 않습니다.", false);
+        }
+    }
+
+    public void validateFileExtension(FileType fileType, String fileName) {
+        if (!fileType.isAllowedExtension(getFileExtension(fileName))) {
+            throw new BusinessException(StatusCode.UNSUPPORTED_MEDIA_TYPE, "혀용된 파일 확장자가 아닙니다.", true);
         }
     }
 
@@ -90,33 +106,17 @@ public class FileManageUtil {
         }
     }
 
-    private void validateFileName(String fileName) {
-        if (!StringUtils.hasText(fileName)) {
-            throw new BusinessException(StatusCode.BAD_REQUEST, "파일명이 존재하지 않습니다.", false);
-        }
-    }
-
-    private void validateFileExtension(FileType fileType, String fileName) {
-        if (!fileType.isAllowedExtension(getFileExtension(fileName))) {
-            throw new BusinessException(StatusCode.UNSUPPORTED_MEDIA_TYPE, "혀용된 파일 확장자가 아닙니다.", true);
-        }
-    }
-
-    private void validateProfileImage(MultipartFile file, String fileName) {
+    private void validateProfileImage(MultipartFile file) {
         if (MAX_IMAGE_SIZE < file.getSize()) {
             throw new BusinessException(StatusCode.BAD_REQUEST, "이미지는 최대 5MB까지 업로드 가능합니다.", false);
         }
     }
 
-    private void validateMetadata(Map<String, String> metadata, String key) {
-        if (!metadata.containsKey(key)) {
-            throw new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 메타 데이터 입니다.", true);
-        }
-    }
-
-    private String getFileExtension(String fileName) {
-        String[] parts = fileName.split("\\.");
-        return parts.length > 1 ? parts[parts.length - 1] : "";
+    /**
+     * 파일 정보 생성
+     */
+    public String generateFileKey(FileType fileType, String fileName) {
+        return fileType.getPath() + generateRandomFileName(fileName);
     }
 
     private Path generateFileAbsolutePath(FileType fileType, String fileName) {
@@ -142,26 +142,15 @@ public class FileManageUtil {
         return propertyUrl + fileName;
     }
 
-    public String generateFileUrl(FileType fileType, String fileName, Map<String, String> metadata) {
-        validateFileName(fileName);
-        validateFileExtension(fileType, fileName);
-
-        StringBuilder url = new StringBuilder();
-
-        switch (fileType) {
-            case SETTLEMENT_FILE -> {
-                validateMetadata(metadata, FileMetadataKeys.MEMBER_ID);
-
-                String path = fileProperties.getPrefixSecretFileUrl() + fileProperties.getMemberSettlementFileUrl();
-                url.append(String.format(path, metadata.get(FileMetadataKeys.MEMBER_ID)));
-            }
-            default -> throw new BusinessException(StatusCode.UNSUPPORTED_MEDIA_TYPE);
-        }
-
-        return url.append(fileName).toString();
+    public String generateRandomFileName(String fileName) {
+        return UUID.randomUUID().toString() + "-" + fileName;
     }
 
-    private String generateRandomFileName(String fileName) {
-        return UUID.randomUUID().toString() + "-" + fileName;
+    /**
+     * 기타
+     */
+    public String getFileExtension(String fileName) {
+        String[] parts = fileName.split("\\.");
+        return parts.length > 1 ? parts[parts.length - 1] : "";
     }
 }

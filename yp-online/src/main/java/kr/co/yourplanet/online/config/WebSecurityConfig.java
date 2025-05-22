@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -19,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
@@ -37,10 +39,18 @@ public class WebSecurityConfig {
             "/v3/api-docs/**",
             "/swagger-ui/**",
             /* business */
-            "/auth/**",
+            // TODO: AUTH API JWT 토큰 사용하게 리팩터링 후 수정
+            "/auth/join",
+            "/auth/login",
+            "/auth/validation",
+            "/auth/refresh-token",
+            "/auth/reset-password",
+            "/auth/find-email",
             /* files */
             "/files/profile/**",
-            "/files/project/**"
+            "/files/project/**",
+            /* h2 console */
+            "/h2-console/**"
     };
 
     @Bean

@@ -1,0 +1,20 @@
+server:
+  port: 8081
+
+spring:
+  profiles:
+    active: local
+  servlet:
+    multipart:
+      max-file-size: 20MB
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    defer-datasource-initialization: false
+
+logging:
+  level:
+    root : info
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace # sql 쿼리 input 값 확인하고 싶을 때

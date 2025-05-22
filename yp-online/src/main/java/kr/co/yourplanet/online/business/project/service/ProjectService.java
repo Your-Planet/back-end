@@ -2,8 +2,6 @@ package kr.co.yourplanet.online.business.project.service;
 
 import java.util.List;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import kr.co.yourplanet.online.business.project.dto.request.ProjectAcceptForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectNegotiateForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectRejectForm;
@@ -14,7 +12,7 @@ import kr.co.yourplanet.online.business.project.dto.response.ProjectHistoryForm;
 
 public interface ProjectService {
 
-    void createProject(ProjectRequestForm projectRequestForm, List<MultipartFile> referenceFiles, Long sponsorId);
+    void createProject(ProjectRequestForm projectRequestForm, Long sponsorId);
 
     void rejectProject(ProjectRejectForm projectRejectForm, Long requestMemberId);
 

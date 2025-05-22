@@ -4,6 +4,7 @@ import kr.co.yourplanet.core.enums.MemberType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -17,6 +18,8 @@ import java.util.Set;
 @AllArgsConstructor
 public class JwtPrincipal implements UserPrincipal {
 
+    private static final String ROLE_PREFIX = "ROLE_";
+
     private Long id;
     private String memberName;
     private MemberType memberType;
@@ -28,7 +31,7 @@ public class JwtPrincipal implements UserPrincipal {
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> roles = new HashSet<>();
-        roles.add(new SimpleGrantedAuthority(this.memberType.toString()));
+        roles.add(new SimpleGrantedAuthority(ROLE_PREFIX + this.memberType.toString()));
         return roles;
     }
 

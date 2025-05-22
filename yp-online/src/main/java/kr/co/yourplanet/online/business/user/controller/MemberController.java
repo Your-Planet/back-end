@@ -1,10 +1,12 @@
 package kr.co.yourplanet.online.business.user.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kr.co.yourplanet.core.enums.StatusCode;
-import kr.co.yourplanet.online.business.user.dto.MemberDetail;
-import kr.co.yourplanet.online.business.user.dto.update.MemberUpdateForm;
+import kr.co.yourplanet.online.business.user.dto.response.MemberDetail;
+import kr.co.yourplanet.online.business.user.dto.response.MemberFullInfo;
+import kr.co.yourplanet.online.business.user.dto.request.MemberUpdateForm;
 import kr.co.yourplanet.online.business.user.service.MemberQueryService;
 import kr.co.yourplanet.online.business.user.service.MemberUpdateService;
 import kr.co.yourplanet.online.common.ResponseForm;
@@ -28,11 +30,21 @@ public class MemberController {
 
     @GetMapping("/member/detail")
     public ResponseForm<MemberDetail> getMemberDetailInfo(@AuthenticationPrincipal JwtPrincipal principal) {
-        return new ResponseForm<>(StatusCode.OK, memberQueryService.getMemberDetailInfo(principal.getId()));
+        return new ResponseForm<>(StatusCode.OK, memberQueryService.getSummaryInfo(principal.getId()));
     }
 
+    @Operation(summary = "내 정보 조회 API")
+    @GetMapping("/members/me")
+    public ResponseForm<MemberFullInfo> getMyInfo(
+            @AuthenticationPrincipal JwtPrincipal principal
+    ) {
+        MemberFullInfo response = memberQueryService.getFullInfo(principal.getId());
+        return new ResponseForm<>(StatusCode.OK, response);
+    }
+
+    @Operation(summary = "내 정보 수정 API")
     @PatchMapping("/members/me")
-    public ResponseForm<Void> updateMemberInfo(
+    public ResponseForm<Void> updateMyInfo(
             @AuthenticationPrincipal JwtPrincipal principal,
             @Valid @RequestBody MemberUpdateForm memberUpdateForm
     ) {

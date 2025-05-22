@@ -9,19 +9,29 @@ import lombok.Getter;
 public enum FileType {
 
     PROFILE_IMAGE(
-            new HashSet<>(Set.of("jpg", "jpeg", "png", "gif"))
+            "files/profile/member/",
+            new HashSet<>(Set.of("jpg", "jpeg", "png", "gif")), 
+            true
     ),
     PROJECT_REFERENCE_FILE(
-            new HashSet<>(Set.of("pdf", "doc", "docx", "txt", "ppt", "pptx", "xls", "xlsx", "csv", "xml"))
+            "files/project/reference/",
+            new HashSet<>(Set.of("pdf", "doc", "docx", "txt", "ppt", "pptx", "xls", "xlsx", "csv", "xml")), 
+            true
     ),
     SETTLEMENT_FILE(
-            new HashSet<>(Set.of("jpg", "jpeg", "png", "gif"))
+            "files/secret/settlement/",
+            new HashSet<>(Set.of("jpg", "jpeg", "png", "gif", "pdf")), 
+            false
     );
 
+    private final String path;
     private final Set<String> allowedExtensions;
+    private final boolean viewable;
 
-    FileType(Set<String> set) {
-        allowedExtensions = set;
+    FileType(String path, Set<String> allowedExtensions, boolean viewable) {
+        this.path = path;
+        this.allowedExtensions = allowedExtensions;
+        this.viewable = viewable;
     }
 
     public boolean isAllowedExtension(String extension) {

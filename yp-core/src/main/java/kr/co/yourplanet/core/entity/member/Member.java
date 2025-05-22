@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,7 +17,6 @@ import kr.co.yourplanet.core.entity.BasicColumn;
 import kr.co.yourplanet.core.enums.BusinessType;
 import kr.co.yourplanet.core.enums.GenderType;
 import kr.co.yourplanet.core.enums.MemberType;
-import kr.co.yourplanet.core.enums.ValidEnum;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,7 +38,7 @@ public class Member extends BasicColumn {
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private MemberSalt memberSalt;
 
-    @ValidEnum(enumClass = MemberType.class)
+    @Enumerated(EnumType.STRING)
     private MemberType memberType;
 
     @Embedded
@@ -82,6 +83,13 @@ public class Member extends BasicColumn {
         return MemberType.SPONSOR.equals(this.getMemberType());
     }
 
+    public boolean hasSettlementInfo() {
+        return this.settlementInfo != null;
+    }
+  
+    public boolean isBusinessCreator() {
+        return isCreator() && BusinessType.BUSINESS.equals(getBusinessType());
+    }
 
     // Simplified Getters
     public String getEmail() {

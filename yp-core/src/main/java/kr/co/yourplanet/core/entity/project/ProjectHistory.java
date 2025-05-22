@@ -4,7 +4,6 @@ import kr.co.yourplanet.core.entity.BasicColumn;
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.enums.DemandType;
 import kr.co.yourplanet.core.enums.ProjectStatus;
-import kr.co.yourplanet.core.enums.ValidEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,7 +33,7 @@ public class ProjectHistory extends BasicColumn {
 
     private Integer seq;
 
-    @ValidEnum(enumClass = ProjectStatus.class)
+    @Enumerated(EnumType.STRING)
     @Column(name = "project_status")
     private ProjectStatus projectStatus;
 
@@ -59,14 +58,14 @@ public class ProjectHistory extends BasicColumn {
     /**
      * 원본 파일 요청 여부
      */
-    @ValidEnum(enumClass = DemandType.class)
+    @Enumerated(EnumType.STRING)
     @Column(name = "origin_file_demand_type")
     private DemandType originFileDemandType;
 
     /**
      * 2차 활용 요청 여부
      */
-    @ValidEnum(enumClass = DemandType.class)
+    @Enumerated(EnumType.STRING)
     @Column(name = "refinement_demand_type")
     private DemandType refinementDemandType;
 

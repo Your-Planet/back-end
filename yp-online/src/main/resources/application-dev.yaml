@@ -12,15 +12,12 @@ spring:
     redis:
       host: ${DEV_REDIS_HOST}
       port: ${DEV_REDIS_PORT}
+      ssl:
+        enabled: true
 
   jpa:
     hibernate:
       ddl-auto: validate
-    defer-datasource-initialization: true
-
-  flyway:
-    baseline-on-migrate: true
-    baseline-version: 1
 
   cloud:
     config:
@@ -33,8 +30,9 @@ spring:
             credentials:
               access-key: ${S3_ACCESS_KEY}
               secret-key: ${S3_SECRET_KEY}
-            presigned-url:
-              expire-time: 3600
+            expire-time:
+              upload: 3600
+              download: 600
 
 encrypt:
   secret: ${DEV_ENCRYPT_SECRET}
@@ -46,8 +44,7 @@ file:
   studio-path: /app/files/upload/studio/
   project-reference-file-path: /app/files/upload/project/reference/
   project-reference-file-url: /files/project/reference/
-  prefix-secret-file-url: files/secret
-  member-settlement-file-url: /settlements/members/%s/
+  base-profile-image-url: ${BASE_PROFILE_IMAGE_URL}
 
 jwt:
   secret: ${DEV_JWT_SECRET}
@@ -56,3 +53,12 @@ payments:
   toss:
     uri: https://api.tosspayments.com/v1/payments/confirm
     secret-key: ${TOSS_PAYMENT_SECRET}
+
+omni:
+  id: ${OMNI-ALIMTALK-ID}
+  password: ${OMNI-ALIMTALK-PASSWORD}
+  senderkey: ${OMNI-ALIMTALK-SENDERKEY}
+  host: https://omni.ibapi.kr
+  url:
+    auth: /v1/auth/token
+    alimtalk: /v1/send/alimtalk

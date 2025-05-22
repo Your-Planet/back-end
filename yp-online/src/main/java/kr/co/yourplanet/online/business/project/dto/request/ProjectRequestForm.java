@@ -1,13 +1,17 @@
 package kr.co.yourplanet.online.business.project.dto.request;
 
+import java.time.LocalDate;
+import java.util.List;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import jakarta.validation.constraints.*;
-import java.time.LocalDate;
-import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -70,11 +74,24 @@ public class ProjectRequestForm {
     private String brandName;
 
     /**
+     * 프로젝트 이름
+     */
+    @NotBlank(message = "프로젝트 이름은 필수입니다")
+    @Size(max = 100, message = "프로젝트 이름은 최대 100자까지 가능합니다")
+    private String orderTitle;
+
+    /**
      * 캠페인 소개
      */
     @NotBlank(message = "캠페인 소개는 필수입니다")
     @Size(max = 500)
     private String campaignDescription;
+
+    /**
+     * 참고자료 파일 목록
+     */
+    @Schema(description = "업로드한 참고자료 파일 id 목록")
+    private List<Long> referenceFiles;
 
     /**
      * 기타 요청사항
