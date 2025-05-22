@@ -176,7 +176,7 @@ VALUES (1, 1, 'PROVIDED', 'PROVIDED', 'UNPROVIDED',
 -- PROJECT --
 
 -- ID 1
--- [IN_PROGRESS]
+-- [ACCEPTED]
 -- 작가 ID 1, 광고주 ID 3
 -- 계약서 존재 x
 INSERT INTO project (id, sponsor_id, creator_id, creator_price_id, project_status,
@@ -185,7 +185,7 @@ INSERT INTO project (id, sponsor_id, creator_id, creator_price_id, project_statu
                      create_date, update_date, negotiate_date_time,
                      complete_date_time, send_date_time, settlement_date_time,
                      order_title, order_code)
-VALUES (1, 3, 1, 1, 'IN_PROGRESS',
+VALUES (1, 3, 1, 1, 'ACCEPTED',
         '2025-03-18 10:00:00', '2025-03-18 12:00:00', NULL, 1,
         '브랜드A', '신제품 홍보 캠페인', 'https://example.com/reference', NULL,
         '2025-03-18 09:00:00', '2025-03-18 12:10:00', '2025-03-19 15:00:00',
@@ -209,7 +209,7 @@ VALUES (2, 3, 1, 1, 'IN_REVIEW',
         '유튜브 광고 캠페인', 'ORD20250318025');
 
 -- ID 3
--- [IN_PROGRESS]
+-- [ACCEPTED]
 -- 작가 ID 1, 광고주 ID 3
 -- 공급자만 계약서 작성 완료
 INSERT INTO project (id, sponsor_id, creator_id, creator_price_id, project_status,
@@ -218,7 +218,7 @@ INSERT INTO project (id, sponsor_id, creator_id, creator_price_id, project_statu
                      create_date, update_date, negotiate_date_time,
                      complete_date_time, send_date_time, settlement_date_time,
                      order_title, order_code)
-VALUES (3, 3, 1, 1, 'IN_PROGRESS',
+VALUES (3, 3, 1, 1, 'ACCEPTED',
         '2025-03-18 10:00:00', '2025-03-18 12:00:00', NULL, 1,
         '스타트업B', '프리미엄 제품 런칭 캠페인', 'https://example.com/product-launch', NULL,
         '2025-03-18 09:00:00', '2025-03-18 12:10:00', '2025-03-19 15:00:00',
@@ -250,7 +250,7 @@ INSERT INTO project_history (id, project_id, seq, project_status, request_member
                              additional_panel_count, additional_panel_negotiable, due_date, offer_price,
                              origin_file_demand_type, post_duration_extension_months, refinement_demand_type,
                              message, post_start_dates, create_date, update_date)
-VALUES (1, 1, 1, 'IN_PROGRESS', 3, 1, 2,
+VALUES (1, 1, 1, 'ACCEPTED', 3, 1, 2,
         true, '2025-04-05', 450000, 'DEMANDED', 2,
         'NOT_DEMANDED', '일정 확정 중',
         '2025-03-26,2025-03-27', '2025-03-18 14:00:00', '2025-03-18 14:30:00');
@@ -260,7 +260,7 @@ INSERT INTO project_history (id, project_id, seq, project_status, request_member
                              additional_panel_count, additional_panel_negotiable, due_date, offer_price,
                              origin_file_demand_type, post_duration_extension_months, refinement_demand_type,
                              message, post_start_dates, create_date, update_date)
-VALUES (2, 3, 1, 'IN_PROGRESS', 3, 1, 2,
+VALUES (2, 3, 1, 'ACCEPTED', 3, 1, 2,
         true, '2025-04-05', 450000, 'DEMANDED', 2,
         'NOT_DEMANDED', '일정 확정 중',
         '2025-03-26,2025-03-27', '2025-03-18 14:00:00', '2025-03-18 14:30:00');

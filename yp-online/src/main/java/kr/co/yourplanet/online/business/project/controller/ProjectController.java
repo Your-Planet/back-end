@@ -41,6 +41,7 @@ public class ProjectController {
     private final ProjectService projectService;
     private final ContractDraftService contractDraftService;
 
+    @Operation(summary = "프로젝트 의뢰")
     @PostMapping(value = "/project", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseForm<String>> createProject(
             @Valid @RequestBody ProjectRequestForm projectRequestForm,
@@ -50,6 +51,7 @@ public class ProjectController {
         return new ResponseEntity<>(new ResponseForm<>(StatusCode.CREATED), HttpStatus.CREATED);
     }
 
+    @Operation(summary = "프로젝트 협상")
     @PutMapping("/project")
     public ResponseEntity<ResponseForm<String>> negotiateProject(
             @Valid @RequestBody ProjectNegotiateForm projectNegotiateForm,
@@ -60,6 +62,7 @@ public class ProjectController {
         return new ResponseEntity<>(new ResponseForm<>(StatusCode.OK), HttpStatus.OK);
     }
 
+    @Operation(summary = "프로젝트 거절/취소")
     @PostMapping("/project/reject")
     public ResponseEntity<ResponseForm<String>> rejectProject(@Valid @RequestBody ProjectRejectForm projectRejectForm,
             @AuthenticationPrincipal JwtPrincipal principal) {
@@ -69,6 +72,7 @@ public class ProjectController {
         return new ResponseEntity<>(new ResponseForm<>(StatusCode.OK), HttpStatus.OK);
     }
 
+    @Operation(summary = "프로젝트 수락")
     @PostMapping("/project/accept")
     public ResponseEntity<ResponseForm<String>> acceptProject(@Valid @RequestBody ProjectAcceptForm projectAcceptForm,
             @AuthenticationPrincipal JwtPrincipal principal) {
@@ -78,6 +82,7 @@ public class ProjectController {
         return new ResponseEntity<>(new ResponseForm<>(StatusCode.OK), HttpStatus.OK);
     }
 
+    @Operation(summary = "프로젝트 히스토리 조회")
     @GetMapping("/project/history")
     public ResponseEntity<ResponseForm<List<ProjectHistoryForm>>> getProjectHistoryList(
             @RequestParam("id") Long projectId, @AuthenticationPrincipal JwtPrincipal principal) {
@@ -90,6 +95,7 @@ public class ProjectController {
         return new ResponseEntity<>(responseForm, HttpStatus.OK);
     }
 
+    @Operation(summary = "나의 프로젝트 리스트 조회")
     @GetMapping("/project")
     public ResponseEntity<ResponseForm<List<ProjectBasicInfo>>> getMemberProjectsBasicInfo(
             @AuthenticationPrincipal JwtPrincipal principal) {
@@ -102,6 +108,7 @@ public class ProjectController {
         return new ResponseEntity<>(responseForm, HttpStatus.OK);
     }
 
+    @Operation(summary = "프로젝트 상세 조회")
     @GetMapping("/project/{id}")
     public ResponseEntity<ResponseForm<ProjectDetailInfo>> getProjectDetailInfo(
             @PathVariable(name = "id") Long projectId, @AuthenticationPrincipal JwtPrincipal principal) {

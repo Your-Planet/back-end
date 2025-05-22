@@ -13,10 +13,12 @@ public enum ProjectStatus {
 	NEGOTIATION_FROM_CREATOR("작가협상", 72, Set.of(MemberType.CREATOR)),
 	CANCELED("취소", 72, Set.of(MemberType.SPONSOR)),
 	REJECTED("거절", 72, Set.of(MemberType.CREATOR)),
-	IN_PROGRESS("수락", 72, Set.of(MemberType.CREATOR)),
+	ACCEPTED("수락", 72, Set.of(MemberType.CREATOR)),
+	IN_PROGRESS("작업중(계약서작성완료)", 0, Set.of()),
 	SENT("작업물발송", 72, Set.of(MemberType.CREATOR)),
 	REQUEST_MODIFICATION("수정요청", 72, Set.of(MemberType.SPONSOR)),
 	COMPLETED("완료", 72, Set.of(MemberType.SPONSOR)),
+	SETTLED("정산완료", 0, Set.of(MemberType.SPONSOR)),
 	CLOSED("마감", 72, Set.of());
 
 	private final String statusName;
@@ -39,10 +41,12 @@ public enum ProjectStatus {
 		NEGOTIATION_FROM_SPONSOR.allowedPreviousStatuses = Set.of(NEGOTIATION_FROM_CREATOR);
 		CANCELED.allowedPreviousStatuses = Set.of(IN_REVIEW, NEGOTIATION_FROM_SPONSOR, NEGOTIATION_FROM_CREATOR);
 		REJECTED.allowedPreviousStatuses = Set.of(IN_REVIEW, NEGOTIATION_FROM_SPONSOR);
-		IN_PROGRESS.allowedPreviousStatuses = Set.of(IN_REVIEW, NEGOTIATION_FROM_SPONSOR);
-		SENT.allowedPreviousStatuses = Set.of(IN_PROGRESS, REQUEST_MODIFICATION);
+		ACCEPTED.allowedPreviousStatuses = Set.of(IN_REVIEW, NEGOTIATION_FROM_SPONSOR);
+		IN_PROGRESS.allowedPreviousStatuses = Set.of(ACCEPTED);
+		SENT.allowedPreviousStatuses = Set.of(ACCEPTED, REQUEST_MODIFICATION);
 		REQUEST_MODIFICATION.allowedPreviousStatuses = Set.of(SENT);
 		COMPLETED.allowedPreviousStatuses = Set.of(SENT);
+		SETTLED.allowedPreviousStatuses = Set.of(COMPLETED);
 		CLOSED.allowedPreviousStatuses = Set.of();
 	}
 

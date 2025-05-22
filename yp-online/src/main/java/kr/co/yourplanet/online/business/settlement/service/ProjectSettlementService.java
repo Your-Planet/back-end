@@ -33,7 +33,7 @@ public class ProjectSettlementService {
     // 프로젝트 수락 시 호출
     public void createForAcceptedProject(long creatorId, long projectId) {
         projectValidationService.checkCreator(projectId, creatorId);
-        projectValidationService.checkInProgress(projectId);
+        projectValidationService.checkAccepted(projectId);
 
         Project project = projectQueryService.getById(projectId);
 

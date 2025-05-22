@@ -162,8 +162,12 @@ public class Project extends BasicColumn {
 
     public void accept(ProjectHistory projectHistory) {
         this.acceptedHistoryId = projectHistory.getId();
-        this.projectStatus = ProjectStatus.IN_PROGRESS;
+        this.projectStatus = ProjectStatus.ACCEPTED;
         this.acceptDateTime = LocalDateTime.now();
+    }
+
+    public void startProjectAfterContract() {
+        this.projectStatus = ProjectStatus.IN_PROGRESS;
     }
 
     // 취소, 거절, 마감 등

@@ -22,7 +22,7 @@ public class ProjectPaymentProcessor implements PaymentProcessor {
     public void validate(Long targetId, Long memberId) {
         projectValidationService.checkExist(targetId);
         projectValidationService.checkSponsor(targetId, memberId);
-        projectValidationService.checkInProgress(targetId);
+        projectValidationService.checkAccepted(targetId);
     }
 
     @Override
