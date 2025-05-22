@@ -4,18 +4,24 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.auth.service.VerificationCodeService;
+import kr.co.yourplanet.online.business.user.dto.request.FindIdForm;
 import kr.co.yourplanet.online.business.user.dto.request.LoginForm;
 import kr.co.yourplanet.online.business.user.dto.request.MemberJoinForm;
+import kr.co.yourplanet.online.business.user.dto.request.MemberValidateForm;
 import kr.co.yourplanet.online.business.user.dto.request.RefreshTokenForm;
 import kr.co.yourplanet.online.business.auth.dto.VerificationCodeForm;
+import kr.co.yourplanet.online.business.user.dto.request.ResetPasswordForm;
 import kr.co.yourplanet.online.business.user.service.MemberJoinService;
+import kr.co.yourplanet.online.business.user.service.MemberQueryService;
 import kr.co.yourplanet.online.business.user.service.MemberService;
+import kr.co.yourplanet.online.business.user.service.MemberValidationService;
 import kr.co.yourplanet.online.common.ResponseForm;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,7 +37,9 @@ import jakarta.validation.Valid;
 public class AuthController {
 
     private final MemberService memberService;
+    private final MemberQueryService memberQueryService;
     private final MemberJoinService memberJoinService;
+    private final MemberValidationService memberValidationService;
     private final VerificationCodeService verificationCodeService;
 
     @Operation(summary = "회원 가입")
@@ -53,6 +61,32 @@ public class AuthController {
         response.addCookie(getRefreshTokenCookie(refreshTokenForm.getRefreshToken()));  // Refresh Token 쿠키 설정
 
         return new ResponseForm<>(StatusCode.OK, refreshTokenForm.getAccessToken());
+    }
+
+    @Operation(summary = "멤버 검증")
+    @PostMapping("/auth/member/validate")
+    public ResponseForm<Void> validateMember(
+            @Valid @RequestBody MemberValidateForm memberValidateForm
+    ) {
+        memberValidationService.validateMember(memberValidateForm);
+        return new ResponseForm<>(StatusCode.OK);
+    }
+
+    @Operation(summary = "이메일 찾기")
+    @PostMapping("/auth/find-email")
+    public ResponseForm<String> findEmail(
+            @Valid @RequestBody FindIdForm accountRecoveryFrom
+    ) {
+        return new ResponseForm<>(StatusCode.OK, memberQueryService.findEmail(accountRecoveryFrom));
+    }
+
+    @Operation(summary = "비밀번호 재설정")
+    @PatchMapping("/auth/password/reset")
+    public ResponseForm<Void> resetPassword(
+            @Valid @RequestBody ResetPasswordForm resetPasswordForm
+    ) {
+        memberService.resetPassword(resetPasswordForm);
+        return new ResponseForm<>(StatusCode.OK);
     }
 
     @Operation(summary = "인증코드 전송")

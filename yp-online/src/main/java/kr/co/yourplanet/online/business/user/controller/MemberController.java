@@ -5,9 +5,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.user.dto.request.ChangePasswordForm;
-import kr.co.yourplanet.online.business.user.dto.request.FindIdForm;
-import kr.co.yourplanet.online.business.user.dto.request.MemberValidateForm;
-import kr.co.yourplanet.online.business.user.dto.request.ResetPasswordForm;
 import kr.co.yourplanet.online.business.user.dto.request.ValidatePasswordForm;
 import kr.co.yourplanet.online.business.user.dto.response.MemberDetail;
 import kr.co.yourplanet.online.business.user.dto.response.MemberFullInfo;
@@ -64,23 +61,6 @@ public class MemberController {
         return new ResponseForm<>(StatusCode.OK, "회원 정보 수정이 완료 되었습니다.", true);
     }
 
-    @Operation(summary = "이메일 찾기")
-    @PostMapping("/members/find-email")
-    public ResponseForm<String> findEmail(
-            @Valid @RequestBody FindIdForm accountRecoveryFrom
-    ) {
-        return new ResponseForm<>(StatusCode.OK, memberQueryService.findEmail(accountRecoveryFrom));
-    }
-
-    @Operation(summary = "멤버 검증")
-    @PostMapping("/members/validate")
-    public ResponseForm<Void> validateMember(
-            @Valid @RequestBody MemberValidateForm memberValidateForm
-    ) {
-        memberValidationService.validateMember(memberValidateForm);
-        return new ResponseForm<>(StatusCode.OK);
-    }
-
     @Operation(summary = "비밀번호 검증")
     @PostMapping("/members/me/password/validate")
     public ResponseForm<Void> validatePassword(
@@ -98,15 +78,6 @@ public class MemberController {
             @Valid @RequestBody ChangePasswordForm changePasswordForm
     ) {
         memberService.changePassword(principal.getId(), changePasswordForm);
-        return new ResponseForm<>(StatusCode.OK);
-    }
-
-    @Operation(summary = "비밀번호 재설정")
-    @PostMapping("/members/password/reset")
-    public ResponseForm<Void> resetPassword(
-            @Valid @RequestBody ResetPasswordForm resetPasswordForm
-    ) {
-        memberService.resetPassword(resetPasswordForm);
         return new ResponseForm<>(StatusCode.OK);
     }
 }

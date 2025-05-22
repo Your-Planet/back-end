@@ -39,13 +39,7 @@ public class WebSecurityConfig {
             "/v3/api-docs/**",
             "/swagger-ui/**",
             /* business */
-            // TODO: AUTH API JWT 토큰 사용하게 리팩터링 후 수정
-            "/auth/join",
-            "/auth/login",
-            "/auth/validation",
-            "/auth/refresh-token",
-            "/auth/reset-password",
-            "/auth/find-email",
+            "/auth/**",
             /* files */
             "/files/profile/**",
             "/files/project/**",
