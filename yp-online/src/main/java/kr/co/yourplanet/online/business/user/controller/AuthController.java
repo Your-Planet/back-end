@@ -9,7 +9,7 @@ import kr.co.yourplanet.online.business.user.dto.request.LoginForm;
 import kr.co.yourplanet.online.business.user.dto.request.MemberJoinForm;
 import kr.co.yourplanet.online.business.user.dto.request.MemberValidateForm;
 import kr.co.yourplanet.online.business.user.dto.request.RefreshTokenForm;
-import kr.co.yourplanet.online.business.auth.dto.VerificationCodeForm;
+import kr.co.yourplanet.online.business.auth.dto.VerificationCodeSendForm;
 import kr.co.yourplanet.online.business.user.dto.request.ResetPasswordForm;
 import kr.co.yourplanet.online.business.user.service.MemberJoinService;
 import kr.co.yourplanet.online.business.user.service.MemberQueryService;
@@ -92,7 +92,7 @@ public class AuthController {
     @Operation(summary = "인증코드 전송")
     @PostMapping("/auth/verification-code")
     public ResponseForm<Void> sendVerificationCode(
-            @Valid @RequestBody VerificationCodeForm form
+            @Valid @RequestBody VerificationCodeSendForm form
     ) {
         verificationCodeService.sendVerificationCode(form);
 

@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 import kr.co.yourplanet.core.enums.AuthenticationMethod;
 import kr.co.yourplanet.core.mail.EmailService;
-import kr.co.yourplanet.online.business.auth.dto.VerificationCodeCommand;
+import kr.co.yourplanet.online.business.auth.dto.VerificationCodeSendCommand;
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -21,7 +21,7 @@ public class EmailVerificationSender implements VerificationSender {
     }
 
     @Override
-    public void send(VerificationCodeCommand command) {
+    public void send(VerificationCodeSendCommand command) {
         emailService.send(command.destination(), SUBJECT, command.verificationCode());
     }
 }

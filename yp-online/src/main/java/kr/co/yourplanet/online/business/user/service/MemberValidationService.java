@@ -38,6 +38,12 @@ public class MemberValidationService {
         }
     }
 
+    public void checkEmailExists(String email) {
+        if (memberRepository.findMemberByEmail(email).isEmpty()) {
+            throw new BadRequestException("입력된 이메일에 해당하는 회원 정보가 존재하지 않습니다.");
+        }
+    }
+
     public void checkDuplicateInstagramId(String instagramId) {
         if (memberRepository.findByInstagramId(instagramId).isPresent()) {
             throw new BusinessException(StatusCode.BAD_REQUEST, "이미 가입된 인스타그램 계정입니다.", false);
