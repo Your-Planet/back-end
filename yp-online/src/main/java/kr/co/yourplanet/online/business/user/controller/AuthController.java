@@ -1,8 +1,22 @@
 package kr.co.yourplanet.online.business.user.controller;
 
 import java.util.Arrays;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.user.dto.request.ChangePasswordForm;
 import kr.co.yourplanet.online.business.user.dto.request.FindIdForm;
@@ -18,34 +32,6 @@ import kr.co.yourplanet.online.business.user.service.MemberService;
 import kr.co.yourplanet.online.business.user.service.MemberValidationService;
 import kr.co.yourplanet.online.common.ResponseForm;
 import kr.co.yourplanet.online.jwt.JwtPrincipal;
-import lombok.RequiredArgsConstructor;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
-import kr.co.yourplanet.core.enums.StatusCode;
-import kr.co.yourplanet.online.business.user.dto.FindIdForm;
-import kr.co.yourplanet.online.business.user.dto.LoginForm;
-import kr.co.yourplanet.online.business.user.dto.MemberJoinForm;
-import kr.co.yourplanet.online.business.user.dto.MemberValidateForm;
-import kr.co.yourplanet.online.business.user.dto.RefreshTokenForm;
-import kr.co.yourplanet.online.business.user.dto.ResetPasswordForm;
-import kr.co.yourplanet.online.business.user.service.MemberJoinService;
-import kr.co.yourplanet.online.business.user.service.MemberQueryService;
-import kr.co.yourplanet.online.business.user.service.MemberService;
-import kr.co.yourplanet.online.business.user.service.MemberValidationService;
-import kr.co.yourplanet.online.common.ResponseForm;
 import lombok.RequiredArgsConstructor;
 
 @Tag(name = "Auth", description = "인증 API")
