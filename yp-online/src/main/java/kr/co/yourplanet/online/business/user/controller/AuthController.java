@@ -3,6 +3,8 @@ package kr.co.yourplanet.online.business.user.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.co.yourplanet.core.enums.StatusCode;
+import kr.co.yourplanet.online.business.auth.dto.AuthenticationTokenInfo;
+import kr.co.yourplanet.online.business.auth.dto.VerificationCodeCheckForm;
 import kr.co.yourplanet.online.business.auth.service.VerificationCodeService;
 import kr.co.yourplanet.online.business.user.dto.request.FindIdForm;
 import kr.co.yourplanet.online.business.user.dto.request.LoginForm;
@@ -90,13 +92,23 @@ public class AuthController {
     }
 
     @Operation(summary = "인증코드 전송")
-    @PostMapping("/auth/verification-code")
+    @PostMapping("/auth/verification-code/send")
     public ResponseForm<Void> sendVerificationCode(
             @Valid @RequestBody VerificationCodeSendForm form
     ) {
         verificationCodeService.sendVerificationCode(form);
 
         return new ResponseForm<>(StatusCode.OK);
+    }
+
+    @Operation(summary = "인증코드 확인")
+    @PostMapping("/auth/verification-code/check")
+    public ResponseForm<AuthenticationTokenInfo> checkVerificationCode(
+            @Valid @RequestBody VerificationCodeCheckForm form
+    ) {
+        AuthenticationTokenInfo response = verificationCodeService.checkVerificationCode(form);
+
+        return new ResponseForm<>(StatusCode.OK, response);
     }
 
     @Operation(summary = "접근 토큰 갱신")

@@ -50,6 +50,17 @@ public class RedisRepository {
     }
 
     /**
+     * 삭제
+     */
+    public void delete(String key) {
+        stringRedisTemplate.delete(key);
+    }
+
+    public void deleteHash(String key) {
+        objectRedisTemplate.delete(key);
+    }
+
+    /**
      * 검증
      */
     public boolean hasKey(String key) {
