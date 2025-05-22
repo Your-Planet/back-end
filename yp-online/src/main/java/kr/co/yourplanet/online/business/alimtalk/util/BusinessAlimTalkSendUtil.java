@@ -42,10 +42,10 @@ public class BusinessAlimTalkSendUtil {
     /**
      * 알림톡 발송 공통 메소드
      *
-     * @param alimTalkTemplateCode 알림톡템플릿
-     * @param targetMember 알림톡수신자
-     * @param contextObjectMap 변수치환맵
-     * @return AlimTalkSendResponseForm
+     * @param alimTalkTemplateCode [알림톡템플릿]
+     * @param targetMember [알림톡수신자]
+     * @param contextObjectMap [변수치환맵]
+     * @return AlimTalkSendResponseForm [알림톡 발송요청 결과 확인이 필요한 경우 사용 (ALIM_TALK_SEND_REQUEST_SUCCESS = "A000")]
      */
     private AlimTalkSendResponseForm send(AlimTalkTemplateCode alimTalkTemplateCode, Member targetMember, Map<String, Object> contextObjectMap) {
         Optional<AlimTalkTemplate> alimTalkTemplateOptional = alimTalkTemplateRepository.findByTemplateCode(
@@ -81,7 +81,7 @@ public class BusinessAlimTalkSendUtil {
      * [회원가입] 가입 완료 알림톡 발송
      * [수신자] 회원가입 완료자
      *
-     * @param targetMember 알림톡수신자
+     * @param targetMember [알림톡수신자]
      */
     @Async
     public void sendMemberJoinCompleteAlimTalk(Member targetMember) {
@@ -105,9 +105,9 @@ public class BusinessAlimTalkSendUtil {
      * [프로젝트] 협상 접수 알림톡 발송
      * [수신자] 협상 검토자(작가 or 광고주)
      *
-     * @param targetMemberId 알림톡수신자
-     * @param sponsorId 광고주
-     * @param projectId 프로젝트
+     * @param targetMemberId [알림톡수신자]
+     * @param sponsorId [광고주]
+     * @param projectId [프로젝트]
      */
     @Async
     public void sendProjectNegotiationCommon(Long targetMemberId, Long sponsorId, Long projectId) {
@@ -136,9 +136,9 @@ public class BusinessAlimTalkSendUtil {
      * [프로젝트] 의뢰 수락 알림톡 발송
      * [수신자] 작가, 광고주
      *
-     * @param creatorId 작가
-     * @param sponsorId 광고주
-     * @param projectId 프로젝트
+     * @param creatorId [작가]
+     * @param sponsorId [광고주]
+     * @param projectId [프로젝트]
      */
     @Async
     public void sendProjectAcceptCommon(Long creatorId, Long sponsorId, Long projectId) {
@@ -168,9 +168,9 @@ public class BusinessAlimTalkSendUtil {
      * [프로젝트] 의뢰 거절 알림톡 발송
      * [수신자] 광고주
      *
-     * @param sponsorId 광고주
-     * @param creatorId 작가
-     * @param projectId 프로젝트
+     * @param sponsorId [광고주]
+     * @param creatorId [작가]
+     * @param projectId [프로젝트]
      */
     @Async
     public void sendProjectRejectSponsor(Long sponsorId, Long creatorId, Long projectId) {
@@ -197,7 +197,7 @@ public class BusinessAlimTalkSendUtil {
      * [프로젝트] 의뢰 취소 알림톡 발송
      * [수신자] 작가
      *
-     * @param creatorId 작가
+     * @param creatorId [작가]
      */
     @Async
     public void sendProjectCancelCreator(Long creatorId) {
