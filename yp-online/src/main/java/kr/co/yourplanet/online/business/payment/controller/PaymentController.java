@@ -46,7 +46,7 @@ public class PaymentController {
             @AuthenticationPrincipal JwtPrincipal principal,
             @Valid @RequestBody PaymentApproveForm request
     ) {
-        paymentService.approve(principal.getId(), request.projectId(), request.paymentKey(), request.orderId(), request.amount());
+        paymentService.approve(request.paymentType(), principal.getId(), request.paymentKey(), request.orderId(), request.amount(), request.targetId());
 
         return new ResponseEntity<>(new ResponseForm<>(StatusCode.OK), HttpStatus.OK);
     }

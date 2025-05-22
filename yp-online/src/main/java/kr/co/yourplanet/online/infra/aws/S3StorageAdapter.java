@@ -36,9 +36,6 @@ public class S3StorageAdapter implements StorageAdapter {
     @Value("${spring.cloud.config.server.aws.s3.endpoint}")
     private String endpoint;
 
-    @Value("${spring.cloud.config.server.aws.s3.expire-time.upload}")
-    private long uploadExpireTime;
-
     @Override
     public URL upload(MultipartFile file, String fileKey) {
         PutObjectRequest objectRequest = PutObjectRequest.builder()
@@ -61,9 +58,9 @@ public class S3StorageAdapter implements StorageAdapter {
     }
 
     @Override
-    public URL getUploadUrl(String fileKey, MediaType mediaType) {
+    public URL getUploadUrl(String fileKey, MediaType mediaType, long expireTime) {
         PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofSeconds(uploadExpireTime))
+                .signatureDuration(Duration.ofSeconds(expireTime))
                 .putObjectRequest(b -> b.bucket(bucket)
                         .key(fileKey)
                         .contentType(mediaType.toString()))
@@ -88,9 +85,15 @@ public class S3StorageAdapter implements StorageAdapter {
 
     @Override
     public URL getPublicUrl(String fileKey) {
+        return getS3FileUrl(fileKey);
+    }
+
+    @Override
+    public URL getSecureUrl(String fileKey, long expireTime) {
         GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
                 .getObjectRequest(b -> b.bucket(bucket)
                         .key(fileKey))
+                .signatureDuration(Duration.ofMinutes(expireTime))
                 .build();
 
         PresignedGetObjectRequest request = s3Presigner.presignGetObject(presignRequest);

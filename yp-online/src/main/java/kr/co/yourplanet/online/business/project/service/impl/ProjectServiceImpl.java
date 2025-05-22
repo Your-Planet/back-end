@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import kr.co.yourplanet.core.entity.file.FileMetadata;
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.project.Project;
 import kr.co.yourplanet.core.entity.project.ProjectHistory;
@@ -17,7 +18,9 @@ import kr.co.yourplanet.core.enums.FileType;
 import kr.co.yourplanet.core.enums.MemberType;
 import kr.co.yourplanet.core.enums.ProjectStatus;
 import kr.co.yourplanet.core.enums.StatusCode;
+import kr.co.yourplanet.online.business.file.service.FileQueryService;
 import kr.co.yourplanet.online.business.file.service.FileService;
+import kr.co.yourplanet.online.business.file.service.FileUrlService;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectAcceptForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectNegotiateForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectRejectForm;
@@ -32,11 +35,11 @@ import kr.co.yourplanet.online.business.project.dto.response.ReferenceFileInfo;
 import kr.co.yourplanet.online.business.project.repository.ProjectHistoryRepository;
 import kr.co.yourplanet.online.business.project.repository.ProjectRepository;
 import kr.co.yourplanet.online.business.project.service.ProjectService;
+import kr.co.yourplanet.online.business.settlement.service.ProjectSettlementService;
 import kr.co.yourplanet.online.business.studio.repository.PriceRepository;
 import kr.co.yourplanet.online.business.user.repository.MemberRepository;
 import kr.co.yourplanet.online.common.exception.BusinessException;
 import kr.co.yourplanet.online.common.util.SnowflakeIdGenerator;
-import kr.co.yourplanet.online.properties.FileProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,14 +49,17 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional(readOnly = true)
 public class ProjectServiceImpl implements ProjectService {
 
-    private final FileProperties fileProperties;
     private final SnowflakeIdGenerator snowflakeIdGenerator;
+    private final ProjectSettlementService projectSettlementService;
 
     private final ProjectRepository projectRepository;
     private final ProjectHistoryRepository projectHistoryRepository;
     private final MemberRepository memberRepository;
     private final PriceRepository priceRepository;
+
     private final FileService fileService;
+    private final FileQueryService fileQueryService;
+    private final FileUrlService fileUrlService;
 
     @Override
     @Transactional
@@ -93,6 +99,7 @@ public class ProjectServiceImpl implements ProjectService {
             .requestDateTime(LocalDateTime.now())
             .creatorPrice(creatorPrice)
             .build();
+        Project savedProject = projectRepository.save(project);
 
         // 프로젝트 히스토리 저장
         ProjectHistory projectHistory = ProjectHistory.builder()
@@ -114,11 +121,10 @@ public class ProjectServiceImpl implements ProjectService {
         projectHistoryRepository.save(projectHistory);
 
         // 참고자료 파일 처리
-        long projectId = projectRepository.save(project).getId();
         List<Long> referenceFiles = projectRequestForm.getReferenceFiles();
         if (!referenceFiles.isEmpty()) {
             for (Long fileId : referenceFiles) {
-                fileService.completeUpload(fileId, sponsorId, projectId, FileType.PROJECT_REFERENCE_FILE);
+                fileService.completeUpload(fileId, sponsorId, savedProject.getId(), FileType.PROJECT_REFERENCE_FILE);
             }
         }
     }
@@ -212,6 +218,8 @@ public class ProjectServiceImpl implements ProjectService {
             throw new BusinessException(StatusCode.NOT_FOUND, "작업 요청 이력이 존재하지 않습니다", false);
         }
 
+        // 프로젝트 정산 정보 생성
+        projectSettlementService.createForAcceptedProject(requestMemberId, project.getId());
     }
 
     @Override
@@ -284,16 +292,9 @@ public class ProjectServiceImpl implements ProjectService {
         ProjectHistory latestProjectHistory = project.getLatestHistory()
             .orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "의뢰 내역이 존재하지 않습니다.", false));
         Price creatorPrice = project.getCreatorPrice();
-        List<ReferenceFileInfo> referenceFileInfoList = new ArrayList<>();
 
-        if (!CollectionUtils.isEmpty(project.getReferenceFiles())) {
-            referenceFileInfoList = project.getReferenceFiles().stream()
-                .map(projectReferenceFile -> ReferenceFileInfo.builder()
-                    .originalFileName(projectReferenceFile.getOriginalFileName())
-                    .fileUrl(fileProperties.getBaseUrl() + projectReferenceFile.getReferenceFileUrl())
-                    .build()
-                ).collect(Collectors.toList());
-        }
+        // 프로젝트 참고 자료
+        List<ReferenceFileInfo> referenceFileInfos = getReferenceFileInfos(project);
 
         // DTO 생성
         ProjectOverview overview = ProjectOverview.builder()
@@ -313,7 +314,7 @@ public class ProjectServiceImpl implements ProjectService {
         ProjectDetail detail = ProjectDetail.builder()
             .campaignDescription(project.getCampaignDescription())
             .referenceUrls(project.getReferenceUrls())
-            .referenceFiles(referenceFileInfoList)
+            .referenceFiles(referenceFileInfos)
             .latestProjectHistory(new ProjectHistoryForm(latestProjectHistory))
             .build();
 
@@ -327,6 +328,18 @@ public class ProjectServiceImpl implements ProjectService {
             .projectTimes(new ProjectTimes(project))
             .build();
 
+    }
+
+    private List<ReferenceFileInfo> getReferenceFileInfos(Project project) {
+        List<FileMetadata> referenceFiles =
+                fileQueryService.getByTarget(FileType.PROJECT_REFERENCE_FILE, project.getId());
+
+        return referenceFiles.stream()
+                .map(file -> ReferenceFileInfo.builder()
+                        .originalFileName(file.getOriginalName())
+                        .fileUrl(fileUrlService.getPublicUrl(file.getId()))
+                        .build())
+                .toList();
     }
 
     private Member findMemberById(Long memberId) {
@@ -370,6 +383,5 @@ public class ProjectServiceImpl implements ProjectService {
             throw new BusinessException(StatusCode.BAD_REQUEST,
                 "현재 " + targetStatus.getStatusName() + " 할 수 없는 프로젝트 상태입니다", false);
         }
-
     }
 }

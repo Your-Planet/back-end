@@ -42,7 +42,7 @@ public class FileValidationService {
     public void checkSecret(long fileId) {
         FileMetadata file = fileQueryService.getById(fileId);
 
-        if (file.isSecret()) {
+        if (!file.isViewable()) {
             throw new BusinessException(StatusCode.FORBIDDEN, "열람할 수 없는 파일 입니다.", false);
         }
     }
@@ -58,7 +58,7 @@ public class FileValidationService {
     public void checkAlreadyLinked(long fileId) {
         FileMetadata file = fileQueryService.getById(fileId);
 
-        if (file.getReferenceId() != null) {
+        if (file.getTargetId() != null) {
             throw new BusinessException(StatusCode.CONFLICT, "이미 연결된 파일입니다.", true);
         }
     }

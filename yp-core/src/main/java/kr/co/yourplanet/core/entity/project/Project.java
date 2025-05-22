@@ -137,11 +137,6 @@ public class Project extends BasicColumn {
     @Convert(converter = StringListConverter.class)
     @Column(name = "reference_urls")
     private List<String> referenceUrls;
-    /**
-     * 참고 자료
-     */
-    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
-    private List<ProjectReferenceFile> referenceFiles;
 
     /**
      * 프로젝트 히스토리
@@ -158,7 +153,6 @@ public class Project extends BasicColumn {
     public Project() {
         this.projectHistories = new ArrayList<>();
         this.referenceUrls = new ArrayList<>();
-        this.referenceFiles = new ArrayList<>();
     }
 
     public void negotiate(ProjectStatus projectStatus) {

@@ -63,7 +63,7 @@ public class JwtTokenProvider {
     public boolean validateAccessToken(String token) {
         try {
             if (token == null || !token.startsWith("Bearer ")) {
-                throw new JwtException("유효하지 않은 토큰");
+                throw new JwtException("Bearer 방식으로 인증해야 합니다.");
             }
             Key key = new SecretKeySpec(secretKey.getBytes(), SignatureAlgorithm.HS256.getJcaName());
             String originToken = token.substring(7);
@@ -84,7 +84,7 @@ public class JwtTokenProvider {
     // JWT 값으로 Authentication
     public Authentication getAuthentication(String token) {
         Key key = new SecretKeySpec(secretKey.getBytes(), SignatureAlgorithm.HS256.getJcaName());
-        Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+        Claims claims = parseClaims(token, key);
 
         JwtPrincipal userDetails = JwtPrincipal.builder()
                 .id(claims.get("id", Long.class))
@@ -95,10 +95,17 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
     }
 
-    public Long getMemberIdFromRefreshToken(String token) throws Exception {
+    public Long getMemberIdFromRefreshToken(String token) {
         Key key = new SecretKeySpec(secretKey.getBytes(), SignatureAlgorithm.HS256.getJcaName());
-        Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+        Claims claims = parseClaims(token, key);
         return claims.get("id", Long.class);
     }
 
+    private static Claims parseClaims(String token, Key key) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
 }

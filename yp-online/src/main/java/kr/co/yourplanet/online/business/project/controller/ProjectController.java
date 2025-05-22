@@ -12,9 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -44,14 +42,13 @@ public class ProjectController {
     private final ContractDraftService contractDraftService;
 
     @Operation(summary = "프로젝트 의뢰")
-    @PostMapping(value = "/project", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<ResponseForm<String>> createProject(@Valid @RequestPart ProjectRequestForm projectRequestForm,
-            @RequestPart(required = false) List<MultipartFile> referenceFiles,
-            @AuthenticationPrincipal JwtPrincipal principal) {
-
+    @PostMapping(value = "/project", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseForm<String>> createProject(
+            @Valid @RequestBody ProjectRequestForm projectRequestForm,
+            @AuthenticationPrincipal JwtPrincipal principal
+    ) {
         projectService.createProject(projectRequestForm, principal.getId());
-
-        return new ResponseEntity<>(new ResponseForm<>(StatusCode.OK), HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseForm<>(StatusCode.CREATED), HttpStatus.CREATED);
     }
 
     @Operation(summary = "프로젝트 협상")
@@ -140,7 +137,7 @@ public class ProjectController {
             @RequestBody @Valid ContractDraftForm request
     ) {
         contractDraftService.draftContract(projectId, principal.getId(), request);
-
+;
         return new ResponseEntity<>(new ResponseForm<>(StatusCode.CREATED), HttpStatus.CREATED);
     }
 }
