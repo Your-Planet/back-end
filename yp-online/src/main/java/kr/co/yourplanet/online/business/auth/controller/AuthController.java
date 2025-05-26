@@ -1,4 +1,4 @@
-package kr.co.yourplanet.online.business.user.controller;
+package kr.co.yourplanet.online.business.auth.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
