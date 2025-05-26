@@ -1,25 +1,37 @@
 package kr.co.yourplanet.support.container;
 
+import java.time.Duration;
+
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.context.annotation.Bean;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 @TestConfiguration
+@Testcontainers
 public class RedisTestContainerConfig {
 
-    static final GenericContainer<?> redis = new GenericContainer<>(DockerImageName.parse("redis:6-alpine"))
-            .withExposedPorts(6379)
-            .withReuse(true);
+    private static final int REDIS_PORT = 6379;
+
+    @Container
+    private static final GenericContainer<?> redisContainer = new GenericContainer<>("redis:7.4.1-alpine3.20")
+            .withExposedPorts(REDIS_PORT)
+            .waitingFor(Wait.forListeningPort())
+            .withStartupTimeout(Duration.ofSeconds(60));
 
     static {
-        redis.start();
+        redisContainer.start();
     }
 
-    @DynamicPropertySource
-    static void overrideProps(DynamicPropertyRegistry registry) {
-        registry.add("spring.redis.host", redis::getHost);
-        registry.add("spring.redis.port", () -> redis.getMappedPort(6379));
+    @Bean
+    public RedisConnectionFactory redisConnectionFactory() {
+        return new LettuceConnectionFactory(
+                redisContainer.getHost(),
+                redisContainer.getMappedPort(REDIS_PORT)
+        );
     }
 }
