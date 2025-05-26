@@ -23,8 +23,9 @@ public class RedisTokenRepository implements TokenRepository {
     }
 
     @Override
-    public Optional<Object> get(long memberId) {
-        return Optional.empty();
+    public Optional<Long> getMemberId(AuthPurpose tokenPurpose, String token) {
+        return redisRepository.getValue(getKey(tokenPurpose, token))
+                .map(Long::parseLong);
     }
 
     private String getKey(AuthPurpose tokenPurpose, String token) {

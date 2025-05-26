@@ -8,5 +8,5 @@ public interface TokenRepository {
 
     void save(AuthPurpose tokenPurpose, String token, long memberId);
 
-    Optional<Object> get(long memberId);
+    Optional<Long> getMemberId(AuthPurpose tokenPurpose, String token);
 }
