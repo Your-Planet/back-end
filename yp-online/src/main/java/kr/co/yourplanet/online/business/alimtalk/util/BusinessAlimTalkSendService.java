@@ -228,13 +228,11 @@ public class BusinessAlimTalkSendService {
         if(optionalMember.isPresent()) {
             Member member = optionalMember.get();
 
-            // 치환 변수 생성
-            Map<String, String> etcVariableMap = Map.of("authCode", authCode);
-
+            // 엔티티에 포함되지 않은 변수 처리를 위해 key:ETC_VARIABLE_MAP_KEY, value:Map 처리
             // 알림톡 문구 변수 치환 객체 주입
-            Map<String, Object> contextObjectMap = Map.of(ETC_VARIABLE_MAP_KEY, etcVariableMap);
+            Map<String, Object> contextObjectMap = Map.of(ETC_VARIABLE_MAP_KEY, Map.of("authCode", authCode));
 
-            // 작가에게 알림톡 발송
+            // 멤버에게 알림톡 발송
             send(AlimTalkTemplateCode.AUTH_CODE, member, contextObjectMap);
         }
 
