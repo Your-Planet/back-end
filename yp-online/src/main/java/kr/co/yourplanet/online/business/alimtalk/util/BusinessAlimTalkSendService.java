@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JacksonException;
 
@@ -23,10 +23,10 @@ import kr.co.yourplanet.online.business.user.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Component
+@Service
 @Slf4j
 @RequiredArgsConstructor
-public class BusinessAlimTalkSendUtil {
+public class BusinessAlimTalkSendService {
 
     private final AlimTalkSendService alimTalkSendService;
     private final AlimTalkTemplateRepository alimTalkTemplateRepository;

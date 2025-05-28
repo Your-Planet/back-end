@@ -18,7 +18,7 @@ import kr.co.yourplanet.core.enums.FileType;
 import kr.co.yourplanet.core.enums.MemberType;
 import kr.co.yourplanet.core.enums.ProjectStatus;
 import kr.co.yourplanet.core.enums.StatusCode;
-import kr.co.yourplanet.online.business.alimtalk.util.BusinessAlimTalkSendUtil;
+import kr.co.yourplanet.online.business.alimtalk.util.BusinessAlimTalkSendService;
 import kr.co.yourplanet.online.business.file.service.FileQueryService;
 import kr.co.yourplanet.online.business.file.service.FileService;
 import kr.co.yourplanet.online.business.file.service.FileUrlService;
@@ -62,7 +62,7 @@ public class ProjectServiceImpl implements ProjectService {
     private final FileQueryService fileQueryService;
     private final FileUrlService fileUrlService;
 
-    private final BusinessAlimTalkSendUtil businessAlimTalkSendUtil;
+    private final BusinessAlimTalkSendService businessAlimTalkSendService;
 
     @Override
     @Transactional
@@ -158,9 +158,9 @@ public class ProjectServiceImpl implements ProjectService {
 
         // 알림톡 발송
         if (MemberType.CREATOR.equals(member.getMemberType())) {
-            businessAlimTalkSendUtil.sendProjectRejectSponsor(project.getSponsor().getId(), project.getCreator().getId(), project.getId());
+            businessAlimTalkSendService.sendProjectRejectSponsor(project.getSponsor().getId(), project.getCreator().getId(), project.getId());
         } else if (MemberType.SPONSOR.equals(member.getMemberType())) {
-            businessAlimTalkSendUtil.sendProjectCancelCreator(project.getCreator().getId());
+            businessAlimTalkSendService.sendProjectCancelCreator(project.getCreator().getId());
         }
 
     }
@@ -212,10 +212,10 @@ public class ProjectServiceImpl implements ProjectService {
         // 알림톡 발송
         if (MemberType.CREATOR.equals(requestMember.getMemberType())) {
             // 작가가 협상 요청한 경우 -> 광고주에게 알림톡 발송
-            businessAlimTalkSendUtil.sendProjectNegotiationCommon(project.getSponsor().getId(), project.getSponsor().getId(), project.getId());
+            businessAlimTalkSendService.sendProjectNegotiationCommon(project.getSponsor().getId(), project.getSponsor().getId(), project.getId());
         } else if (MemberType.SPONSOR.equals(requestMember.getMemberType())) {
             // 광고주가 협상 요청한 경우 -> 작가에게 알림톡 발송
-            businessAlimTalkSendUtil.sendProjectNegotiationCommon(project.getCreator().getId(), project.getSponsor().getId(), project.getId());
+            businessAlimTalkSendService.sendProjectNegotiationCommon(project.getCreator().getId(), project.getSponsor().getId(), project.getId());
         }
 
     }
@@ -244,7 +244,7 @@ public class ProjectServiceImpl implements ProjectService {
         projectSettlementService.createForAcceptedProject(requestMemberId, project.getId());
 
         // 알림톡 발송
-        businessAlimTalkSendUtil.sendProjectAcceptCommon(project.getCreator().getId(), project.getSponsor().getId(), project.getId());
+        businessAlimTalkSendService.sendProjectAcceptCommon(project.getCreator().getId(), project.getSponsor().getId(), project.getId());
     }
 
     @Override
