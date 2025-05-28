@@ -37,6 +37,7 @@ public class BusinessAlimTalkSendService {
 
     private static final String ALIM_TALK_SEND_REQUEST_SUCCESS = "A000";
     private static final String ALIM_TALK_SEND_REQUEST_ERROR = "XXXX";
+    private static final String ETC_VARIABLE_MAP_KEY = "etcMap";
 
 
     /**
@@ -211,6 +212,30 @@ public class BusinessAlimTalkSendService {
 
             // 작가에게 알림톡 발송
             send(AlimTalkTemplateCode.PROJECT_CANCEL_CREATOR, creator, contextObjectMap);
+        }
+
+    }
+
+    /**
+     * [계정] 인증코드 발송
+     * [수신자] 사용자
+     *
+     * @param memberId [작가]
+     */
+    public void sendAuthCode(Long memberId, String authCode) {
+        Optional<Member> optionalMember = memberRepository.findById(memberId);
+
+        if(optionalMember.isPresent()) {
+            Member member = optionalMember.get();
+
+            // 치환 변수 생성
+            Map<String, String> etcVariableMap = Map.of("authCode", authCode);
+
+            // 알림톡 문구 변수 치환 객체 주입
+            Map<String, Object> contextObjectMap = Map.of(ETC_VARIABLE_MAP_KEY, etcVariableMap);
+
+            // 작가에게 알림톡 발송
+            send(AlimTalkTemplateCode.AUTH_CODE, member, contextObjectMap);
         }
 
     }

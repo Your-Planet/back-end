@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum AlimTalkTemplateCode {
 
-    VERIFICATION_CODE("YP_ALIM_0001", "인증번호"),
+    AUTH_CODE("YP_ALIM_0001", "인증번호"),
     MEMBER_JOIN_CREATOR("YP_ALIM_0002", "회원가입 완료 작가"),
     MEMBER_JOIN_SPONSOR("YP_ALIM_0003", "회원가입 완료 광고주"),
     PROJECT_NEGOTIATE_COMMON("YP_ALIM_0005", "신규 협상 접수 알림(공통)"),
