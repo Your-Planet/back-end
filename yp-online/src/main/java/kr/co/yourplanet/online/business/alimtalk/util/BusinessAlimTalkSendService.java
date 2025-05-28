@@ -220,7 +220,7 @@ public class BusinessAlimTalkSendService {
      * [계정] 인증코드 발송
      * [수신자] 사용자
      *
-     * @param memberId [작가]
+     * @param memberId 멤버ID
      */
     public void sendAuthCode(Long memberId, String authCode) {
         Optional<Member> optionalMember = memberRepository.findById(memberId);
