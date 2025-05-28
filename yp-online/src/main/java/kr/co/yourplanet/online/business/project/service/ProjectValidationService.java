@@ -24,10 +24,10 @@ public class ProjectValidationService {
         }
     }
 
-    public void checkInProgress(long id) {
+    public void checkAccepted(long id) {
         Project project = projectQueryService.getById(id);
 
-        if (!ProjectStatus.IN_PROGRESS.equals(project.getProjectStatus())) {
+        if (!ProjectStatus.ACCEPTED.equals(project.getProjectStatus())) {
             throw new BusinessException(StatusCode.CONFLICT, "수락된 프로젝트가 아닙니다.", false);
         }
     }
