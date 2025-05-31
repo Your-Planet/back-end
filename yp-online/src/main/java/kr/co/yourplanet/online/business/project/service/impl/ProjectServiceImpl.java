@@ -18,6 +18,7 @@ import kr.co.yourplanet.core.enums.FileType;
 import kr.co.yourplanet.core.enums.MemberType;
 import kr.co.yourplanet.core.enums.ProjectStatus;
 import kr.co.yourplanet.core.enums.StatusCode;
+import kr.co.yourplanet.online.business.alimtalk.util.BusinessAlimTalkSendService;
 import kr.co.yourplanet.online.business.file.service.FileQueryService;
 import kr.co.yourplanet.online.business.file.service.FileService;
 import kr.co.yourplanet.online.business.file.service.FileUrlService;
@@ -60,6 +61,8 @@ public class ProjectServiceImpl implements ProjectService {
     private final FileService fileService;
     private final FileQueryService fileQueryService;
     private final FileUrlService fileUrlService;
+
+    private final BusinessAlimTalkSendService businessAlimTalkSendService;
 
     @Override
     @Transactional
@@ -142,13 +145,23 @@ public class ProjectServiceImpl implements ProjectService {
         // 취소or거절 가능 상태인지 확인
         if (MemberType.CREATOR.equals(member.getMemberType())) {
             projectStatusAction = ProjectStatus.REJECTED;
-
         } else if (MemberType.SPONSOR.equals(member.getMemberType())) {
             projectStatusAction = ProjectStatus.CANCELED;
+        } else {
+            throw new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 사용자 유형입니다.", false);
         }
+
         validateProjectStatusTransition(member, project, projectStatusAction);
 
+        // 프로젝트 취소/거절 처리
         project.invalidate(projectStatusAction, projectRejectForm.getReason());
+
+        // 알림톡 발송
+        if (MemberType.CREATOR.equals(member.getMemberType())) {
+            businessAlimTalkSendService.sendProjectRejectSponsor(project.getSponsor().getId(), project.getCreator().getId(), project.getId());
+        } else if (MemberType.SPONSOR.equals(member.getMemberType())) {
+            businessAlimTalkSendService.sendProjectCancelCreator(project.getCreator().getId());
+        }
 
     }
 
@@ -196,6 +209,15 @@ public class ProjectServiceImpl implements ProjectService {
             .build();
         projectHistoryRepository.save(projectHistory);
 
+        // 알림톡 발송
+        if (MemberType.CREATOR.equals(requestMember.getMemberType())) {
+            // 작가가 협상 요청한 경우 -> 광고주에게 알림톡 발송
+            businessAlimTalkSendService.sendProjectNegotiationCommon(project.getSponsor().getId(), project.getSponsor().getId(), project.getId());
+        } else if (MemberType.SPONSOR.equals(requestMember.getMemberType())) {
+            // 광고주가 협상 요청한 경우 -> 작가에게 알림톡 발송
+            businessAlimTalkSendService.sendProjectNegotiationCommon(project.getCreator().getId(), project.getSponsor().getId(), project.getId());
+        }
+
     }
 
     @Override
@@ -220,6 +242,9 @@ public class ProjectServiceImpl implements ProjectService {
 
         // 프로젝트 정산 정보 생성
         projectSettlementService.createForAcceptedProject(requestMemberId, project.getId());
+
+        // 알림톡 발송
+        businessAlimTalkSendService.sendProjectAcceptCommon(project.getCreator().getId(), project.getSponsor().getId(), project.getId());
     }
 
     @Override
