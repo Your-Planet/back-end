@@ -24,17 +24,18 @@ public class RedisPaymentRequestRepository implements PaymentRequestRepository {
     public void save(Long memberId, String orderId, Long amount) {
         String key = getOrderKey(orderId);
 
-        redisRepository.saveHashWithTTL(key, MEMBER_ID, memberId, TTL_TIME);
-        redisRepository.saveHashWithTTL(key, AMOUNT, amount, TTL_TIME);
-        redisRepository.saveHashWithTTL(key, IDEMPOTENCY_KEY, IdempotencyKeyGenerator.generate(orderId), TTL_TIME);
+        redisRepository.saveHash(key, MEMBER_ID, memberId, TTL_TIME);
+        redisRepository.saveHash(key, AMOUNT, amount, TTL_TIME);
+        redisRepository.saveHash(key, IDEMPOTENCY_KEY, IdempotencyKeyGenerator.generate(orderId), TTL_TIME);
     }
 
     @Override
     public boolean isExist(String orderId) {
         String key = getOrderKey(orderId);
-        return redisRepository.hasKey(key);
+        return redisRepository.hasHashKey(key);
     }
 
+    // TODO: 한꺼번에 해시 구조 가져오는 방식으로 리팩터링
     @Override
     public Optional<Long> getAmount(String orderId) {
         String key = getOrderKey(orderId);

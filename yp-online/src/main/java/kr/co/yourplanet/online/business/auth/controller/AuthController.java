@@ -1,27 +1,27 @@
-package kr.co.yourplanet.online.business.user.controller;
+package kr.co.yourplanet.online.business.auth.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.co.yourplanet.core.enums.StatusCode;
-import kr.co.yourplanet.online.business.user.dto.request.ChangePasswordForm;
+import kr.co.yourplanet.online.business.auth.dto.AuthenticationTokenInfo;
+import kr.co.yourplanet.online.business.auth.dto.VerificationCodeCheckForm;
+import kr.co.yourplanet.online.business.auth.service.VerificationCodeService;
 import kr.co.yourplanet.online.business.user.dto.request.FindIdForm;
 import kr.co.yourplanet.online.business.user.dto.request.LoginForm;
 import kr.co.yourplanet.online.business.user.dto.request.MemberJoinForm;
 import kr.co.yourplanet.online.business.user.dto.request.MemberValidateForm;
 import kr.co.yourplanet.online.business.user.dto.request.RefreshTokenForm;
+import kr.co.yourplanet.online.business.auth.dto.VerificationCodeSendForm;
 import kr.co.yourplanet.online.business.user.dto.request.ResetPasswordForm;
-import kr.co.yourplanet.online.business.user.dto.request.ValidatePasswordForm;
 import kr.co.yourplanet.online.business.user.service.MemberJoinService;
 import kr.co.yourplanet.online.business.user.service.MemberQueryService;
 import kr.co.yourplanet.online.business.user.service.MemberService;
 import kr.co.yourplanet.online.business.user.service.MemberValidationService;
 import kr.co.yourplanet.online.common.ResponseForm;
-import kr.co.yourplanet.online.jwt.JwtPrincipal;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,8 +40,9 @@ public class AuthController {
 
     private final MemberService memberService;
     private final MemberQueryService memberQueryService;
-    private final MemberValidationService memberValidationService;
     private final MemberJoinService memberJoinService;
+    private final MemberValidationService memberValidationService;
+    private final VerificationCodeService verificationCodeService;
 
     @Operation(summary = "회원 가입")
     @PostMapping("/auth/join")
@@ -64,16 +65,8 @@ public class AuthController {
         return new ResponseForm<>(StatusCode.OK, refreshTokenForm.getAccessToken());
     }
 
-    @Operation(summary = "이메일 찾기")
-    @PostMapping("/auth/find-email")
-    public ResponseForm<String> findId(
-            @Valid @RequestBody FindIdForm accountRecoveryFrom
-    ) {
-        return new ResponseForm<>(StatusCode.OK, memberQueryService.findId(accountRecoveryFrom));
-    }
-
     @Operation(summary = "멤버 검증")
-    @PostMapping("/auth/validation")
+    @PostMapping("/auth/member/validate")
     public ResponseForm<Void> validateMember(
             @Valid @RequestBody MemberValidateForm memberValidateForm
     ) {
@@ -81,33 +74,41 @@ public class AuthController {
         return new ResponseForm<>(StatusCode.OK);
     }
 
-    @Operation(summary = "비밀번호 검증")
-    @PostMapping("/auth/validate-password")
-    public ResponseForm<Void> validatePassword(
-            @AuthenticationPrincipal JwtPrincipal principal,
-            @Valid @RequestBody ValidatePasswordForm validatePasswordForm
+    @Operation(summary = "이메일 찾기")
+    @PostMapping("/auth/find-email")
+    public ResponseForm<String> findEmail(
+            @Valid @RequestBody FindIdForm accountRecoveryFrom
     ) {
-        memberValidationService.validatePassword(principal.getId(), validatePasswordForm.password());
-        return new ResponseForm<>(StatusCode.OK);
+        return new ResponseForm<>(StatusCode.OK, memberQueryService.findEmail(accountRecoveryFrom));
     }
 
-    @Operation(summary = "비밀번호 변경")
-    @PatchMapping("/auth/change-password")
-    public ResponseForm<Void> changePassword(
-            @AuthenticationPrincipal JwtPrincipal principal,
-            @Valid @RequestBody ChangePasswordForm changePasswordForm
-    ) {
-        memberService.changePassword(principal.getId(), changePasswordForm);
-        return new ResponseForm<>(StatusCode.OK);
-    }
-
-    @Operation(summary = "비밀번호 초기화")
-    @PostMapping("/auth/reset-password")
+    @Operation(summary = "비밀번호 재설정")
+    @PatchMapping("/auth/password/reset")
     public ResponseForm<Void> resetPassword(
             @Valid @RequestBody ResetPasswordForm resetPasswordForm
     ) {
         memberService.resetPassword(resetPasswordForm);
         return new ResponseForm<>(StatusCode.OK);
+    }
+
+    @Operation(summary = "인증코드 전송")
+    @PostMapping("/auth/verification-code/send")
+    public ResponseForm<Void> sendVerificationCode(
+            @Valid @RequestBody VerificationCodeSendForm form
+    ) {
+        verificationCodeService.sendVerificationCode(form);
+
+        return new ResponseForm<>(StatusCode.OK);
+    }
+
+    @Operation(summary = "인증코드 확인")
+    @PostMapping("/auth/verification-code/check")
+    public ResponseForm<AuthenticationTokenInfo> checkVerificationCode(
+            @Valid @RequestBody VerificationCodeCheckForm form
+    ) {
+        AuthenticationTokenInfo response = verificationCodeService.checkVerificationCode(form);
+
+        return new ResponseForm<>(StatusCode.OK, response);
     }
 
     @Operation(summary = "접근 토큰 갱신")

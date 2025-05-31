@@ -24,7 +24,7 @@ class AuthControllerTest extends IntegrationTest {
     @DisplayName("비밀번호 검증 API")
     class ValidatePassword {
 
-        private final String path = "/auth/validate-password";
+        private final String path = "/members/me/password/validate";
 
         @Test
         @DisplayName("[성공] 입력 비밀번호와 기존 비밀번호가 일치하면 검증에 성공한다.")
@@ -59,7 +59,7 @@ class AuthControllerTest extends IntegrationTest {
     @DisplayName("비밀번호 변경 API")
     class changePassword {
 
-        private final String path = "/auth/change-password";
+        private final String path = "/members/me/password/change";
 
         @Test
         @DisplayName("[성공] 비밀번호 변경에 성공한다.")

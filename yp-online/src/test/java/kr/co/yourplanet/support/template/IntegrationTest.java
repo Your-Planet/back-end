@@ -1,5 +1,7 @@
 package kr.co.yourplanet.support.template;
 
+import static kr.co.yourplanet.support.container.RedisTestContainerConfig.*;
+
 import java.io.IOException;
 
 import org.junit.jupiter.api.AfterAll;
@@ -9,24 +11,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import kr.co.yourplanet.support.container.RedisTestContainerConfig;
 import okhttp3.mockwebserver.MockWebServer;
 
 @SpringBootTest
 @Sql(scripts = "classpath:db/setup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(scripts = "classpath:db/teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 @ActiveProfiles("test")
+@Import(RedisTestContainerConfig.class)
 @AutoConfigureMockMvc(print = MockMvcPrint.SYSTEM_OUT)
-@Testcontainers
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class IntegrationTest {
 
@@ -56,6 +59,7 @@ public abstract class IntegrationTest {
         registry.add("payments.toss.uri",
                 () -> "http://localhost:" + MOCK_SERVER_PORT + "/v1/payments/confirm");
     }
+
 
     /**
      * 유틸 메서드
