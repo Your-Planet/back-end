@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.co.yourplanet.core.entity.settlement.SettlementPaymentStatus;
 import kr.co.yourplanet.core.entity.settlement.SettlementStatus;
 import kr.co.yourplanet.core.enums.StatusCode;
+import kr.co.yourplanet.online.business.settlement.dto.ProjectSettlementDetailInfo;
 import kr.co.yourplanet.online.business.settlement.dto.ProjectSettlementSummariesInfo;
 import kr.co.yourplanet.online.business.settlement.service.ProjectSettlementQueryService;
 import kr.co.yourplanet.online.common.ResponseForm;
@@ -44,11 +46,19 @@ public class SettlementController {
     @Operation(summary = "프로젝트 정산 정보 목록 조회")
     @GetMapping("/project")
     public ResponseEntity<ResponseForm<ProjectSettlementSummariesInfo>> getProjectSettlements(
-            @AuthenticationPrincipal JwtPrincipal jwtPrincipal,
             Pageable pageable
     ) {
         ProjectSettlementSummariesInfo response = projectSettlementQueryService.getSummariesInfo(pageable);
+        return new ResponseEntity<>(new ResponseForm<>(StatusCode.OK, response), HttpStatus.OK);
+    }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "프로젝트 정산 상세 정보 조회")
+    @GetMapping("/project/{projectId}")
+    public ResponseEntity<ResponseForm<ProjectSettlementDetailInfo>> getProjectSettlementDetail(
+            @PathVariable Long projectId
+    ) {
+        ProjectSettlementDetailInfo response = projectSettlementQueryService.getDetailInfo(projectId);
         return new ResponseEntity<>(new ResponseForm<>(StatusCode.OK, response), HttpStatus.OK);
     }
 }

@@ -7,16 +7,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.project.Project;
+import kr.co.yourplanet.core.entity.project.ProjectHistory;
 import kr.co.yourplanet.core.entity.settlement.ProjectSettlement;
 import kr.co.yourplanet.core.entity.settlement.SettlementPaymentStatus;
 import kr.co.yourplanet.core.entity.settlement.SettlementStatus;
+import kr.co.yourplanet.core.entity.studio.Price;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.core.model.PageInfo;
 import kr.co.yourplanet.online.business.settlement.dto.ProjectBasicInfo;
+import kr.co.yourplanet.online.business.settlement.dto.ProjectSettlementDetailInfo;
 import kr.co.yourplanet.online.business.settlement.dto.ProjectSettlementSummariesInfo;
 import kr.co.yourplanet.online.business.settlement.dto.ProjectSettlementSummaryInfo;
+import kr.co.yourplanet.online.business.settlement.dto.ProjectSpecInfo;
 import kr.co.yourplanet.online.business.settlement.dto.SettlementInfo;
 import kr.co.yourplanet.online.business.settlement.dto.SponsorInfo;
 import kr.co.yourplanet.online.business.settlement.repository.ProjectSettlementRepository;
@@ -59,31 +62,61 @@ public class ProjectSettlementQueryService {
                 .build();
     }
 
-    private ProjectSettlementSummaryInfo createSummaryInfo(ProjectSettlement settlement) {
-        Project project = settlement.getProject();
-        Member sponsor = project.getSponsor();
+    public ProjectSettlementDetailInfo getDetailInfo(long projectId) {
+        ProjectSettlement settlement = getByProjectId(projectId);
 
-        ProjectBasicInfo projectBasicInfo = ProjectBasicInfo.builder()
+        return ProjectSettlementDetailInfo.builder()
+                .projectBasicInfo(toProjectBasicInfo(settlement.getProject()))
+                .sponsorInfo(toSponsorInfo(settlement.getProject()))
+                .settlementInfo(toSettlementInfo(settlement))
+                .projectSpecInfo(toProjectSpecInfo(settlement.getProject()))
+                .build();
+    }
+
+    private ProjectSettlementSummaryInfo createSummaryInfo(ProjectSettlement settlement) {
+        return ProjectSettlementSummaryInfo.builder()
+                .projectBasicInfo(toProjectBasicInfo(settlement.getProject()))
+                .sponsorInfo(toSponsorInfo(settlement.getProject()))
+                .settlementInfo(toSettlementInfo(settlement))
+                .build();
+    }
+
+    private ProjectBasicInfo toProjectBasicInfo(Project project) {
+        return ProjectBasicInfo.builder()
                 .orderCode(project.getOrderCode())
                 .orderTitle(project.getOrderTitle())
                 .build();
+    }
 
-        SponsorInfo sponsorInfo = SponsorInfo.builder()
+    private SponsorInfo toSponsorInfo(Project project) {
+        return SponsorInfo.builder()
                 .name(project.getBrandName())
-                .email(sponsor.getEmail())
+                .email(project.getSponsor().getEmail())
                 .build();
+    }
 
-        SettlementInfo settlementInfo = SettlementInfo.builder()
+    private SettlementInfo toSettlementInfo(ProjectSettlement settlement) {
+        return SettlementInfo.builder()
                 .paymentAmount(settlement.getPaymentAmount())
                 .settlementAmount(settlement.getSettlementAmount())
                 .paymentCompletedAt(settlement.getPaymentDate())
                 .contractCompletedAt(settlement.getContractDate())
                 .build();
+    }
 
-        return ProjectSettlementSummaryInfo.builder()
-                .sponsorInfo(sponsorInfo)
-                .projectBasicInfo(projectBasicInfo)
-                .settlementInfo(settlementInfo)
+    private ProjectSpecInfo toProjectSpecInfo(Project project) {
+        ProjectHistory history = project.getAcceptedHistory()
+                .orElseThrow(() -> new BusinessException(StatusCode.CONFLICT, "수락된 프로젝트가 아닙니다.", false));
+        Price price = project.getCreatorPrice();
+
+        return ProjectSpecInfo.builder()
+                .dueDate(history.getDueDate())
+                .cutCount(price.getCuts())
+                .additionalCutCount(history.getAdditionalPanelCount())
+                .finalCutCount(price.getCuts() + history.getAdditionalPanelCount())
+                .modificationCount(price.getModificationCount())
+                .additionalModificationCount(history.getAdditionalModificationCount())
+                .finalModificationCount(price.getModificationCount() + history.getAdditionalModificationCount())
                 .build();
     }
 }
