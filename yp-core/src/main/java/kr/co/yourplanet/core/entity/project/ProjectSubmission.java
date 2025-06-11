@@ -33,11 +33,14 @@ public class ProjectSubmission extends BasicColumn {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id")
+    @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
-    @Column(name = "seq")
+    @Column(name = "seq", nullable = false)
     private Integer seq;
+
+    @Column(name = "submission_status", nullable = false)
+    private SubmissionStatus submissionStatus;
 
     @Column(name = "sent_date_time")
     private LocalDateTime sentDateTime;
@@ -48,6 +51,11 @@ public class ProjectSubmission extends BasicColumn {
     @Column(name = "review_message", length = 1000)
     private String reviewMessage;
 
+    public void reviewSubmission(SubmissionStatus status, String reviewMessage) {
+        this.submissionStatus = status;
+        this.reviewDateTime = LocalDateTime.now();
+        this.reviewMessage = reviewMessage;
 
+    }
 
 }

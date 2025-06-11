@@ -3,6 +3,7 @@ CREATE TABLE project_submission
     id                BIGINT PRIMARY KEY,
     project_id        BIGINT                              NOT NULL,
     seq               INTEGER                             NOT NULL,
+    submission_status VARCHAR(50)                         NOT NULL,
     sent_date_time    TIMESTAMP,
     review_date_time  TIMESTAMP,
     review_message    VARCHAR(1000),

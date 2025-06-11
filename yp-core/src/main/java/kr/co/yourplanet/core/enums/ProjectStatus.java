@@ -17,7 +17,7 @@ public enum ProjectStatus {
 	IN_PROGRESS("작업중(계약서작성완료)", 0, Set.of()),
 	SUBMISSION_SENT("작업물발송", 72, Set.of(MemberType.CREATOR)),
 	REQUEST_MODIFICATION("수정요청", 72, Set.of(MemberType.SPONSOR)),
-	COMPLETED("완료", 72, Set.of(MemberType.SPONSOR)),
+	COMPLETED("작업완료", 72, Set.of(MemberType.SPONSOR)),
 	SETTLED("정산완료", 0, Set.of(MemberType.SPONSOR)),
 	CLOSED("마감", 72, Set.of());
 

@@ -280,7 +280,7 @@ public class BusinessAlimTalkSendService {
      * @param projectId [프로젝트]
      */
     @Async
-    public void sendProjectSubmissionApprove(Long projectId) {
+    public void sendProjectSubmissionConfirm(Long projectId) {
 
         try {
             Project project = projectQueryService.getById(projectId);
@@ -290,7 +290,7 @@ public class BusinessAlimTalkSendService {
             Map<String, Object> contextObjectMap = Map.of("creator", creator, "project", project);
 
             // 작가에게 알림톡 발송
-            send(AlimTalkTemplateCode.PROJECT_SUBMISSION_APPROVAL_CREATOR, creator, contextObjectMap);
+            send(AlimTalkTemplateCode.PROJECT_SUBMISSION_CONFIRMED_CREATOR, creator, contextObjectMap);
         } catch (Exception e) {
             loggingAlimTalkSendFail("sendProjectSubmissionApprove", projectId);
         }

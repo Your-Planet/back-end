@@ -121,6 +121,11 @@ public class Project extends BasicColumn {
     @Column(name = "submission_sent_date_time")
     private LocalDateTime submissionSentDateTime;
     /**
+     * 작업물 수정 요청 일시
+     */
+    @Column(name = "submission_modification_request_date_time")
+    private LocalDateTime submissionModificationRequestDateTime;
+    /**
      * 의뢰 완료 일시
      */
     @Column(name = "complete_date_time")
@@ -130,6 +135,12 @@ public class Project extends BasicColumn {
      */
     @Column(name = "reject_date_time")
     private LocalDateTime rejectDateTime;
+    /**
+     * 정산완료 일시
+     */
+    @Column(name = "settlement_date_time")
+    private LocalDateTime settlementDateTime;
+
     /**
      * 의뢰 거절/취소 사유
      */
@@ -194,6 +205,18 @@ public class Project extends BasicColumn {
     public void sendSubmission(){
         this.projectStatus = ProjectStatus.SUBMISSION_SENT;
         this.submissionSentDateTime = LocalDateTime.now();
+    }
+
+    // 작업물 수정 요청
+    public void requestSubmissionModification(){
+        this.projectStatus = ProjectStatus.REQUEST_MODIFICATION;
+        this.submissionModificationRequestDateTime = LocalDateTime.now();
+    }
+
+    // 작업물 확정 처리
+    public void confirmSubmission(){
+        this.projectStatus = ProjectStatus.COMPLETED;
+        this.completeDateTime = LocalDateTime.now();
     }
 
     /**
