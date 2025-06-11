@@ -32,7 +32,7 @@ import kr.co.yourplanet.online.business.project.dto.response.ProjectDetailInfo;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectHistoryForm;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectOverview;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectTimes;
-import kr.co.yourplanet.online.business.project.dto.response.ReferenceFileInfo;
+import kr.co.yourplanet.online.business.project.dto.response.FileInfoPreview;
 import kr.co.yourplanet.online.business.project.repository.ProjectHistoryRepository;
 import kr.co.yourplanet.online.business.project.repository.ProjectRepository;
 import kr.co.yourplanet.online.business.project.service.ProjectQueryService;
@@ -318,7 +318,7 @@ public class ProjectServiceImpl implements ProjectService {
         Price creatorPrice = project.getCreatorPrice();
 
         // 프로젝트 참고 자료
-        List<ReferenceFileInfo> referenceFileInfos = getReferenceFileInfos(project);
+        List<FileInfoPreview> referenceFileInfos = getReferenceFileInfos(project);
 
         // DTO 생성
         ProjectOverview overview = ProjectOverview.builder()
@@ -354,12 +354,12 @@ public class ProjectServiceImpl implements ProjectService {
 
     }
 
-    private List<ReferenceFileInfo> getReferenceFileInfos(Project project) {
+    private List<FileInfoPreview> getReferenceFileInfos(Project project) {
         List<FileMetadata> referenceFiles =
                 fileQueryService.getByTarget(FileType.PROJECT_REFERENCE_FILE, project.getId());
 
         return referenceFiles.stream()
-                .map(file -> ReferenceFileInfo.builder()
+                .map(file -> FileInfoPreview.builder()
                         .originalFileName(file.getOriginalName())
                         .fileUrl(fileUrlService.getPublicUrl(file.getId()))
                         .build())

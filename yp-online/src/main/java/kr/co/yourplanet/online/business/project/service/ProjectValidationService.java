@@ -52,6 +52,10 @@ public class ProjectValidationService {
 
     // 사용자 유형별 처리 가능한 ProjectStatus 검사
     public void validateProjectStatusTransition(Member requestMember, Project project, ProjectStatus targetStatus) {
+        if( targetStatus == null) {
+            throw new BusinessException(StatusCode.INTERNAL_SERVER_ERROR, "프로젝트 상태 변경 중 오류 발생.", false);
+        }
+
         MemberType requestMemberType = requestMember.getMemberType();
         ProjectStatus currentStatus = project.getProjectStatus();
 

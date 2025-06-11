@@ -17,7 +17,7 @@ public class ProjectDetail {
 	@NotBlank
 	private String campaignDescription;
 	private List<String> referenceUrls;
-	private List<ReferenceFileInfo> referenceFiles;
+	private List<FileInfoPreview> referenceFiles;
 	private ProjectHistoryForm latestProjectHistory;
 
 }
