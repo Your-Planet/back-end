@@ -194,13 +194,13 @@ INSERT INTO project (id, sponsor_id, creator_id, creator_price_id, project_statu
                      request_date_time, accept_date_time, reject_date_time, accepted_history_id,
                      brand_name, campaign_description, reference_urls, reject_reason,
                      create_date, update_date, negotiate_date_time,
-                     complete_date_time, send_date_time, settlement_date_time,
+                     complete_date_time, settlement_date_time,
                      order_title, order_code)
 VALUES (1, 3, 1, 1, 'ACCEPTED',
         '2025-03-18 10:00:00', '2025-03-18 12:00:00', NULL, 1,
         '브랜드A', '신제품 홍보 캠페인', 'https://example.com/reference', NULL,
         '2025-03-18 09:00:00', '2025-03-18 12:10:00', '2025-03-19 15:00:00',
-        '2025-03-30 09:00:00', NULL, NULL,
+        '2025-03-30 09:00:00', NULL,
         'SNS 마케팅 프로젝트', 'ORD20250318001');
 
 -- ID 2
@@ -210,13 +210,13 @@ INSERT INTO project (id, sponsor_id, creator_id, creator_price_id, project_statu
                      request_date_time, accept_date_time, reject_date_time, accepted_history_id,
                      brand_name, campaign_description, reference_urls, reject_reason,
                      create_date, update_date, negotiate_date_time,
-                     complete_date_time, send_date_time, settlement_date_time,
+                     complete_date_time, settlement_date_time,
                      order_title, order_code)
 VALUES (2, 3, 1, 1, 'IN_REVIEW',
         '2025-03-18 10:00:00', NULL, NULL, NULL,
         '브랜드A', '신제품 홍보 캠페인', 'https://example.com/reference', NULL,
         '2025-03-18 09:00:00', '2025-03-18 12:10:00', '2025-03-19 15:00:00',
-        '2025-03-30 09:00:00', NULL, NULL,
+        '2025-03-30 09:00:00', NULL,
         '유튜브 광고 캠페인', 'ORD20250318025');
 
 -- ID 3
@@ -227,13 +227,13 @@ INSERT INTO project (id, sponsor_id, creator_id, creator_price_id, project_statu
                      request_date_time, accept_date_time, reject_date_time, accepted_history_id,
                      brand_name, campaign_description, reference_urls, reject_reason,
                      create_date, update_date, negotiate_date_time,
-                     complete_date_time, send_date_time, settlement_date_time,
+                     complete_date_time, settlement_date_time,
                      order_title, order_code)
 VALUES (3, 3, 1, 1, 'ACCEPTED',
         '2025-03-18 10:00:00', '2025-03-18 12:00:00', NULL, 1,
         '스타트업B', '프리미엄 제품 런칭 캠페인', 'https://example.com/product-launch', NULL,
         '2025-03-18 09:00:00', '2025-03-18 12:10:00', '2025-03-19 15:00:00',
-        '2025-03-30 09:00:00', NULL, NULL,
+        '2025-03-30 09:00:00',  NULL,
         '디지털 광고 프로젝트', 'ORD20250318075');
 
 -- ID 4
@@ -244,13 +244,13 @@ INSERT INTO project (id, sponsor_id, creator_id, creator_price_id, project_statu
                      request_date_time, accept_date_time, reject_date_time, accepted_history_id,
                      brand_name, campaign_description, reference_urls, reject_reason,
                      create_date, update_date, negotiate_date_time,
-                     complete_date_time, send_date_time, settlement_date_time,
+                     complete_date_time, settlement_date_time,
                      order_title, order_code)
 VALUES (4, 3, 1, 1, 'IN_PROGRESS',
         '2025-03-18 10:00:00', '2025-03-18 12:00:00', NULL, 1,
         '스타트업B', '프리미엄 제품 런칭 캠페인', 'https://example.com/product-launch', NULL,
         '2025-03-18 09:00:00', '2025-03-18 12:10:00', '2025-03-19 15:00:00',
-        '2025-03-30 09:00:00', NULL, NULL,
+        '2025-03-30 09:00:00', NULL,
         '디지털 광고 프로젝트', 'ORD20250318982');
 
 
