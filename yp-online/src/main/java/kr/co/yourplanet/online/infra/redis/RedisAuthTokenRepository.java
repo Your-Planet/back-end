@@ -28,6 +28,11 @@ public class RedisAuthTokenRepository implements AuthTokenRepository {
                 .map(Long::parseLong);
     }
 
+    @Override
+    public void delete(AuthPurpose tokenPurpose, String token) {
+        redisRepository.delete(getKey(tokenPurpose, token));
+    }
+
     private String getKey(AuthPurpose tokenPurpose, String token) {
         return PREFIX + tokenPurpose.name().toLowerCase() + ":" + token;
     }

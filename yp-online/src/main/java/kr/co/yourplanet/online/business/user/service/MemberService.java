@@ -5,6 +5,7 @@ import kr.co.yourplanet.core.entity.member.MemberSalt;
 import kr.co.yourplanet.core.entity.member.RefreshToken;
 import kr.co.yourplanet.core.enums.AuthPurpose;
 import kr.co.yourplanet.core.enums.StatusCode;
+import kr.co.yourplanet.online.business.auth.repository.AuthTokenRepository;
 import kr.co.yourplanet.online.business.user.dto.request.ChangePasswordForm;
 import kr.co.yourplanet.online.business.user.dto.request.LoginForm;
 import kr.co.yourplanet.online.business.user.dto.request.RefreshTokenForm;
@@ -15,7 +16,6 @@ import kr.co.yourplanet.online.business.user.repository.RefreshTokenRepository;
 import kr.co.yourplanet.online.common.encrypt.EncryptManager;
 import kr.co.yourplanet.online.common.exception.BadRequestException;
 import kr.co.yourplanet.online.common.exception.BusinessException;
-import kr.co.yourplanet.online.infra.redis.RedisAuthTokenRepository;
 import kr.co.yourplanet.online.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +38,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final MemberSaltRepository memberSaltRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final RedisAuthTokenRepository redisTokenRepository;
+    private final AuthTokenRepository authTokenRepository;
 
     private final EncryptManager encryptManager;
 
@@ -85,7 +85,7 @@ public class MemberService {
 
     public void resetPassword(ResetPasswordForm form) {
         // 토큰 정보 조회
-        Long memberId = redisTokenRepository.getMemberId(AuthPurpose.PASSWORD_RESET, form.getAuthToken())
+        Long memberId = authTokenRepository.getMemberId(AuthPurpose.RESET_PASSWORD, form.getAuthToken())
                 .orElseThrow(() -> new BadRequestException("토큰에 해당하는 정보가 존재하지 않습니다."));
         Member member = memberQueryService.getById(memberId);
 
@@ -95,6 +95,9 @@ public class MemberService {
 
         updateMemberPassword(member, form.getNewPassword(), rawSalt);
         upsertMemberSalt(member, encryptedSalt);
+
+        // 사용된 토큰 삭제
+        authTokenRepository.delete(AuthPurpose.RESET_PASSWORD, form.getAuthToken());
     }
 
     public RefreshTokenForm refreshAccessToken(String previousRefreshToken) {

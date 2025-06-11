@@ -9,4 +9,6 @@ public interface AuthTokenRepository {
     void save(AuthPurpose tokenPurpose, String token, long memberId);
 
     Optional<Long> getMemberId(AuthPurpose tokenPurpose, String token);
+
+    void delete(AuthPurpose tokenPurpose, String token);
 }
