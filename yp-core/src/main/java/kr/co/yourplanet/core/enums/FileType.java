@@ -22,6 +22,11 @@ public enum FileType {
             "files/secret/settlement/",
             new HashSet<>(Set.of("jpg", "jpeg", "png", "gif", "pdf")), 
             false
+    ),
+    PROJECT_SUBMISSION_FILE(
+        "files/project/submission/",
+        new HashSet<>(Set.of("pdf", "doc", "docx", "txt", "ppt", "pptx", "xls", "xlsx", "csv", "xml")),
+        true
     );
 
     private final String path;

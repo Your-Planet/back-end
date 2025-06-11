@@ -101,7 +101,7 @@ public class Project extends BasicColumn {
      * 프로젝트 의뢰, 수락, 반려, 완료 등
      */
     /**
-     * 의뢰 의뢰 일시
+     * 최초 의뢰 일시
      */
     @Column(name = "request_date_time")
     private LocalDateTime requestDateTime;
@@ -115,6 +115,11 @@ public class Project extends BasicColumn {
      */
     @Column(name = "accept_date_time")
     private LocalDateTime acceptDateTime;
+    /**
+     * 작업물 발송 일시
+     */
+    @Column(name = "submission_sent_date_time")
+    private LocalDateTime submissionSentDateTime;
     /**
      * 의뢰 완료 일시
      */
@@ -150,9 +155,17 @@ public class Project extends BasicColumn {
     @Column(name = "accepted_history_id")
     private Long acceptedHistoryId;
 
+    /**
+     * 작업물 발송 내역
+     */
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+    @OrderBy("seq ASC")
+    private List<ProjectSubmission> submissions;
+
     public Project() {
         this.projectHistories = new ArrayList<>();
         this.referenceUrls = new ArrayList<>();
+        this.submissions = new ArrayList<>();
     }
 
     public void negotiate(ProjectStatus projectStatus) {
@@ -175,6 +188,12 @@ public class Project extends BasicColumn {
         this.projectStatus = projectStatus;
         this.rejectReason = rejectReason;
         this.rejectDateTime = LocalDateTime.now();
+    }
+
+    // 작업물발송
+    public void sendSubmission(){
+        this.projectStatus = ProjectStatus.SUBMISSION_SENT;
+        this.submissionSentDateTime = LocalDateTime.now();
     }
 
     /**
@@ -202,5 +221,11 @@ public class Project extends BasicColumn {
         return !CollectionUtils.isEmpty(projectHistories)
                 ? Optional.of(projectHistories.get(projectHistories.size() - 1)) // 가장 최신 히스토리
                 : Optional.empty(); // 히스토리가 없으면 빈 Optional 반환
+    }
+
+    public int getNextSubmissionSeq() {
+        return !CollectionUtils.isEmpty(submissions)
+            ? submissions.get(submissions.size() - 1).getSeq() + 1 // 가장 최신 발송내역
+            : 1; // 히스토리가 없으면 빈 Optional 반환
     }
 }
