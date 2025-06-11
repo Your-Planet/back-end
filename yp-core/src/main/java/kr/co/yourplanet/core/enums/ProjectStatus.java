@@ -43,7 +43,7 @@ public enum ProjectStatus {
 		REJECTED.allowedPreviousStatuses = Set.of(IN_REVIEW, NEGOTIATION_FROM_SPONSOR);
 		ACCEPTED.allowedPreviousStatuses = Set.of(IN_REVIEW, NEGOTIATION_FROM_SPONSOR);
 		IN_PROGRESS.allowedPreviousStatuses = Set.of(ACCEPTED);
-		SUBMISSION_SENT.allowedPreviousStatuses = Set.of(ACCEPTED, REQUEST_MODIFICATION);
+		SUBMISSION_SENT.allowedPreviousStatuses = Set.of(IN_PROGRESS, REQUEST_MODIFICATION);
 		REQUEST_MODIFICATION.allowedPreviousStatuses = Set.of(SUBMISSION_SENT);
 		COMPLETED.allowedPreviousStatuses = Set.of(SUBMISSION_SENT);
 		SETTLED.allowedPreviousStatuses = Set.of(COMPLETED);

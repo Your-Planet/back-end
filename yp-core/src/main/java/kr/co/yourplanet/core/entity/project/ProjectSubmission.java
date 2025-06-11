@@ -29,7 +29,7 @@ public class ProjectSubmission extends BasicColumn {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "project_submission_seq")
-    @SequenceGenerator(name = "project_submission_seq", sequenceName = "project_submission_seq", allocationSize = 50)
+    @SequenceGenerator(name = "project_submission_seq", sequenceName = "project_submission_seq", allocationSize = 10)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
