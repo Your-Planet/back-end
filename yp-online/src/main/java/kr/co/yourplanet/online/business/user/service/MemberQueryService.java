@@ -35,8 +35,13 @@ public class MemberQueryService {
                 .orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "요청한 멤버를 찾을 수 없습니다.", true));
     }
 
-    public Member getIdByEmail(String email) {
+    public Member getByEmail(String email) {
         return memberRepository.findMemberByEmail(email)
+                .orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "해당 이메일로 등록된 멤버를 찾을 수 없습니다.", true));
+    }
+
+    public Member getByTel(String tel) {
+        return memberRepository.findMemberByTel(tel)
                 .orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "해당 이메일로 등록된 멤버를 찾을 수 없습니다.", true));
     }
 
