@@ -9,4 +9,4 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update    # flyway 도입 전까지
+      ddl-auto: validate
