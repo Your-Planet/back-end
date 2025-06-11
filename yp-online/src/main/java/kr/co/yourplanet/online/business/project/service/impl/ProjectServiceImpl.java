@@ -2,8 +2,9 @@ package kr.co.yourplanet.online.business.project.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,7 @@ import kr.co.yourplanet.core.entity.file.FileMetadata;
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.project.Project;
 import kr.co.yourplanet.core.entity.project.ProjectHistory;
+import kr.co.yourplanet.core.entity.project.ProjectSubmission;
 import kr.co.yourplanet.core.entity.studio.Price;
 import kr.co.yourplanet.core.enums.FileType;
 import kr.co.yourplanet.core.enums.MemberType;
@@ -26,13 +28,14 @@ import kr.co.yourplanet.online.business.project.dto.request.ProjectAcceptForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectNegotiateForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectRejectForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectRequestForm;
+import kr.co.yourplanet.online.business.project.dto.response.FileInfoPreview;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectBasicInfo;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectDetail;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectDetailInfo;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectHistoryForm;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectOverview;
+import kr.co.yourplanet.online.business.project.dto.response.ProjectSubmissionForm;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectTimes;
-import kr.co.yourplanet.online.business.project.dto.response.FileInfoPreview;
 import kr.co.yourplanet.online.business.project.repository.ProjectHistoryRepository;
 import kr.co.yourplanet.online.business.project.repository.ProjectRepository;
 import kr.co.yourplanet.online.business.project.service.ProjectQueryService;
@@ -320,6 +323,15 @@ public class ProjectServiceImpl implements ProjectService {
         // 프로젝트 참고 자료
         List<FileInfoPreview> referenceFileInfos = getReferenceFileInfos(project);
 
+        // 프로젝트 작업물 발송내역 조회
+        List<ProjectSubmissionForm> projectSubmissions = new ArrayList<>();
+        for (ProjectSubmission submission : Optional.ofNullable(project.getSubmissions()).orElseGet(Collections::emptyList)) {
+            ProjectSubmissionForm submissionForm = new ProjectSubmissionForm(submission);
+            submissionForm.setSubmissionFiles(getSubmissionFileInfos(submission));
+
+            projectSubmissions.add(submissionForm);
+        }
+
         // DTO 생성
         ProjectOverview overview = ProjectOverview.builder()
             .sponsorName(project.getSponsor().getName())
@@ -347,7 +359,8 @@ public class ProjectServiceImpl implements ProjectService {
             .detail(detail)
             .projectHistories(project.getProjectHistories().stream()
                 .map(ProjectHistoryForm::new)
-                .collect(Collectors.toList()))
+                .toList())
+            .projectSubmissions(projectSubmissions)
             .projectStatus(project.getProjectStatus())
             .projectTimes(new ProjectTimes(project))
             .build();
@@ -364,6 +377,19 @@ public class ProjectServiceImpl implements ProjectService {
                         .fileUrl(fileUrlService.getPublicUrl(file.getId()))
                         .build())
                 .toList();
+    }
+
+    private List<FileInfoPreview> getSubmissionFileInfos(ProjectSubmission projectSubmission) {
+        List<FileMetadata> submissionFiles =
+            Optional.ofNullable(fileQueryService.getByTarget(FileType.PROJECT_SUBMISSION_FILE, projectSubmission.getId()))
+                .orElseGet(Collections::emptyList);
+
+        return submissionFiles.stream()
+            .map(file -> FileInfoPreview.builder()
+                .originalFileName(file.getOriginalName())
+                .fileUrl(fileUrlService.getPublicUrl(file.getId()))
+                .build())
+            .toList();
     }
 
     private void checkProjectValidation(Member member, Project project) {

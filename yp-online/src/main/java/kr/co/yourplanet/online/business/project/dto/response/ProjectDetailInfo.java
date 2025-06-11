@@ -21,6 +21,7 @@ public class ProjectDetailInfo {
     private ProjectDetail detail;
     @NotNull
     private List<ProjectHistoryForm> projectHistories;
+    private List<ProjectSubmissionForm> projectSubmissions;
 
     @NotNull
     private ProjectStatus projectStatus;
