@@ -15,7 +15,7 @@ import kr.co.yourplanet.online.business.user.repository.RefreshTokenRepository;
 import kr.co.yourplanet.online.common.encrypt.EncryptManager;
 import kr.co.yourplanet.online.common.exception.BadRequestException;
 import kr.co.yourplanet.online.common.exception.BusinessException;
-import kr.co.yourplanet.online.infra.redis.RedisTokenRepository;
+import kr.co.yourplanet.online.infra.redis.RedisAuthTokenRepository;
 import kr.co.yourplanet.online.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +38,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final MemberSaltRepository memberSaltRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final RedisTokenRepository redisTokenRepository;
+    private final RedisAuthTokenRepository redisTokenRepository;
 
     private final EncryptManager encryptManager;
 
@@ -85,7 +85,7 @@ public class MemberService {
 
     public void resetPassword(ResetPasswordForm form) {
         // 토큰 정보 조회
-        Long memberId = redisTokenRepository.getMemberId(AuthPurpose.PASSWORD_RESET, form.getToken())
+        Long memberId = redisTokenRepository.getMemberId(AuthPurpose.PASSWORD_RESET, form.getAuthToken())
                 .orElseThrow(() -> new BadRequestException("토큰에 해당하는 정보가 존재하지 않습니다."));
         Member member = memberQueryService.getById(memberId);
 

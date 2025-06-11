@@ -14,7 +14,7 @@ public class ResetPasswordForm {
 
     @Schema(description = "인증 후 발급 받은 토큰")
     @NotBlank
-    private String token;
+    private String authToken;
 
     @Schema(description = "새로운 비밀번호")
     @NotBlank

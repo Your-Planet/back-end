@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import kr.co.yourplanet.core.enums.AuthPurpose;
 
-public interface TokenRepository {
+public interface AuthTokenRepository {
 
     void save(AuthPurpose tokenPurpose, String token, long memberId);
 
