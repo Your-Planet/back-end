@@ -79,27 +79,34 @@ public class AuthCodeService {
     }
 
     private AuthCodeSendCommand createSendCommand(AuthCodeSendForm form) {
-        String authCode = AuthCodeGenerator.generate();
         AuthPurpose purpose = form.purpose();
         AuthMethod method = form.method();
 
-        String target;
+        // 지원되는 인증 수단 검증
+        if (!form.purpose().supports(form.method())) {
+            throw new BadRequestException(purpose.name() + " 에는 " + method.name() + " 인증 방식을 사용할 수 없습니다.");
+        }
+
+        String authCode = AuthCodeGenerator.generate();
+        String destination;
         Long memberId;
+
+        System.out.println("authCode = " + authCode);
 
         switch (form.method()) {
             case EMAIL -> {
-                target = Optional.ofNullable(form.email())
+                destination = Optional.ofNullable(form.email())
                         .orElseThrow(() -> new BadRequestException("이메일을 입력해주세요."));
-                memberId = memberQueryService.getByEmail(target).getId();
+                memberId = memberQueryService.getByEmail(destination).getId();
             }
             case ALIMTALK -> {
-                target = Optional.ofNullable(form.tel())
+                destination = Optional.ofNullable(form.tel())
                         .orElseThrow(() -> new BadRequestException("전화번호를 입력해주세요."));
-                memberId = memberQueryService.getByTel(target).getId();
+                memberId = memberQueryService.getByTel(destination).getId();
             }
             default -> throw new NotImplementedException("아직 구현되지 않은 기능입니다.");
         }
 
-        return new AuthCodeSendCommand(purpose, method, target, authCode, memberId);
+        return new AuthCodeSendCommand(purpose, method, destination, authCode, memberId);
     }
 }
