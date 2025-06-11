@@ -24,13 +24,38 @@ public class MemberValidationService {
     private static final String UPPER_CASE_REGEX = ".*[A-Z].*";
     private static final String DIGIT_REGEX = ".*\\d.*";
     private static final String SPECIAL_CHARACTER_REGEX = ".*[^a-zA-Z0-9].*";
-    private static final String SEQUENTIAL_REGEX = ".*([a-zA-Z]{3}|\\d{3}).*";
+
     private static final int MIN_LENGTH = 8;
     private static final int MAX_LENGTH = 20;
 
     private final MemberQueryService memberQueryService;
     private final MemberRepository memberRepository;
     private final EncryptManager encryptManager;
+
+    public void validateMember(MemberValidateForm memberValidateForm) {
+        Optional<Member> findMember = memberRepository.findMemberByEmail(memberValidateForm.getEmail());
+
+        if (findMember.isEmpty()) {
+            throw new BusinessException(StatusCode.BAD_REQUEST, "해당 이메일로 가입된 회원이 없습니다.", false);
+        }
+
+        Member member = findMember.get();
+        if (!memberValidateForm.getTel().equals(member.getTel())) {
+            throw new BusinessException(StatusCode.BAD_REQUEST, "전화번호가 일치하지 않습니다.", false);
+        }
+
+        if (!memberValidateForm.getName().equals(member.getName())) {
+            throw new BusinessException(StatusCode.BAD_REQUEST, "사용자 이름이 일치하지 않습니다.", false);
+        }
+    }
+
+    public void validateIsCreator(long memberId) {
+        Member member = memberQueryService.getById(memberId);
+
+        if (!member.isCreator()) {
+            throw new BadRequestException("작가 사용자가 아닙니다.");
+        }
+    }
 
     public void checkDuplicateEmail(String email) {
         if (memberRepository.findMemberByEmail(email).isPresent()) {
@@ -50,41 +75,6 @@ public class MemberValidationService {
         }
     }
 
-    public void validatePasswordFormat(String password) {
-        int patternCount = 0;
-
-        // 비밀번호 길이 체크
-        if (password.length() < MIN_LENGTH || password.length() > MAX_LENGTH) {
-            throw new BusinessException(StatusCode.BAD_REQUEST, "8-20자의 비밀번호만 사용할 수 있어요", false);
-        }
-
-        if (Pattern.matches(LOWER_CASE_REGEX, password)) {
-            patternCount++;
-        }
-        if (Pattern.matches(UPPER_CASE_REGEX, password)) {
-            patternCount++;
-        }
-        if (Pattern.matches(DIGIT_REGEX, password)) {
-            patternCount++;
-        }
-        if (Pattern.matches(SPECIAL_CHARACTER_REGEX, password)) {
-            patternCount++;
-        }
-
-        // 비밀번호 패턴 종류 체크
-        if (patternCount < 3) {
-            throw new BusinessException(StatusCode.BAD_REQUEST, "영문 대문자, 소문자, 숫자, 특수문자 중 3종류 이상을 사용해 주세요.", false);
-        }
-
-        // if (Pattern.matches(REPEATED_CHARACTERS_REGEX, password)) {
-        //     throw new BuisnessException("동일한 문자/숫자는 3자리 이상 사용할 수 없어요.");
-        // }
-        //
-        // if (Pattern.matches(SEQUENTIAL_REGEX, password)){
-        //     throw new BuisnessException("3자리 연속된 문자/숫자는 비밀번호로 사용할 수 없어요.");
-        // }
-    }
-
     public void validatePassword(long memberId, String password) {
         Member member = memberQueryService.getById(memberId);
 
@@ -96,6 +86,30 @@ public class MemberValidationService {
         }
     }
 
+    public void validatePasswordFormat(String password) {
+        // 비밀번호 길이 체크
+        if (password.length() < MIN_LENGTH || password.length() > MAX_LENGTH) {
+            throw new BusinessException(StatusCode.BAD_REQUEST, "8-20자의 비밀번호만 사용할 수 있어요", false);
+        }
+
+        int patternCount = 0;
+
+        if (Pattern.matches(LOWER_CASE_REGEX, password) || Pattern.matches(UPPER_CASE_REGEX, password)) {
+            patternCount++;
+        }
+        if (Pattern.matches(DIGIT_REGEX, password)) {
+            patternCount++;
+        }
+        if (Pattern.matches(SPECIAL_CHARACTER_REGEX, password)) {
+            patternCount++;
+        }
+
+        // 비밀번호 패턴 종류 체크
+        if (patternCount < 2) {
+            throw new BusinessException(StatusCode.BAD_REQUEST, "영문, 숫자, 특수문자 중 2종류 이상을 사용해 주세요.", false);
+        }
+    }
+
     public void validatePasswordReused(long memberId, String newPassword) {
         Member member = memberQueryService.getById(memberId);
 
@@ -104,31 +118,6 @@ public class MemberValidationService {
 
         if (member.getPassword().equals(encryptNewPassword)) {
             throw new BusinessException(StatusCode.BAD_REQUEST, "직전에 사용한 비밀번호는 다시 설정할 수 없습니다.", false);
-        }
-    }
-
-    public void validateMember(MemberValidateForm memberValidateForm) {
-        Optional<Member> findMember = memberRepository.findMemberByEmail(memberValidateForm.getEmail());
-
-        if (!findMember.isPresent()) {
-            throw new BusinessException(StatusCode.BAD_REQUEST, "해당 이메일로 가입된 회원이 없습니다.", false);
-        }
-
-        Member member = findMember.get();
-        if (!memberValidateForm.getTel().equals(member.getTel())) {
-            throw new BusinessException(StatusCode.BAD_REQUEST, "전화번호가 일치하지 않습니다.", false);
-        }
-
-        if (!memberValidateForm.getName().equals(member.getName())) {
-            throw new BusinessException(StatusCode.BAD_REQUEST, "사용자 이름이 일치하지 않습니다.", false);
-        }
-    }
-
-    public void validateIsCreator(long memberId) {
-        Member member = memberQueryService.getById(memberId);
-
-        if (!member.isCreator()) {
-            throw new BadRequestException("작가 사용자가 아닙니다.");
         }
     }
 }

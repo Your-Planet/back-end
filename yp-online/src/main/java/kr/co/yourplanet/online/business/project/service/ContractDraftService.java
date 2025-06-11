@@ -32,6 +32,7 @@ public class ContractDraftService {
     private final MemberQueryService memberQueryService;
     private final ProjectSettlementService projectSettlementService;
 
+    // TODO: 프로젝트 시작 시 계약서 생성으로 수정하기
     /**
      * 계약서 조회 및 DB에 기본 계약서 저장
      */
@@ -50,23 +51,31 @@ public class ContractDraftService {
      * 계약서 작성
      */
     public void draftContract(Long projectId, Long memberId, ContractDraftForm form) {
-        validateProjectForContract(projectId, memberId);
-        
+        Project project = projectQueryService.getById(projectId);
+        validateProjectForContract(project, memberId);
+
         ProjectContract contract = getUncompletedContract(projectId);
         Member member = memberQueryService.getById(memberId);
         Contractor contractor = createContractor(form);
 
         writeContractInfo(contract, member.getMemberType(), contractor);
+        completeIfDone(project, contract);
 
-        completeIfDone(contract);
         contractService.save(contract);
-
-        // 정산 정보에 계약 완료 시간 기록
-        projectSettlementService.markContractCompleted(projectId, contract.getCompleteDateTime());
     }
 
-    private void validateProjectForContract(Long projectId, Long memberId) {
-        Project project = projectQueryService.getById(projectId);
+    private void completeIfDone(Project project, ProjectContract contract) {
+        if (contract.isCompleted()) {
+            // 프로젝트 시작
+            project.startProjectAfterContract();
+
+            // 계약 완료 시점 기록
+            contract.completeContract();
+            projectSettlementService.markContractCompleted(contract.getProject().getId(), contract.getCompleteDateTime());
+        }
+    }
+
+    private void validateProjectForContract(Project project, Long memberId) {
         contractValidationService.validateContractParty(memberId, project);
         contractValidationService.validateProjectStatus(project.getProjectStatus());
     }
@@ -87,13 +96,6 @@ public class ContractDraftService {
             contract.writeProviderInfo(contractor);
         } else if (MemberType.SPONSOR.equals(memberType)) {
             contract.writeClientInfo(contractor);
-        }
-    }
-
-    private void completeIfDone(ProjectContract contract) {
-        // 계약 완료 시간 기록
-        if (contract.isCompleted()) {
-            contract.completeContract();
         }
     }
 

@@ -1,6 +1,6 @@
 package kr.co.yourplanet.core.enums;
 
-public enum AuthenticationMethod {
+public enum AuthMethod {
 
     EMAIL,
     ALIMTALK

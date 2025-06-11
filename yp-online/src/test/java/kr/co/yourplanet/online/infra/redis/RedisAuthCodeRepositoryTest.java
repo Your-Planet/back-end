@@ -9,13 +9,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import kr.co.yourplanet.core.enums.AuthPurpose;
-import kr.co.yourplanet.online.business.auth.dto.VerificationCodeData;
+import kr.co.yourplanet.online.business.auth.dto.AuthCodeData;
 import kr.co.yourplanet.support.template.IntegrationTest;
 
-class RedisVerificationCodeRepositoryTest extends IntegrationTest {
+class RedisAuthCodeRepositoryTest extends IntegrationTest {
 
     @Autowired
-    private RedisVerificationCodeRepository redisVerificationCodeRepository;
+    private RedisAuthCodeRepository redisVerificationCodeRepository;
 
     @Test
     @DisplayName("[성공] 인증번호 저장 및 조회에 성공한다.")
@@ -24,13 +24,13 @@ class RedisVerificationCodeRepositoryTest extends IntegrationTest {
         String destination = "01012345678";
         String code = "123456";
         long memberId = 1L;
-        AuthPurpose purpose = AuthPurpose.PASSWORD_RESET;
+        AuthPurpose purpose = AuthPurpose.RESET_PASSWORD;
 
         // when
         redisVerificationCodeRepository.save(purpose, destination, code, memberId);
 
         // then
-        Optional<VerificationCodeData> result = redisVerificationCodeRepository.get(destination);
+        Optional<AuthCodeData> result = redisVerificationCodeRepository.get(destination);
 
         assertThat(result).isPresent();
         assertThat(result)
@@ -47,11 +47,11 @@ class RedisVerificationCodeRepositoryTest extends IntegrationTest {
     void delete_code() {
         // given
         String destination = "01012345678";
-        redisVerificationCodeRepository.save(AuthPurpose.PASSWORD_RESET, destination, "654321", 1L);
+        redisVerificationCodeRepository.save(AuthPurpose.RESET_PASSWORD, destination, "654321", 1L);
 
         // when
         redisVerificationCodeRepository.delete(destination);
-        Optional<VerificationCodeData> result = redisVerificationCodeRepository.get(destination);
+        Optional<AuthCodeData> result = redisVerificationCodeRepository.get(destination);
 
         // then
         assertThat(result).isEmpty();
