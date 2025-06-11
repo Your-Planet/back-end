@@ -1,0 +1,1 @@
+ALTER TABLE project ADD COLUMN submission_sent_date_time timestamp;
