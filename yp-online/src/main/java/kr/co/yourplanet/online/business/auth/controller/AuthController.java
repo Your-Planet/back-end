@@ -6,7 +6,7 @@ import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.auth.dto.AuthTokenInfo;
 import kr.co.yourplanet.online.business.auth.dto.AuthCodeCheckForm;
 import kr.co.yourplanet.online.business.auth.service.AuthCodeService;
-import kr.co.yourplanet.online.business.user.dto.request.FindIdForm;
+import kr.co.yourplanet.online.business.user.dto.request.FindEmailForm;
 import kr.co.yourplanet.online.business.user.dto.request.LoginForm;
 import kr.co.yourplanet.online.business.user.dto.request.MemberJoinForm;
 import kr.co.yourplanet.online.business.user.dto.request.MemberValidateForm;
@@ -77,9 +77,10 @@ public class AuthController {
     @Operation(summary = "이메일 찾기")
     @PostMapping("/auth/find-email")
     public ResponseForm<String> findEmail(
-            @Valid @RequestBody FindIdForm accountRecoveryFrom
+            @Valid @RequestBody FindEmailForm findEmailForm
     ) {
-        return new ResponseForm<>(StatusCode.OK, memberQueryService.findEmail(accountRecoveryFrom));
+        String response = memberQueryService.findEmail(findEmailForm);
+        return new ResponseForm<>(StatusCode.OK, response);
     }
 
     @Operation(summary = "비밀번호 재설정")
@@ -97,7 +98,6 @@ public class AuthController {
             @Valid @RequestBody AuthCodeSendForm form
     ) {
         authCodeService.sendAuthCode(form);
-
         return new ResponseForm<>(StatusCode.OK);
     }
 
@@ -107,7 +107,6 @@ public class AuthController {
             @Valid @RequestBody AuthCodeCheckForm form
     ) {
         AuthTokenInfo response = authCodeService.checkAuthCode(form);
-
         return new ResponseForm<>(StatusCode.OK, response);
     }
 
