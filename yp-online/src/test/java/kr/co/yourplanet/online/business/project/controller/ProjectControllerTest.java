@@ -14,6 +14,7 @@ import kr.co.yourplanet.support.helper.WithMockJwtPrincipal;
 import kr.co.yourplanet.online.common.HeaderConstant;
 import kr.co.yourplanet.support.stub.ProjectContractFormBuilder;
 import kr.co.yourplanet.support.stub.ProjectStub;
+import kr.co.yourplanet.support.stub.ProjectSubmissionFormBuilder;
 import kr.co.yourplanet.support.stub.TokenStub;
 import kr.co.yourplanet.support.template.IntegrationTest;
 
@@ -29,7 +30,7 @@ class ProjectControllerTest extends IntegrationTest {
         @Test
         @WithMockJwtPrincipal(id = 1L, memberType = MemberType.CREATOR)
         void success_creator() throws Exception {
-            long projectId = ProjectStub.getInProgressProjectWithoutContractId();
+            long projectId = ProjectStub.getAcceptedProjectWithoutContractId();
 
             mockMvc.perform(get(path, projectId)
                             .header(HeaderConstant.ACCESS_TOKEN, TokenStub.getMockAccessToken())
@@ -42,7 +43,7 @@ class ProjectControllerTest extends IntegrationTest {
         @Test
         @WithMockJwtPrincipal(id = 3L, memberType = MemberType.SPONSOR)
         void success_sponsor() throws Exception {
-            long projectId = ProjectStub.getInProgressProjectWithoutContractId();
+            long projectId = ProjectStub.getAcceptedProjectWithoutContractId();
 
             mockMvc.perform(get(path, projectId)
                             .header(HeaderConstant.ACCESS_TOKEN, TokenStub.getMockAccessToken())
@@ -55,7 +56,7 @@ class ProjectControllerTest extends IntegrationTest {
         @Test
         @WithMockJwtPrincipal(id = 2L, memberType = MemberType.CREATOR)
         void fail_when_not_contract_party() throws Exception {
-            long projectId = ProjectStub.getInProgressProjectWithoutContractId();
+            long projectId = ProjectStub.getAcceptedProjectWithoutContractId();
 
             mockMvc.perform(get(path, projectId)
                             .header(HeaderConstant.ACCESS_TOKEN, TokenStub.getMockAccessToken())
@@ -88,7 +89,7 @@ class ProjectControllerTest extends IntegrationTest {
         @Test
         @WithMockJwtPrincipal(id = 3L, memberType = MemberType.SPONSOR)
         void success_sponsor() throws Exception {
-            long projectId = ProjectStub.getInProgressProjectWithContractId();
+            long projectId = ProjectStub.getAcceptedProjectWithContractId();
 
             mockMvc.perform(post(path, projectId)
                             .header(HeaderConstant.ACCESS_TOKEN, TokenStub.getMockAccessToken())
@@ -102,7 +103,7 @@ class ProjectControllerTest extends IntegrationTest {
         @Test
         @WithMockJwtPrincipal(id = 2L, memberType = MemberType.CREATOR)
         void fail_when_not_contract_party() throws Exception {
-            long projectId = ProjectStub.getInProgressProjectWithContractId();
+            long projectId = ProjectStub.getAcceptedProjectWithContractId();
 
             mockMvc.perform(post(path, projectId)
                             .header(HeaderConstant.ACCESS_TOKEN, TokenStub.getMockAccessToken())
@@ -130,7 +131,7 @@ class ProjectControllerTest extends IntegrationTest {
         @Test
         @WithMockJwtPrincipal(id = 1L, memberType = MemberType.CREATOR)
         void fail_when_already_drafted_contract() throws Exception {
-            long projectId = ProjectStub.getInProgressProjectWithContractId();
+            long projectId = ProjectStub.getAcceptedProjectWithContractId();
 
             mockMvc.perform(post(path, projectId)
                             .header(HeaderConstant.ACCESS_TOKEN, TokenStub.getMockAccessToken())
@@ -152,6 +153,41 @@ class ProjectControllerTest extends IntegrationTest {
                             .content(toJson(ProjectContractFormBuilder.businessContractDraftForm())))
                     .andDo(print())
                     .andExpect(status().isConflict());
+        }
+    }
+
+    @Nested
+    @DisplayName("작업물 발송 API")
+    class DraftProjectSubmission {
+
+        private final String path = "/project/{id}/submission";
+
+        @DisplayName("[성공] 프로젝트 작업물 발송에 성공한다.")
+        @Test
+        @WithMockJwtPrincipal(id = 1L, memberType = MemberType.CREATOR)
+        void success_send_submission() throws Exception {
+            long projectId = ProjectStub.getInProgressProjectWithCompletedContractId();
+
+            mockMvc.perform(post(path, projectId)
+                    .header(HeaderConstant.ACCESS_TOKEN, TokenStub.getMockAccessToken())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(toJson(ProjectSubmissionFormBuilder.projectSubmissionForm())))
+                .andDo(print())
+                .andExpect(status().isCreated());
+        }
+
+        @DisplayName("[실패] 프로젝트 작가가 아닌 경우 작업물 발송에 실패한다.")
+        @Test
+        @WithMockJwtPrincipal(id = 2L, memberType = MemberType.CREATOR)
+        void fail_when_not_project_party() throws Exception {
+            long projectId = ProjectStub.getInProgressProjectWithCompletedContractId();
+
+            mockMvc.perform(post(path, projectId)
+                    .header(HeaderConstant.ACCESS_TOKEN, TokenStub.getMockAccessToken())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(toJson(ProjectSubmissionFormBuilder.projectSubmissionForm())))
+                .andDo(print())
+                .andExpect(status().isForbidden());
         }
     }
 }
