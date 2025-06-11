@@ -23,7 +23,7 @@ import kr.co.yourplanet.online.business.project.dto.request.ProjectAcceptForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectNegotiateForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectRejectForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectRequestForm;
-import kr.co.yourplanet.online.business.project.dto.request.SubmissionForm;
+import kr.co.yourplanet.online.business.project.dto.request.SubmissionSendForm;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectBasicInfo;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectDetailInfo;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectHistoryForm;
@@ -149,7 +149,7 @@ public class ProjectController {
     public ResponseEntity<ResponseForm<Void>> sendSubmission(
         @AuthenticationPrincipal JwtPrincipal principal,
         @PathVariable(name = "id") Long projectId,
-        @RequestBody @Valid SubmissionForm request
+        @RequestBody @Valid SubmissionSendForm request
     ) {
         submissionService.sendSubmission(projectId, principal.getId(), request);
 

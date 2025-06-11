@@ -13,7 +13,7 @@ import kr.co.yourplanet.core.enums.FileType;
 import kr.co.yourplanet.core.enums.ProjectStatus;
 import kr.co.yourplanet.online.business.alimtalk.util.BusinessAlimTalkSendService;
 import kr.co.yourplanet.online.business.file.service.FileService;
-import kr.co.yourplanet.online.business.project.dto.request.SubmissionForm;
+import kr.co.yourplanet.online.business.project.dto.request.SubmissionSendForm;
 import kr.co.yourplanet.online.business.project.repository.ProjectSubmissionRepository;
 import kr.co.yourplanet.online.business.project.service.ProjectQueryService;
 import kr.co.yourplanet.online.business.project.service.ProjectValidationService;
@@ -35,7 +35,7 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Override
     @Transactional
-    public void sendSubmission(Long projectId, Long creatorId, SubmissionForm submissionForm) {
+    public void sendSubmission(Long projectId, Long creatorId, SubmissionSendForm submissionSendForm) {
 
         // 프로젝트-작가 관련성 체크
         projectValidationService.checkCreator(projectId, creatorId);
@@ -55,7 +55,7 @@ public class SubmissionServiceImpl implements SubmissionService {
         projectSubmissionRepository.save(submission);
 
         // 작업물 파일 저장
-        List<Long> submissionFileIds = submissionForm.submissionFileIds();
+        List<Long> submissionFileIds = submissionSendForm.submissionFileIds();
         if (!CollectionUtils.isEmpty(submissionFileIds)) {
             for (Long fileId : submissionFileIds) {
                 fileService.completeUpload(fileId, creatorId, submission.getId(), FileType.PROJECT_SUBMISSION_FILE);

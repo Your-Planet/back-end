@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 
 @Builder
-public record SubmissionForm(
+public record SubmissionSendForm(
 
     @Schema(description = "업로드한 작업물 파일 id")
     @NotEmpty(message = "첨부된 작업물이 존재하지 않습니다.")
