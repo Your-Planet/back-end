@@ -18,8 +18,8 @@ import kr.co.yourplanet.core.entity.alimtalk.AlimTalkTemplate;
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.project.Project;
 import kr.co.yourplanet.core.enums.AlimTalkTemplateCode;
-import kr.co.yourplanet.online.business.project.repository.ProjectRepository;
-import kr.co.yourplanet.online.business.user.repository.MemberRepository;
+import kr.co.yourplanet.online.business.project.service.ProjectQueryService;
+import kr.co.yourplanet.online.business.user.service.MemberQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,8 +32,8 @@ public class BusinessAlimTalkSendService {
     private final AlimTalkTemplateRepository alimTalkTemplateRepository;
     private final AlimTalkSendFormFactory alimTalkSendFormFactory;
 
-    private final MemberRepository memberRepository;
-    private final ProjectRepository projectRepository;
+    private final MemberQueryService memberQueryService;
+    private final ProjectQueryService projectQueryService;
 
     private static final String ALIM_TALK_SEND_REQUEST_SUCCESS = "A000";
     private static final String ALIM_TALK_SEND_REQUEST_ERROR = "XXXX";
@@ -113,22 +113,18 @@ public class BusinessAlimTalkSendService {
     @Async
     public void sendProjectNegotiationCommon(Long targetMemberId, Long sponsorId, Long projectId) {
         AlimTalkTemplateCode templateCode = AlimTalkTemplateCode.PROJECT_NEGOTIATE_COMMON;
-
-        Optional<Member> optionalTargetMember = memberRepository.findById(targetMemberId);
-        Optional<Member> optionalSponsorMember = memberRepository.findById(sponsorId);
-        Optional<Project> optionalProject = projectRepository.findById(projectId);
-
-        if (optionalTargetMember.isPresent() && optionalSponsorMember.isPresent() && optionalProject.isPresent()) {
-            Member targetMember = optionalTargetMember.get();
-            Member sponsor = optionalSponsorMember.get();
-            Project project = optionalProject.get();
+        try {
+            Member targetMember = memberQueryService.getById(targetMemberId);
+            Member sponsor = memberQueryService.getById(sponsorId);
+            Project project = projectQueryService.getById(projectId);
 
             // 알림톡 문구 변수 치환 객체 주입
             Map<String, Object> contextObjectMap = Map.of("member", targetMember, "sponsor", sponsor, "project",
                 project);
 
             send(templateCode, targetMember, contextObjectMap);
-
+        } catch (Exception e) {
+            loggingAlimTalkSendFail("sendProjectNegotiationCommon", projectId);
         }
 
     }
@@ -144,14 +140,10 @@ public class BusinessAlimTalkSendService {
     @Async
     public void sendProjectAcceptCommon(Long creatorId, Long sponsorId, Long projectId) {
 
-        Optional<Member> optionalCreatorMember = memberRepository.findById(creatorId);
-        Optional<Member> optionalSponsorMember = memberRepository.findById(sponsorId);
-        Optional<Project> optionalProject = projectRepository.findById(projectId);
-
-        if (optionalCreatorMember.isPresent() && optionalSponsorMember.isPresent() && optionalProject.isPresent()) {
-            Member creator = optionalCreatorMember.get();
-            Member sponsor = optionalSponsorMember.get();
-            Project project = optionalProject.get();
+        try {
+            Member creator = memberQueryService.getById(creatorId);
+            Member sponsor = memberQueryService.getById(sponsorId);
+            Project project = projectQueryService.getById(projectId);
 
             // 알림톡 문구 변수 치환 객체 주입
             Map<String, Object> contextObjectMap = Map.of("creator", creator, "sponsor", sponsor, "project", project);
@@ -161,7 +153,10 @@ public class BusinessAlimTalkSendService {
 
             // 광고주에게 알림톡 발송
             send(AlimTalkTemplateCode.PROJECT_ACCEPT_SPONSOR, sponsor, contextObjectMap);
+        } catch (Exception e) {
+            loggingAlimTalkSendFail("sendProjectAcceptCommon", projectId);
         }
+
 
     }
 
@@ -176,22 +171,19 @@ public class BusinessAlimTalkSendService {
     @Async
     public void sendProjectRejectSponsor(Long sponsorId, Long creatorId, Long projectId) {
 
-        Optional<Member> optionalCreatorMember = memberRepository.findById(creatorId);
-        Optional<Member> optionalSponsorMember = memberRepository.findById(sponsorId);
-        Optional<Project> optionalProject = projectRepository.findById(projectId);
-
-        if (optionalCreatorMember.isPresent() && optionalSponsorMember.isPresent() && optionalProject.isPresent()) {
-            Member creator = optionalCreatorMember.get();
-            Member sponsor = optionalSponsorMember.get();
-            Project project = optionalProject.get();
+        try {
+            Member creator = memberQueryService.getById(creatorId);
+            Member sponsor = memberQueryService.getById(sponsorId);
+            Project project = projectQueryService.getById(projectId);
 
             // 알림톡 문구 변수 치환 객체 주입
             Map<String, Object> contextObjectMap = Map.of("creator", creator, "sponsor", sponsor, "project", project);
 
             // 작가에게 알림톡 발송
             send(AlimTalkTemplateCode.PROJECT_REJECT_SPONSOR, sponsor, contextObjectMap);
+        } catch (Exception e) {
+            loggingAlimTalkSendFail("sendProjectAcceptCommon", projectId);
         }
-
     }
 
     /**
@@ -202,18 +194,18 @@ public class BusinessAlimTalkSendService {
      */
     @Async
     public void sendProjectCancelCreator(Long creatorId) {
-        Optional<Member> optionalCreatorMember = memberRepository.findById(creatorId);
 
-        if(optionalCreatorMember.isPresent()) {
-            Member creator = optionalCreatorMember.get();
+        try {
+            Member creator = memberQueryService.getById(creatorId);
 
             // 알림톡 문구 변수 치환 객체 주입
             Map<String, Object> contextObjectMap = Map.of("creator", creator);
 
             // 작가에게 알림톡 발송
             send(AlimTalkTemplateCode.PROJECT_CANCEL_CREATOR, creator, contextObjectMap);
+        } catch (Exception e) {
+            loggingAlimTalkSendFail("sendProjectCancelCreator", creatorId);
         }
-
     }
 
     /**
@@ -223,19 +215,90 @@ public class BusinessAlimTalkSendService {
      * @param memberId 멤버ID
      */
     public void sendAuthCode(Long memberId, String authCode) {
-        Optional<Member> optionalMember = memberRepository.findById(memberId);
+        Member member = memberQueryService.getById(memberId);
+        // 엔티티에 포함되지 않은 변수 처리를 위해 key:ETC_VARIABLE_MAP_KEY, value:Map 처리
+        // 알림톡 문구 변수 치환 객체 주입
+        Map<String, Object> contextObjectMap = Map.of(ETC_VARIABLE_MAP_KEY, Map.of("authCode", authCode));
 
-        if(optionalMember.isPresent()) {
-            Member member = optionalMember.get();
+        // 멤버에게 알림톡 발송
+        send(AlimTalkTemplateCode.AUTH_CODE, member, contextObjectMap);
+    }
 
-            // 엔티티에 포함되지 않은 변수 처리를 위해 key:ETC_VARIABLE_MAP_KEY, value:Map 처리
+    /**
+     * [프로젝트] 작업물 도착 알림
+     * [수신자] 광고주
+     *
+     * @param projectId [프로젝트]
+     */
+    @Async
+    public void sendProjectSubmissionSent(Long projectId) {
+
+        try {
+            Project project = projectQueryService.getById(projectId);
+            Member creator = project.getCreator();
+            Member sponsor = project.getSponsor();
+
             // 알림톡 문구 변수 치환 객체 주입
-            Map<String, Object> contextObjectMap = Map.of(ETC_VARIABLE_MAP_KEY, Map.of("authCode", authCode));
+            Map<String, Object> contextObjectMap = Map.of("creator", creator, "sponsor", sponsor, "project", project);
 
-            // 멤버에게 알림톡 발송
-            send(AlimTalkTemplateCode.AUTH_CODE, member, contextObjectMap);
+            // 작가에게 알림톡 발송
+            send(AlimTalkTemplateCode.PROJECT_SUBMISSION_SENT_SPONSOR, sponsor, contextObjectMap);
+        } catch (Exception e) {
+            loggingAlimTalkSendFail("sendProjectSubmissionSent", projectId);
         }
 
+    }
+
+    /**
+     * [프로젝트] 작업물 수정 요청
+     * [수신자] 작가
+     *
+     * @param projectId [프로젝트]
+     */
+    @Async
+    public void sendProjectSubmissionModification(Long projectId) {
+
+        try {
+            Project project = projectQueryService.getById(projectId);
+            Member creator = project.getCreator();
+
+            // 알림톡 문구 변수 치환 객체 주입
+            Map<String, Object> contextObjectMap = Map.of("creator", creator);
+
+            // 작가에게 알림톡 발송
+            send(AlimTalkTemplateCode.PROJECT_SUBMISSION_MODIFICATION_REQUEST_CREATOR, creator, contextObjectMap);
+        } catch (Exception e) {
+            loggingAlimTalkSendFail("sendProjectSubmissionModification", projectId);
+        }
+
+    }
+
+    /**
+     * [프로젝트] 작업물 최종 승인
+     * [수신자] 작가
+     *
+     * @param projectId [프로젝트]
+     */
+    @Async
+    public void sendProjectSubmissionApprove(Long projectId) {
+
+        try {
+            Project project = projectQueryService.getById(projectId);
+            Member creator = project.getCreator();
+
+            // 알림톡 문구 변수 치환 객체 주입
+            Map<String, Object> contextObjectMap = Map.of("creator", creator, "project", project);
+
+            // 작가에게 알림톡 발송
+            send(AlimTalkTemplateCode.PROJECT_SUBMISSION_APPROVAL_CREATOR, creator, contextObjectMap);
+        } catch (Exception e) {
+            loggingAlimTalkSendFail("sendProjectSubmissionApprove", projectId);
+        }
+
+    }
+
+    private void loggingAlimTalkSendFail(String methodName, Long objectId) {
+        log.error("알림톡 발송 실패 : [{}] / {}", methodName, objectId);
     }
 
 }

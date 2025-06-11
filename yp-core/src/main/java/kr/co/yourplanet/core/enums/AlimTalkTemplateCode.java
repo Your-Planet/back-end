@@ -12,8 +12,10 @@ public enum AlimTalkTemplateCode {
     PROJECT_ACCEPT_CREATOR("YP_ALIM_0006", "의뢰 수락 알림(작가)"),
     PROJECT_ACCEPT_SPONSOR("YP_ALIM_0007", "의뢰 수락 알림(브랜드 파트너)"),
     PROJECT_REJECT_SPONSOR("YP_ALIM_0014", "프로젝트 거절 알림(브랜드 파트너)"),
-    PROJECT_CANCEL_CREATOR("YP_ALIM_0015", "프로젝트 취소 알림(작가)");
-
+    PROJECT_CANCEL_CREATOR("YP_ALIM_0015", "프로젝트 취소 알림(작가)"),
+    PROJECT_SUBMISSION_SENT_SPONSOR("YP_ALIM_0011", "작업물 도착 알림(브랜드 파트너)"),
+    PROJECT_SUBMISSION_MODIFICATION_REQUEST_CREATOR("YP_ALIM_0010", "신규 수정 요청 접수(작가)"),
+    PROJECT_SUBMISSION_APPROVAL_CREATOR("YP_ALIM_0012", "최종 작업물 승인 알림(작가)");
 
     private final String code;
     private final String description;
