@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -23,6 +24,7 @@ import kr.co.yourplanet.online.business.project.dto.request.ProjectAcceptForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectNegotiateForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectRejectForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectRequestForm;
+import kr.co.yourplanet.online.business.project.dto.request.SubmissionModificateForm;
 import kr.co.yourplanet.online.business.project.dto.request.SubmissionSendForm;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectBasicInfo;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectDetailInfo;
@@ -152,6 +154,31 @@ public class ProjectController {
         @RequestBody @Valid SubmissionSendForm request
     ) {
         submissionService.sendSubmission(projectId, principal.getId(), request);
+
+        return new ResponseEntity<>(new ResponseForm<>(StatusCode.CREATED), HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "작업물 수정 요청")
+    @PatchMapping("/project/{projectId}/submission/{submissionId}/request-modification")
+    public ResponseEntity<ResponseForm<Void>> requestSubmissionModification(
+        @AuthenticationPrincipal JwtPrincipal principal,
+        @PathVariable(name = "projectId") Long projectId,
+        @PathVariable(name = "submissionId") Long submissionId,
+        @RequestBody @Valid SubmissionModificateForm request
+    ) {
+        submissionService.requestSubmissionModification(projectId, submissionId, principal.getId(), request);
+
+        return new ResponseEntity<>(new ResponseForm<>(StatusCode.CREATED), HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "작업물 확정")
+    @PatchMapping("/project/{projectId}/submission/{submissionId}/confirm")
+    public ResponseEntity<ResponseForm<Void>> confirmSubmission(
+        @AuthenticationPrincipal JwtPrincipal principal,
+        @PathVariable(name = "projectId") Long projectId,
+        @PathVariable(name = "submissionId") Long submissionId
+    ) {
+        submissionService.confirmSubmission(projectId, submissionId, principal.getId());
 
         return new ResponseEntity<>(new ResponseForm<>(StatusCode.CREATED), HttpStatus.CREATED);
     }
