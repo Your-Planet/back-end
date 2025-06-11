@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -23,12 +24,15 @@ import kr.co.yourplanet.online.business.project.dto.request.ProjectAcceptForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectNegotiateForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectRejectForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectRequestForm;
+import kr.co.yourplanet.online.business.project.dto.request.SubmissionModificateForm;
+import kr.co.yourplanet.online.business.project.dto.request.SubmissionSendForm;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectBasicInfo;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectDetailInfo;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectHistoryForm;
 import kr.co.yourplanet.online.business.project.dto.response.ContractInfo;
 import kr.co.yourplanet.online.business.project.service.ContractDraftService;
 import kr.co.yourplanet.online.business.project.service.ProjectService;
+import kr.co.yourplanet.online.business.project.service.SubmissionService;
 import kr.co.yourplanet.online.common.ResponseForm;
 import kr.co.yourplanet.online.jwt.JwtPrincipal;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +44,7 @@ public class ProjectController {
 
     private final ProjectService projectService;
     private final ContractDraftService contractDraftService;
+    private final SubmissionService submissionService;
 
     @Operation(summary = "프로젝트 의뢰")
     @PostMapping(value = "/project", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -137,7 +142,44 @@ public class ProjectController {
             @RequestBody @Valid ContractDraftForm request
     ) {
         contractDraftService.draftContract(projectId, principal.getId(), request);
-;
+
+        return new ResponseEntity<>(new ResponseForm<>(StatusCode.CREATED), HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "작업물 발송")
+    @PostMapping("/project/{id}/submission")
+    public ResponseEntity<ResponseForm<Void>> sendSubmission(
+        @AuthenticationPrincipal JwtPrincipal principal,
+        @PathVariable(name = "id") Long projectId,
+        @RequestBody @Valid SubmissionSendForm request
+    ) {
+        submissionService.sendSubmission(projectId, principal.getId(), request);
+
+        return new ResponseEntity<>(new ResponseForm<>(StatusCode.CREATED), HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "작업물 수정 요청")
+    @PatchMapping("/project/{projectId}/submission/{submissionId}/request-modification")
+    public ResponseEntity<ResponseForm<Void>> requestSubmissionModification(
+        @AuthenticationPrincipal JwtPrincipal principal,
+        @PathVariable(name = "projectId") Long projectId,
+        @PathVariable(name = "submissionId") Long submissionId,
+        @RequestBody @Valid SubmissionModificateForm request
+    ) {
+        submissionService.requestSubmissionModification(projectId, submissionId, principal.getId(), request);
+
+        return new ResponseEntity<>(new ResponseForm<>(StatusCode.CREATED), HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "작업물 확정")
+    @PatchMapping("/project/{projectId}/submission/{submissionId}/confirm")
+    public ResponseEntity<ResponseForm<Void>> confirmSubmission(
+        @AuthenticationPrincipal JwtPrincipal principal,
+        @PathVariable(name = "projectId") Long projectId,
+        @PathVariable(name = "submissionId") Long submissionId
+    ) {
+        submissionService.confirmSubmission(projectId, submissionId, principal.getId());
+
         return new ResponseEntity<>(new ResponseForm<>(StatusCode.CREATED), HttpStatus.CREATED);
     }
 }

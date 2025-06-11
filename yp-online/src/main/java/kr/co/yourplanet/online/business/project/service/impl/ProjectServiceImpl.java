@@ -2,8 +2,9 @@ package kr.co.yourplanet.online.business.project.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,7 @@ import kr.co.yourplanet.core.entity.file.FileMetadata;
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.project.Project;
 import kr.co.yourplanet.core.entity.project.ProjectHistory;
+import kr.co.yourplanet.core.entity.project.ProjectSubmission;
 import kr.co.yourplanet.core.entity.studio.Price;
 import kr.co.yourplanet.core.enums.FileType;
 import kr.co.yourplanet.core.enums.MemberType;
@@ -26,19 +28,22 @@ import kr.co.yourplanet.online.business.project.dto.request.ProjectAcceptForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectNegotiateForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectRejectForm;
 import kr.co.yourplanet.online.business.project.dto.request.ProjectRequestForm;
+import kr.co.yourplanet.online.business.project.dto.response.FileInfoPreview;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectBasicInfo;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectDetail;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectDetailInfo;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectHistoryForm;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectOverview;
+import kr.co.yourplanet.online.business.project.dto.response.ProjectSubmissionForm;
 import kr.co.yourplanet.online.business.project.dto.response.ProjectTimes;
-import kr.co.yourplanet.online.business.project.dto.response.ReferenceFileInfo;
 import kr.co.yourplanet.online.business.project.repository.ProjectHistoryRepository;
 import kr.co.yourplanet.online.business.project.repository.ProjectRepository;
+import kr.co.yourplanet.online.business.project.service.ProjectQueryService;
 import kr.co.yourplanet.online.business.project.service.ProjectService;
+import kr.co.yourplanet.online.business.project.service.ProjectValidationService;
 import kr.co.yourplanet.online.business.settlement.service.ProjectSettlementService;
 import kr.co.yourplanet.online.business.studio.repository.PriceRepository;
-import kr.co.yourplanet.online.business.user.repository.MemberRepository;
+import kr.co.yourplanet.online.business.user.service.MemberQueryService;
 import kr.co.yourplanet.online.common.exception.BusinessException;
 import kr.co.yourplanet.online.common.util.SnowflakeIdGenerator;
 import lombok.RequiredArgsConstructor;
@@ -55,8 +60,12 @@ public class ProjectServiceImpl implements ProjectService {
 
     private final ProjectRepository projectRepository;
     private final ProjectHistoryRepository projectHistoryRepository;
-    private final MemberRepository memberRepository;
     private final PriceRepository priceRepository;
+
+    private final MemberQueryService memberQueryService;
+    private final ProjectQueryService projectQueryService;
+
+    private final ProjectValidationService projectValidationService;
 
     private final FileService fileService;
     private final FileQueryService fileQueryService;
@@ -67,7 +76,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     @Transactional
     public void createProject(ProjectRequestForm projectRequestForm, Long sponsorId) {
-        Member sponsor = findMemberById(sponsorId);
+        Member sponsor = memberQueryService.getById(sponsorId);
         Price creatorPrice = priceRepository.findById(projectRequestForm.getPriceId())
             .orElseThrow(() -> new BusinessException(StatusCode.BAD_REQUEST, "작가의 스튜디오 정보가 존재하지 않습니다", false));
 
@@ -135,8 +144,8 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     @Transactional
     public void rejectProject(ProjectRejectForm projectRejectForm, Long requestMemberId) {
-        Member member = findMemberById(requestMemberId);
-        Project project = findProjectById(projectRejectForm.getId());
+        Member member = memberQueryService.getById(requestMemberId);
+        Project project = projectQueryService.getById(projectRejectForm.getId());
         ProjectStatus projectStatusAction = null;
 
         // Validation
@@ -151,7 +160,7 @@ public class ProjectServiceImpl implements ProjectService {
             throw new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 사용자 유형입니다.", false);
         }
 
-        validateProjectStatusTransition(member, project, projectStatusAction);
+        projectValidationService.validateProjectStatusTransition(member, project, projectStatusAction);
 
         // 프로젝트 취소/거절 처리
         project.invalidate(projectStatusAction, projectRejectForm.getReason());
@@ -168,8 +177,8 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     @Transactional
     public void negotiateProject(ProjectNegotiateForm projectNegotiateForm, Long requestMemberId) {
-        Member requestMember = findMemberById(requestMemberId);
-        Project project = findProjectById(projectNegotiateForm.getProjectId());
+        Member requestMember = memberQueryService.getById(requestMemberId);
+        Project project = projectQueryService.getById(projectNegotiateForm.getProjectId());
         ProjectStatus projectStatusAction = null;
 
         // Validation
@@ -182,7 +191,7 @@ public class ProjectServiceImpl implements ProjectService {
         } else {
             throw new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 사용자 유형입니다.", false);
         }
-        validateProjectStatusTransition(requestMember, project, projectStatusAction);
+        projectValidationService.validateProjectStatusTransition(requestMember, project, projectStatusAction);
 
         // 프로젝트 업데이트
         project.negotiate(projectStatusAction);
@@ -223,14 +232,12 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     @Transactional
     public void acceptProject(ProjectAcceptForm projectAcceptForm, Long requestMemberId) {
-        Member member = memberRepository.findById(requestMemberId)
-            .orElseThrow(() -> new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 사용자 요청입니다.", false));
-        Project project = projectRepository.findById(projectAcceptForm.getId())
-            .orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "존재하지 않는 의뢰입니다.", false));
+        Member member = memberQueryService.getById(requestMemberId);
+        Project project = projectQueryService.getById(projectAcceptForm.getId());
 
         // Validation
         checkProjectValidation(member, project);
-        validateProjectStatusTransition(member, project, ProjectStatus.ACCEPTED);
+        projectValidationService.validateProjectStatusTransition(member, project, ProjectStatus.ACCEPTED);
 
         List<ProjectHistory> projectHistoryList = projectHistoryRepository.findAllByProject(project);
 
@@ -252,10 +259,8 @@ public class ProjectServiceImpl implements ProjectService {
         // return List
         List<ProjectHistoryForm> projectHistoryFormList = new ArrayList<>();
 
-        Member member = memberRepository.findById(requestMemberId)
-            .orElseThrow(() -> new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 사용자 요청입니다.", false));
-        Project project = projectRepository.findById(id)
-            .orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "존재하지 않는 의뢰입니다.", false));
+        Member member = memberQueryService.getById(requestMemberId);
+        Project project = projectQueryService.getById(id);
 
         checkProjectValidation(member, project);
 
@@ -275,8 +280,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public List<ProjectBasicInfo> getMemberProjectsBasicInfo(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 사용자 요청입니다.", false));
+        Member member = memberQueryService.getById(memberId);
         List<Project> projectList = null;
         List<ProjectBasicInfo> projectBasicInfoList = new ArrayList<>();
 
@@ -307,10 +311,8 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ProjectDetailInfo getProjectDetailInfo(Long projectId, Long memberId) {
-        Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 사용자 요청입니다.", false));
-        Project project = projectRepository.findById(projectId)
-            .orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "존재하지 않는 의뢰입니다.", false));
+        Member member = memberQueryService.getById(memberId);
+        Project project = projectQueryService.getById(projectId);
 
         checkProjectValidation(member, project);
 
@@ -319,7 +321,16 @@ public class ProjectServiceImpl implements ProjectService {
         Price creatorPrice = project.getCreatorPrice();
 
         // 프로젝트 참고 자료
-        List<ReferenceFileInfo> referenceFileInfos = getReferenceFileInfos(project);
+        List<FileInfoPreview> referenceFileInfos = getReferenceFileInfos(project);
+
+        // 프로젝트 작업물 발송내역 조회
+        List<ProjectSubmissionForm> projectSubmissions = new ArrayList<>();
+        for (ProjectSubmission submission : Optional.ofNullable(project.getSubmissions()).orElseGet(Collections::emptyList)) {
+            ProjectSubmissionForm submissionForm = new ProjectSubmissionForm(submission);
+            submissionForm.setSubmissionFiles(getSubmissionFileInfos(submission));
+
+            projectSubmissions.add(submissionForm);
+        }
 
         // DTO 생성
         ProjectOverview overview = ProjectOverview.builder()
@@ -348,33 +359,37 @@ public class ProjectServiceImpl implements ProjectService {
             .detail(detail)
             .projectHistories(project.getProjectHistories().stream()
                 .map(ProjectHistoryForm::new)
-                .collect(Collectors.toList()))
+                .toList())
+            .projectSubmissions(projectSubmissions)
             .projectStatus(project.getProjectStatus())
             .projectTimes(new ProjectTimes(project))
             .build();
 
     }
 
-    private List<ReferenceFileInfo> getReferenceFileInfos(Project project) {
+    private List<FileInfoPreview> getReferenceFileInfos(Project project) {
         List<FileMetadata> referenceFiles =
                 fileQueryService.getByTarget(FileType.PROJECT_REFERENCE_FILE, project.getId());
 
         return referenceFiles.stream()
-                .map(file -> ReferenceFileInfo.builder()
+                .map(file -> FileInfoPreview.builder()
                         .originalFileName(file.getOriginalName())
                         .fileUrl(fileUrlService.getPublicUrl(file.getId()))
                         .build())
                 .toList();
     }
 
-    private Member findMemberById(Long memberId) {
-        return memberRepository.findById(memberId)
-            .orElseThrow(() -> new BusinessException(StatusCode.BAD_REQUEST, "유효하지 않은 사용자 요청입니다.", false));
-    }
+    private List<FileInfoPreview> getSubmissionFileInfos(ProjectSubmission projectSubmission) {
+        List<FileMetadata> submissionFiles =
+            Optional.ofNullable(fileQueryService.getByTarget(FileType.PROJECT_SUBMISSION_FILE, projectSubmission.getId()))
+                .orElseGet(Collections::emptyList);
 
-    private Project findProjectById(Long projectId) {
-        return projectRepository.findById(projectId)
-            .orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND, "프로젝트를 찾을 수 없습니다.", false));
+        return submissionFiles.stream()
+            .map(file -> FileInfoPreview.builder()
+                .originalFileName(file.getOriginalName())
+                .fileUrl(fileUrlService.getPublicUrl(file.getId()))
+                .build())
+            .toList();
     }
 
     private void checkProjectValidation(Member member, Project project) {
@@ -398,15 +413,5 @@ public class ProjectServiceImpl implements ProjectService {
         }
     }
 
-    // 사용자 유형별 처리 가능한 ProjectStatus 검사
-    private void validateProjectStatusTransition(Member requestMember, Project project, ProjectStatus targetStatus) {
-        MemberType requestMemberType = requestMember.getMemberType();
-        ProjectStatus currentStatus = project.getProjectStatus();
 
-        // 허가되지 않은 action ProjectStatus or 액션 불가능한 프로젝트 상태
-        if (!targetStatus.isTransitionAllowed(requestMemberType, currentStatus)) {
-            throw new BusinessException(StatusCode.BAD_REQUEST,
-                "현재 " + targetStatus.getStatusName() + " 할 수 없는 프로젝트 상태입니다", false);
-        }
-    }
 }

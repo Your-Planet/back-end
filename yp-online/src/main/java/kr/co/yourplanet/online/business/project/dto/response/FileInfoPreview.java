@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ReferenceFileInfo {
+public class FileInfoPreview {
 
     @NotBlank
     private String originalFileName;
