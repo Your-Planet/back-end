@@ -3,6 +3,7 @@ package kr.co.yourplanet.online.business.user.service;
 import kr.co.yourplanet.core.entity.member.Member;
 import kr.co.yourplanet.core.entity.member.MemberSalt;
 import kr.co.yourplanet.core.entity.member.RefreshToken;
+import kr.co.yourplanet.core.enums.AuthPurpose;
 import kr.co.yourplanet.core.enums.StatusCode;
 import kr.co.yourplanet.online.business.user.dto.request.ChangePasswordForm;
 import kr.co.yourplanet.online.business.user.dto.request.LoginForm;
@@ -12,7 +13,9 @@ import kr.co.yourplanet.online.business.user.repository.MemberRepository;
 import kr.co.yourplanet.online.business.user.repository.MemberSaltRepository;
 import kr.co.yourplanet.online.business.user.repository.RefreshTokenRepository;
 import kr.co.yourplanet.online.common.encrypt.EncryptManager;
+import kr.co.yourplanet.online.common.exception.BadRequestException;
 import kr.co.yourplanet.online.common.exception.BusinessException;
+import kr.co.yourplanet.online.infra.redis.RedisTokenRepository;
 import kr.co.yourplanet.online.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +38,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final MemberSaltRepository memberSaltRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final RedisTokenRepository redisTokenRepository;
 
     private final EncryptManager encryptManager;
 
@@ -73,56 +77,24 @@ public class MemberService {
     }
 
     public void changePassword(long memberId, ChangePasswordForm form) {
-        memberValidationService.validatePasswordFormat(form.password());
-        memberValidationService.validatePasswordReused(memberId, form.password());
         Member member = memberQueryService.getById(memberId);
+        String rawSalt = encryptManager.decryptSalt(member.getMemberSalt().getSalt());
 
-        String decryptedSalt = encryptManager.decryptSalt(member.getMemberSalt().getSalt());
-        String newPassword = encryptManager.encryptPassword(form.password(), decryptedSalt);
-
-        member.updatePassword(newPassword);
-        memberRepository.saveMember(member);
+        updateMemberPassword(member, form.password(), rawSalt);
     }
 
-    public void resetPassword(ResetPasswordForm resetPasswordForm) {
-        Optional<Member> findMember = memberRepository.findMemberByEmail(resetPasswordForm.getEmail());
-        MemberSalt memberSalt;
+    public void resetPassword(ResetPasswordForm form) {
+        // 토큰 정보 조회
+        Long memberId = redisTokenRepository.getMemberId(AuthPurpose.PASSWORD_RESET, form.getToken())
+                .orElseThrow(() -> new BadRequestException("토큰에 해당하는 정보가 존재하지 않습니다."));
+        Member member = memberQueryService.getById(memberId);
 
-        if (findMember.isEmpty()) {
-            throw new BusinessException(StatusCode.BAD_REQUEST, "가입된 회원이 없습니다.", false);
-        }
+        // 새 salt 생성
+        String rawSalt = encryptManager.generateSalt();
+        String encryptedSalt = encryptManager.encryptSalt(rawSalt);
 
-        Member member = findMember.get();
-        if (!resetPasswordForm.getTel().equals(member.getTel())) {
-            throw new BusinessException(StatusCode.BAD_REQUEST, "전화번호가 일치하지 않습니다.", false);
-        }
-
-        if (!resetPasswordForm.getName().equals(member.getName())) {
-            throw new BusinessException(StatusCode.BAD_REQUEST, "사용자 이름이 일치하지 않습니다.", false);
-        }
-
-        // 비밀번호 정책 확인
-        memberValidationService.validatePasswordFormat(resetPasswordForm.getNewPassword());
-
-        // 비밀번호 암호화
-        String salt = encryptManager.generateSalt();
-        String encodedHashPassword = encryptManager.encryptPassword(resetPasswordForm.getNewPassword(), salt);
-
-        member.updatePassword(encodedHashPassword);
-
-        memberRepository.saveMember(member);
-
-        Optional<MemberSalt> findMemberSalt = memberSaltRepository.findByMember(member);
-        if (findMemberSalt.isEmpty()) {
-            memberSalt = MemberSalt.builder()
-                    .member(member)
-                    .salt(encryptManager.encryptSalt(salt))
-                    .build();
-        } else {
-            memberSalt = findMemberSalt.get();
-            memberSalt.updateSalt(encryptManager.encryptSalt(salt));
-        }
-        memberSaltRepository.saveMemberSalt(memberSalt);
+        updateMemberPassword(member, form.getNewPassword(), rawSalt);
+        upsertMemberSalt(member, encryptedSalt);
     }
 
     public RefreshTokenForm refreshAccessToken(String previousRefreshToken) {
@@ -152,5 +124,28 @@ public class MemberService {
         } catch (Exception e) {
             throw new BusinessException(StatusCode.UNAUTHORIZED, "재로그인이 필요합니다.", false);
         }
+    }
+
+    private void updateMemberPassword(Member member, String password, String salt) {
+        memberValidationService.validatePasswordFormat(password);
+        memberValidationService.validatePasswordReused(member.getId(), password);
+
+        String encodedPassword = encryptManager.encryptPassword(password, salt);
+        member.updatePassword(encodedPassword);
+        memberRepository.saveMember(member);
+    }
+
+    private void upsertMemberSalt(Member member, String encryptedSalt) {
+        MemberSalt memberSalt = memberSaltRepository.findByMember(member)
+                .map(existing -> {
+                    existing.updateSalt(encryptedSalt);
+                    return existing;
+                })
+                .orElseGet(() -> MemberSalt.builder()
+                        .member(member)
+                        .salt(encryptedSalt)
+                        .build());
+
+        memberSaltRepository.saveMemberSalt(memberSalt);
     }
 }
