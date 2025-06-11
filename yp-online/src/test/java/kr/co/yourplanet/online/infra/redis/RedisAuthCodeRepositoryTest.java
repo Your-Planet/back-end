@@ -24,7 +24,7 @@ class RedisAuthCodeRepositoryTest extends IntegrationTest {
         String destination = "01012345678";
         String code = "123456";
         long memberId = 1L;
-        AuthPurpose purpose = AuthPurpose.PASSWORD_RESET;
+        AuthPurpose purpose = AuthPurpose.RESET_PASSWORD;
 
         // when
         redisVerificationCodeRepository.save(purpose, destination, code, memberId);
@@ -47,7 +47,7 @@ class RedisAuthCodeRepositoryTest extends IntegrationTest {
     void delete_code() {
         // given
         String destination = "01012345678";
-        redisVerificationCodeRepository.save(AuthPurpose.PASSWORD_RESET, destination, "654321", 1L);
+        redisVerificationCodeRepository.save(AuthPurpose.RESET_PASSWORD, destination, "654321", 1L);
 
         // when
         redisVerificationCodeRepository.delete(destination);

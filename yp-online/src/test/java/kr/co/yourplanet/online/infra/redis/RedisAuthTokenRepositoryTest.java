@@ -20,7 +20,7 @@ class RedisAuthTokenRepositoryTest extends IntegrationTest {
     @DisplayName("[성공] 토큰 저장 및 조회에 성공한다.")
     void save_and_get_token() {
         // given
-        AuthPurpose purpose = AuthPurpose.PASSWORD_RESET;
+        AuthPurpose purpose = AuthPurpose.RESET_PASSWORD;
         String token = "sample-token-123";
         long memberId = 1L;
 
