@@ -1,5 +1,20 @@
 -- MEMBER --
 
+-- ID: 0
+-- 관리자
+INSERT INTO member (id, email, name, tel, password, privacy_policy_agreed_time, terms_of_service_agreed_time)
+VALUES (0,
+        'admin@gmail.com',
+        '관리자',
+        '01012345678',
+        '2CJn2ppvaleyrs3bZk+dP1Pe2DfoO5eKD+1h1rnI/kQ=',
+        NOW(),
+        NOW());
+
+INSERT INTO member_salt (id, member_id, create_date, update_date, salt)
+VALUES (0, 0, '2025-02-24 13:07:45.755085', '2025-02-24 13:07:45.755085',
+        'ici1vf8rgNYbn5s0n9ik3cFM492EQUIwlxcveOV9//k=');
+
 -- ID: 1
 -- 작가: 사업자
 INSERT INTO member (id, email, password, name, gender_type, member_type, tel, birth_date,
