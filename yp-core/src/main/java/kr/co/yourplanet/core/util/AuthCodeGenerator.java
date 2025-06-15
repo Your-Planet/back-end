@@ -6,7 +6,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class VerificationCodeGenerator {
+public class AuthCodeGenerator {
 
     private static final SecureRandom random = new SecureRandom();
     private static final int CODE_LENGTH = 6;

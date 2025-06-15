@@ -1,13 +1,13 @@
 package kr.co.yourplanet.online.business.auth.dto;
 
-import kr.co.yourplanet.core.enums.AuthenticationMethod;
+import kr.co.yourplanet.core.enums.AuthMethod;
 import kr.co.yourplanet.core.enums.AuthPurpose;
 
-public record VerificationCodeSendCommand(
+public record AuthCodeSendCommand(
         AuthPurpose purpose,
-        AuthenticationMethod method,
+        AuthMethod method,
         String destination,
-        String verificationCode,
+        String authCode,
         long memberId
 ) {
 }

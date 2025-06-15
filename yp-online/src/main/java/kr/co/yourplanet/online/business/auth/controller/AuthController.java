@@ -3,15 +3,15 @@ package kr.co.yourplanet.online.business.auth.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.co.yourplanet.core.enums.StatusCode;
-import kr.co.yourplanet.online.business.auth.dto.AuthenticationTokenInfo;
-import kr.co.yourplanet.online.business.auth.dto.VerificationCodeCheckForm;
-import kr.co.yourplanet.online.business.auth.service.VerificationCodeService;
-import kr.co.yourplanet.online.business.user.dto.request.FindIdForm;
+import kr.co.yourplanet.online.business.auth.dto.AuthTokenInfo;
+import kr.co.yourplanet.online.business.auth.dto.AuthCodeCheckForm;
+import kr.co.yourplanet.online.business.auth.service.AuthCodeService;
+import kr.co.yourplanet.online.business.user.dto.request.FindEmailForm;
 import kr.co.yourplanet.online.business.user.dto.request.LoginForm;
 import kr.co.yourplanet.online.business.user.dto.request.MemberJoinForm;
 import kr.co.yourplanet.online.business.user.dto.request.MemberValidateForm;
 import kr.co.yourplanet.online.business.user.dto.request.RefreshTokenForm;
-import kr.co.yourplanet.online.business.auth.dto.VerificationCodeSendForm;
+import kr.co.yourplanet.online.business.auth.dto.AuthCodeSendForm;
 import kr.co.yourplanet.online.business.user.dto.request.ResetPasswordForm;
 import kr.co.yourplanet.online.business.user.service.MemberJoinService;
 import kr.co.yourplanet.online.business.user.service.MemberQueryService;
@@ -42,7 +42,7 @@ public class AuthController {
     private final MemberQueryService memberQueryService;
     private final MemberJoinService memberJoinService;
     private final MemberValidationService memberValidationService;
-    private final VerificationCodeService verificationCodeService;
+    private final AuthCodeService authCodeService;
 
     @Operation(summary = "회원 가입")
     @PostMapping("/auth/join")
@@ -77,9 +77,10 @@ public class AuthController {
     @Operation(summary = "이메일 찾기")
     @PostMapping("/auth/find-email")
     public ResponseForm<String> findEmail(
-            @Valid @RequestBody FindIdForm accountRecoveryFrom
+            @Valid @RequestBody FindEmailForm findEmailForm
     ) {
-        return new ResponseForm<>(StatusCode.OK, memberQueryService.findEmail(accountRecoveryFrom));
+        String response = memberQueryService.findEmail(findEmailForm);
+        return new ResponseForm<>(StatusCode.OK, response);
     }
 
     @Operation(summary = "비밀번호 재설정")
@@ -92,22 +93,20 @@ public class AuthController {
     }
 
     @Operation(summary = "인증코드 전송")
-    @PostMapping("/auth/verification-code/send")
-    public ResponseForm<Void> sendVerificationCode(
-            @Valid @RequestBody VerificationCodeSendForm form
+    @PostMapping("/auth/auth-code/send")
+    public ResponseForm<Void> sendAuthCode(
+            @Valid @RequestBody AuthCodeSendForm form
     ) {
-        verificationCodeService.sendVerificationCode(form);
-
+        authCodeService.sendAuthCode(form);
         return new ResponseForm<>(StatusCode.OK);
     }
 
     @Operation(summary = "인증코드 확인")
-    @PostMapping("/auth/verification-code/check")
-    public ResponseForm<AuthenticationTokenInfo> checkVerificationCode(
-            @Valid @RequestBody VerificationCodeCheckForm form
+    @PostMapping("/auth/auth-code/check")
+    public ResponseForm<AuthTokenInfo> checkAuthCode(
+            @Valid @RequestBody AuthCodeCheckForm form
     ) {
-        AuthenticationTokenInfo response = verificationCodeService.checkVerificationCode(form);
-
+        AuthTokenInfo response = authCodeService.checkAuthCode(form);
         return new ResponseForm<>(StatusCode.OK, response);
     }
 

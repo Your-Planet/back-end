@@ -230,7 +230,7 @@ public class BusinessAlimTalkSendService {
 
             // 엔티티에 포함되지 않은 변수 처리를 위해 key:ETC_VARIABLE_MAP_KEY, value:Map 처리
             // 알림톡 문구 변수 치환 객체 주입
-            Map<String, Object> contextObjectMap = Map.of(ETC_VARIABLE_MAP_KEY, Map.of("authCode", authCode));
+            Map<String, Object> contextObjectMap = Map.of("member", member, ETC_VARIABLE_MAP_KEY, Map.of("authCode", authCode));
 
             // 멤버에게 알림톡 발송
             send(AlimTalkTemplateCode.AUTH_CODE, member, contextObjectMap);

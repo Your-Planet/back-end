@@ -11,16 +11,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import kr.co.yourplanet.core.enums.AuthPurpose;
 import kr.co.yourplanet.support.template.IntegrationTest;
 
-class RedisTokenRepositoryTest extends IntegrationTest {
+class RedisAuthTokenRepositoryTest extends IntegrationTest {
 
     @Autowired
-    private RedisTokenRepository redisTokenRepository;
+    private RedisAuthTokenRepository redisTokenRepository;
 
     @Test
     @DisplayName("[성공] 토큰 저장 및 조회에 성공한다.")
     void save_and_get_token() {
         // given
-        AuthPurpose purpose = AuthPurpose.PASSWORD_RESET;
+        AuthPurpose purpose = AuthPurpose.RESET_PASSWORD;
         String token = "sample-token-123";
         long memberId = 1L;
 

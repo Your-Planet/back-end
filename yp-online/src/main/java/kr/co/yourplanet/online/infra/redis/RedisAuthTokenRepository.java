@@ -5,12 +5,12 @@ import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 import kr.co.yourplanet.core.enums.AuthPurpose;
-import kr.co.yourplanet.online.business.auth.repository.TokenRepository;
+import kr.co.yourplanet.online.business.auth.repository.AuthTokenRepository;
 import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
-public class RedisTokenRepository implements TokenRepository {
+public class RedisAuthTokenRepository implements AuthTokenRepository {
 
     private static final String PREFIX = "token:";
     private static final long TTL_TIME = 600L;  // 10분
@@ -26,6 +26,11 @@ public class RedisTokenRepository implements TokenRepository {
     public Optional<Long> getMemberId(AuthPurpose tokenPurpose, String token) {
         return redisRepository.getValue(getKey(tokenPurpose, token))
                 .map(Long::parseLong);
+    }
+
+    @Override
+    public void delete(AuthPurpose tokenPurpose, String token) {
+        redisRepository.delete(getKey(tokenPurpose, token));
     }
 
     private String getKey(AuthPurpose tokenPurpose, String token) {
